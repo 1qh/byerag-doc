@@ -92,6 +92,10 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 
 - [`agent-auto-assign-cron`](./agent-auto-assign-cron.md) — daily cron + manual enable flag; signal (i) only; no rate limit; aggregate audit per run
 
+## Production deployment
+
+- [`prod-deployment-pattern-dokploy`](./prod-deployment-pattern-dokploy.md) — Dokploy on operator VM; git-push auto-deploy; read-only API access from agent; concrete creds in agent memory
+
 ## Process
 
 - [`session-start-book-root-only`](./session-start-book-root-only.md) — read `~/tc/book/` root files only at session start; subfolders are other projects
