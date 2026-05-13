@@ -12,11 +12,19 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Upload
 
-- [ ] Admin uploads a clean PDF; row appears in `docs` with `scope='shared'`, `scanStatus='clean'`.
-- [ ] User uploads a clean PDF; row appears with `scope='mine'`, `owner=<user>`, `scanStatus='clean'`.
-- [ ] EICAR test virus rejected; staging file deleted; UI shows quarantine reason.
+- [ ] Admin uploads a clean PDF; row appears in `docs` with `scope='shared'`, `scanStatus='clean'`, `version=1`.
+- [ ] User uploads a clean PDF; row appears with `scope='mine'`, `owner=<user>`, `scanStatus='clean'`, `version=1`.
+- [ ] EICAR test virus → `docs` row with `scanStatus='quarantined'`, no blob; UI toast `⚠️ Your file was rejected because it appeared suspicious. Reason: <sig>.`; audit row recorded.
 - [ ] Oversized file (>configured cap) rejected at the upload endpoint before reaching scan.
-- [ ] Zip bomb rejected by ClamAV with recursion-limit error.
+- [ ] Zip bomb rejected by ClamAV with recursion-limit error; same quarantine path.
+- [ ] **Duplicate content** (re-upload same sha256, same scope): no new row; toast `this file is already in your library (uploaded as <filename> on <date>).`
+- [ ] **Version conflict** (same filename, same scope, different content): blocking modal `a different file with this name already exists. Replace it? Keep both? Cancel?`
+  - [ ] **Replace** → new row `version=2`, `supersedes=<prev>`; prev row gets `supersededBy=<new>` + `deletedAt=now`; prev blob scheduled for 30-day hard-purge.
+  - [ ] **Keep both** → new row with filename suffix `(2)`; both rows independent (`supersedes=null`).
+  - [ ] **Cancel** → no row, no blob; staged tmp file deleted.
+- [ ] User app surfaces same dedup + version-conflict UX scoped to `mine`.
+- [ ] Cross-scope dedup: shared doc with content X does NOT block a user uploading content X to `mine` (and vice versa).
+- [ ] Repeated quarantine uploads of the same sha256 from the same uploader within 1 hour → 429 `too many rejected uploads`.
 
 ## Embedding
 

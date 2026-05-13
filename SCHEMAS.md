@@ -90,7 +90,7 @@ The corpus.
 - `deletedAt: number?` — soft-delete tombstone
 - `uploadedAt: number`
 
-Indexes: `by_scope`, `by_owner`, `by_scope_uploadedAt`, `by_supersedes`, `by_deletedAt`.
+Indexes: `by_scope`, `by_owner`, `by_scope_uploadedAt`, `by_supersedes`, `by_deletedAt`, `by_sha256_scope_owner`, `by_filename_scope_owner`.
 
 Vector index: `by_embedding` (`dimensions: 768`, filter fields: `owner`, `scope`).
 

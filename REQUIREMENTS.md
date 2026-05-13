@@ -12,16 +12,18 @@ Feature catalog. Canonical state, not transition. Each row is required for the l
 ## Admin upload
 
 - Admin uploads a file via the admin app's upload widget.
-- File scanned by the local ClamAV stateless service before reaching the workspace.
-- On pass: stored as a Convex `_storage` blob; row inserted in `docs` table with `scope='shared'`, `owner=null`, `uploadedBy=<admin email>`.
-- Visible to every signed-in user across both apps.
+- File scanned via Convex action talking to ClamAV daemon before reaching `_storage`.
+- **Malicious file** → row written with `scanStatus='quarantined'`, no blob; UI toast: `⚠️ Your file was rejected because it appeared suspicious. Reason: <signature>.` Audit log records uploader + sha256 + signature.
+- **Duplicate content** (same sha256 in same scope) → no new row; UI toast: `this file is already in your library (uploaded as <filename> on <date>).`
+- **Version conflict** (same filename in same scope, different content) → blocking modal: `a different file with this name already exists. Replace it? Keep both? Cancel?` Admin chooses; server applies per `upload-dedup-and-version-prompt.md`.
+- **Clean insert** → stored as a Convex `_storage` blob; `docs` row with `scope='shared'`, `owner=null`, `uploadedBy=<admin email>`, `version=1`. Visible to every signed-in user across both apps.
 
 ## User upload
 
 - User uploads a file via the user app's upload widget.
-- Same scan path as admin upload.
-- On pass: stored in Convex `_storage`; row inserted with `scope='mine'`, `owner=<user email>`, `uploadedBy=<user email>`.
+- Same scan + duplicate + version-conflict UX as admin upload, but `scope='mine'`, `owner=<user email>`.
 - Visible only to the same user across their own sessions.
+- Duplicate / version-conflict checks scoped to the user's own `mine` partition (a shared-scope doc with the same content does NOT block a user's own copy).
 
 ## Chat (both apps)
 
