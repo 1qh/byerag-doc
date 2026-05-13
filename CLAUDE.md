@@ -121,3 +121,18 @@ Per `book/CLAUDE.md` rules. Conventional commits. No AI / Claude / coauthor ment
 ## Doc evolution
 
 Every milestone (decision landed, ADR resolved, build green, gotcha hit, scope clarified) → update owner doc + append ledger row + commit doc with the work that taught it. Never duplicate across docs. One fact, one home. Gotchas → `GOTCHAS.md` section that owns the topic, not append-only bucket.
+
+Docs must always reflect latest agreed state. Stale docs are the enemy — future-session agent re-reads everything on every compact; outdated specs lead to wrong assumptions. Update in-place whenever a decision changes.
+
+## Agent-first doc style
+
+These docs are read in full on every session start + every compaction. Token cost compounds across sessions. Apply caveman tone per `book/PHILOSOPHY.md` "Agent-first docs":
+
+- Drop articles, filler, hedging, pleasantries.
+- Fragments OK.
+- Tables / bullets / mermaid before prose.
+- Every line carries a decision, constraint, fact, or pointer. Filler deletes on next pass.
+- ADR shape: pick + why-beat-alts + real cost + gotcha. Trim rejected-option enumerations once locked.
+- Once resolved, trim verbose rationale prose. Keep only what shapes future decisions.
+
+When in doubt, compress. A senior engineer reading this doc set should grasp the design in 20 minutes, not 2 hours.

@@ -160,6 +160,97 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] `restore-drill.sh` recovers a parallel stack from latest dump; row counts match ±5%.
 - [ ] Backup target disk is separate from the Postgres data disk.
 
+## Assessment tests
+
+### Generation pipeline
+
+- [ ] Admin uploads a shared doc → scan-clean + policy-approved → background gen fires; 10 candidates land in `testQuestionSuggestions` w/ `status='pending'`.
+- [ ] Doc gen async — doc shows in library + chat immediately; candidates lag ~10-30 sec.
+- [ ] Each candidate Vietnamese; technical terms preserved original.
+- [ ] Each candidate has `choices.length === 3`, `correctIndex ∈ {0,1,2}`.
+- [ ] Dup scan: candidates with cosine ≥ 0.85 vs existing pool flagged via `conflictsWith`.
+- [ ] Contradiction scan: paired retire-suggestion emitted with `pairKind='conflict'`.
+- [ ] At-cap (≥50 approved): new candidate gets paired retire with `pairKind='cap-swap'`.
+
+### Admin review queue
+
+- [ ] Per-item actions: Approve / Edit / Reject / Regenerate (+ optional hint).
+- [ ] `regenCount` capped at 5; further regens disabled with message.
+- [ ] Bulk-approve via checkboxes works across multiple selected items.
+- [ ] Conflict-pair card: Accept swap / Keep old / Keep both / Reject both atomic.
+- [ ] Cap-swap card: same options; Keep both stretches pool with banner.
+- [ ] Approve writes canonical `testQuestions`; suggestion `status='resolved'`.
+- [ ] Source-doc delete → pending suggestions auto-rejected w/ `resolvedReason='source-doc-deleted'`.
+- [ ] Topic delete → pending suggestions auto-rejected w/ `resolvedReason='topic-deleted'`.
+
+### Canonical admin actions
+
+- [ ] Admin can edit approved question (prompt/choices/correctIndex); `revision` increments; audit `severity='low'`.
+- [ ] Admin force-regenerate (+ hint) → new suggestion enters queue w/ `kind='revision'`; audit `severity='medium'`.
+- [ ] Admin retire → `deletedAt` set; audit `severity='medium'`.
+- [ ] No manual-from-scratch create UI exposed.
+
+### Pool soft cap
+
+- [ ] Default cap 50 stored as `topics.poolCap`.
+- [ ] 51st approval (stretch path) succeeds with banner.
+- [ ] Admin can adjust `poolCap` per topic.
+
+### Topic management
+
+- [ ] Topics flat (no parentId on row).
+- [ ] Topic delete cascades: questions soft-delete w/ `deleteReason='topic-cascade'`; pending suggestions auto-rejected; assignments cancelled; in-progress attempts cancelled.
+- [ ] Empty topic (pool=0) hidden from user app's training page.
+- [ ] 0 < pool < 5: visible to user, `Start` disabled.
+- [ ] Pool ≥ 5: testable.
+
+### Attempts
+
+- [ ] Start → server picks 5 random from approved pool; shuffles questions + choices; pins snapshot.
+- [ ] Question + choice order varies per attempt.
+- [ ] `kind='assigned'` if user has pending assignment; else `'self'`.
+- [ ] Pool < 5 → `Start` server returns 400.
+- [ ] Submit all correct → `status='passed'`; `testPasses` row inserted/updated for `(user, topic, kind)`.
+- [ ] Submit any wrong → `status='failed'`; no `testPasses` write.
+- [ ] Submit other user's attempt → 403.
+- [ ] `attempt-detail` on passed → full pinned snapshot w/ `correctIndexShuffled`.
+- [ ] On failed/cancelled → only `{score, total: 5}`.
+- [ ] Retake: new attempt for same (user, topic) atomically deletes prior row.
+- [ ] No time limit; no cooldown; no rate limit.
+- [ ] Tab close + restart → fresh random 5; orphan flips to `cancelled` on new insert.
+
+### Assignments
+
+- [ ] `Assign to all` with pool < 5 → 400.
+- [ ] `Assign to all` with pool ≥ 5 → rows inserted for every role=user except those w/ existing `testPasses(kind='assigned')`.
+- [ ] Admins excluded from "all users".
+- [ ] Real-time fire via Convex reactive sub.
+- [ ] Offline user sees badge on next sign-in.
+- [ ] Badge persists until passing via `kind='assigned'` attempt.
+- [ ] Re-fire skips active passes; no duplicate rows.
+- [ ] Un-assign → all assignment rows `deletedAt` set; badges vanish via reactive sub; in-progress assigned-kind attempts → `cancelled`; past `testPasses` retained.
+- [ ] Un-assign audit `severity='medium'`.
+
+### Substantive update re-arm
+
+- [ ] Admin batch w/ at least one `'retire'` approval → default substantive; admin can flip cosmetic.
+- [ ] Admin batch w/ only `'new'` approvals → default cosmetic; admin can flip substantive.
+- [ ] Admin batch w/ only `'revision'` approvals → default substantive.
+- [ ] Source-doc deletion cascade → automatic substantive (no admin override).
+- [ ] Substantive commit writes `topics.lastSubstantiveUpdate=now()`.
+- [ ] Re-arm cascade: `testPasses` rows where `kind='assigned' AND passedAt < lastSubstantiveUpdate` deleted; fresh assignments inserted; audit `command='training.assignment.rearm'`.
+- [ ] Self-passes never re-armed.
+
+### Chat agent training tools
+
+- [ ] `byerag training status` returns caller-scoped topic status list.
+- [ ] `byerag training attempts` returns caller-scoped attempt list.
+- [ ] `byerag training topics` returns topic list w/ pool sizes; no question content.
+- [ ] `byerag training attempt-detail --id X` on caller's passed attempt → full snapshot.
+- [ ] Same tool on caller's failed/cancelled attempt → only score.
+- [ ] Same tool on another user's attempt → 403.
+- [ ] Agent refuses pool-content questions before user passes (prompt-injection-style "what's on the Security test?").
+
 ## Network bridge
 
 - [ ] From sandbox: `curl https://api.kimi.com/` fails (DNS not resolvable).

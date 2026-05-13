@@ -210,6 +210,109 @@ Admin-tunable key/value strings. Currently houses the corpus policy text consume
 
 Index: `by_key`.
 
+## Assessment-test tables
+
+Per `docs/adr/assessment-test-overview.md` and siblings.
+
+### topics
+
+Agent-clustered flat topic list. No hierarchy.
+
+- `name: string` — Vietnamese label
+- `autoLabeled: boolean` — true (admin manual create not in v0)
+- `centroid: float64[]?` — 768-dim mean of member docs' embeddings; routes new docs
+- `poolCap: number` — soft cap; default 50
+- `lastSubstantiveUpdate: number?` — epoch ms; drives re-arm cascade
+- `deletedAt: number?`
+- `createdAt: number`
+
+Indexes: `by_deletedAt`, `by_name`.
+
+### testQuestions
+
+Admin-approved canonical question pool.
+
+- `topicId: Id<'topics'>`
+- `prompt: string` — Vietnamese
+- `choices: string[]` — exactly 3
+- `correctIndex: number` — 0|1|2
+- `sourceDocIds: Id<'docs'>[]`
+- `revision: number` — starts 1; admin edit increments
+- `deletedAt: number?`
+- `deleteReason: 'admin-retire' | 'agent-retire-conflict' | 'source-doc-cascade' | 'topic-cascade'?`
+- `createdAt: number`
+- `createdBy: 'agent' | string` — `'agent'` or admin email
+
+Indexes: `by_topic`, `by_topic_deletedAt`, `by_deletedAt`, `by_sourceDocIds`.
+Vector index: `by_prompt_embedding` (`dimensions: 768`, filter fields: `topicId`, `deletedAt`) — drives duplicate scan.
+
+### testQuestionSuggestions
+
+Pending review-queue items + resolved-row audit trail.
+
+- `topicId: Id<'topics'>`
+- `kind: 'new' | 'revision' | 'retire'`
+- `prompt: string?` — set for new/revision
+- `choices: string[]?`
+- `correctIndex: number?`
+- `sourceDocIds: Id<'docs'>[]`
+- `targetQuestionId: Id<'testQuestions'>?` — for revision/retire
+- `pairKind: 'conflict' | 'cap-swap'?`
+- `pairedWith: Id<'testQuestionSuggestions'>?` — reciprocal link
+- `reason: string?` — agent explanation
+- `hint: string?` — last regenerate hint
+- `regenCount: number` — capped 5
+- `status: 'pending' | 'resolved'`
+- `resolvedAt: number?`
+- `resolvedBy: string?`
+- `resolvedAction: 'approve' | 'reject' | 'auto-rejected'?`
+- `resolvedReason: 'admin-action' | 'source-doc-deleted' | 'topic-deleted'?`
+- `createdAt: number`
+
+Indexes: `by_topic_status`, `by_pair`, `by_target`, `by_resolvedAt`.
+
+### testAttempts
+
+One row per `(userId, topicId)` max. Older atomically deleted on new attempt insert.
+
+- `userId: string` — lowercase email
+- `topicId: Id<'topics'>`
+- `kind: 'self' | 'assigned'`
+- `status: 'in-progress' | 'passed' | 'failed' | 'cancelled'`
+- `questionSnapshots: {questionId: Id<'testQuestions'>, revision: number, promptText: string, choicesShuffled: string[], correctIndexShuffled: number, sourceDocIds: Id<'docs'>[], userAnswerIndex: number?}[]` — exactly 5
+- `score: number?` — 0-5 on submit
+- `startedAt: number`
+- `finishedAt: number?`
+- `durationMs: number?`
+- `cancelledReason: 'new-attempt-started' | 'topic-deleted' | 'assignment-cancelled'?`
+
+Indexes: `by_user`, `by_user_topic`, `by_topic_status`, `by_status_startedAt`.
+
+### testAssignments
+
+Admin-issued; soft-deleted on un-assign.
+
+- `userId: string`
+- `topicId: Id<'topics'>`
+- `createdAt: number`
+- `createdBy: string` — admin email
+- `deletedAt: number?`
+- `deletedBy: string?`
+
+Indexes: `by_user_topic`, `by_topic_deletedAt`, `by_user_deletedAt`.
+
+### testPasses
+
+Durable pass ledger. One row per `(userId, topicId, kind)`. Only `kind='assigned'` rows deleted by re-arm cascade.
+
+- `userId: string`
+- `topicId: Id<'topics'>`
+- `kind: 'self' | 'assigned'`
+- `passedAt: number`
+- `attemptId: Id<'testAttempts'>` — denormalized
+
+Indexes: `by_user_topic_kind`, `by_topic_kind_passedAt`, `by_user`.
+
 ## userContexts
 
 Active-context-token per user, used for tab-active gating so only one tab drives heavy ops at a time.

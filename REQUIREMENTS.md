@@ -71,6 +71,25 @@ Listed canonically in `CLI-SURFACE.md`. Includes at minimum:
 - Embedding stored as `docs.embedding` field, indexed via `vectorIndex` with `dimensions=768`, filter fields `owner`, `scope`.
 - On `docs similar` tool call: query text prefixed `search_query: `, embedded, `ctx.vectorSearch` with ACL filter pushdown.
 
+## Assessment tests
+
+Per `docs/adr/assessment-test-overview.md` + siblings. Canonical behavior summary:
+
+- Agent generates 10 MCQ candidates per approved shared doc; 3 choices each, 1 correct, Vietnamese-only.
+- Agent flat-clusters topics; admin can delete (cascade). No rename/merge/split/lock/manual-create in v0. No prerequisites.
+- All AI question changes flow through admin review queue. Source-doc deletion cascades automatically without review.
+- Review actions: Approve / Edit / Reject / Regenerate (+ optional hint). Bulk-approve via checkboxes only.
+- Conflict pairs (dup or contradiction) and cap-swap pairs render as joint cards; admin resolves both items together.
+- Soft cap 50 per topic; admin can stretch with warning.
+- Pool < 5 blocks user attempts AND admin assignment creation. Topics with 0 hidden from user app entirely.
+- Attempts: 5 random questions, 100% to pass, unlimited retakes, no cooldown, no time limit, open-book (source-doc citation inline + doc viewer beside), question+choice order shuffled per attempt, tab-close discards, one row per (user, topic).
+- Reveal on pass only (full breakdown); failed attempt shows ratio only.
+- Admin assigns to all `role=user`; admins exempt. Real-time fire via Convex reactive sub. Per-assignment persistent badge until passed. Un-assign nukes silently; in-progress attempts cancelled.
+- Self-pass ≠ assignment-pass; separate `testPasses` rows per kind.
+- Substantive corpus updates re-arm assigned-passes for affected topics. Admin classifies substantive/cosmetic at batch commit. Self-passes never re-arm.
+- Chat agent gets read-only own-data tools: `byerag training status / attempts / topics / attempt-detail`. No pool leak. No admin-curation access.
+- Question generation cost not budget-gated. Per-user chat budget cap stays.
+
 ## Audit
 
 - Every CLI exec call logged to `auditLogs` (owner, command, args summary, ok, mode).

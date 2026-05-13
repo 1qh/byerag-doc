@@ -78,7 +78,21 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 - Cross-user isolation proof: user A's docs invisible to user B's sandbox.
 - ALL items in `VERIFY.md` pass.
 
-## P8 — Polish
+## P8 — Assessment tests
+
+- `topics`, `testQuestions`, `testQuestionSuggestions`, `testAttempts`, `testAssignments`, `testPasses` active in Convex.
+- Question generation pipeline triggered by `docs.policyStatus` → `approved` (async via `scheduler.runAfter`).
+- 10 questions per approved doc; Vietnamese-only; dup + contradiction scans.
+- Admin review queue at `/admin/test-questions/pending` with per-card actions + bulk-approve.
+- Soft cap 50 per topic with 1-in-1-out cap-swap pairs; admin stretch allowed.
+- Pool < 5 blocks attempts + assignment creation.
+- Attempt flow: random 5, 100% pass, shuffled order, pinned snapshot, open-book, reveal-on-pass.
+- Assignment flow: admin to role=user, real-time fire, persistent per-assignment badge, un-assign nuke.
+- Re-arm cascade on substantive-flagged batch commits.
+- `byerag training` provider exposed to chat agent (read-only own-data).
+- `lastSubstantiveUpdate` field active on `topics`.
+
+## P9 — Polish
 
 - Empty states, error toasts, loading skeletons.
 - Doc-viewer keyboard nav.

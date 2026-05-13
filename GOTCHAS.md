@@ -59,3 +59,23 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 ## CLI auth (device flow + PAT)
 
 (none yet)
+
+## Assessment tests — generation
+
+(none yet)
+
+## Assessment tests — review queue
+
+(none yet)
+
+## Assessment tests — attempts
+
+(none yet)
+
+## Assessment tests — assignments + re-arm
+
+(none yet)
+
+## Assessment tests — chat agent training tools
+
+(none yet)

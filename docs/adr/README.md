@@ -67,6 +67,18 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 - [`multilingual-corpus-handling`](./multilingual-corpus-handling.md) — single embedding model handles ~100 langs + `docs.lang` for display
 - [`schema-spec-fields-canonical`](./schema-spec-fields-canonical.md) — identity / time / enum / index naming conventions
 
+## Assessment tests
+
+- [`assessment-test-overview`](./assessment-test-overview.md) — top-level invariants + sibling-ADR index
+- [`topic-clustering-plan-b`](./topic-clustering-plan-b.md) — flat agent-clustered topic list; no hierarchy
+- [`question-generation-pipeline`](./question-generation-pipeline.md) — async gen on approved doc; 10 per doc; Vietnamese; conflict scan
+- [`question-review-queue`](./question-review-queue.md) — admin actions; bulk-approve; conflict + cap-swap pairs
+- [`question-pool-soft-cap-50`](./question-pool-soft-cap-50.md) — 1-in-1-out at cap; admin stretch allowed
+- [`assessment-test-attempts`](./assessment-test-attempts.md) — 5 Qs / 100% pass / open-book / shuffle / discard-on-close
+- [`assessment-assignments`](./assessment-assignments.md) — admin to role=user / real-time / persistent badge / un-assign nuke
+- [`re-arm-on-substantive-corpus-update`](./re-arm-on-substantive-corpus-update.md) — admin substantive flag invalidates assigned-passes
+- [`chat-agent-training-tools`](./chat-agent-training-tools.md) — read-only own-data CLI surface
+
 ## Process
 
 - [`session-start-book-root-only`](./session-start-book-root-only.md) — read `~/tc/book/` root files only at session start; subfolders are other projects
