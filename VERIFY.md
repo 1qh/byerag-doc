@@ -70,14 +70,14 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] User asks a semantic question; agent calls `byerag docs similar` then `byerag docs read`; cites in answer.
 - [ ] Admin app analog works on shared docs.
 - [ ] Resume: close tab, reopen, prior chat history visible; resume on prior thread continues the SDK session.
-- [ ] **Supportiveness bar (per `AGENT-DOCTRINE.md`):**
-  - [ ] User asks about one doc → agent surfaces related shared-corpus obligations even when not literally asked.
-  - [ ] Agent flags risks unsolicited (short-notice clauses, auto-renewals, policy conflicts).
-  - [ ] Agent connects dots across multi-doc context (date arithmetic, dependency surfacing).
-  - [ ] Agent pre-empts likely follow-up questions in the same response.
-  - [ ] Agent flags corpus gaps when answer doesn't exist; recommends upload-this / escalate-to-admin.
-  - [ ] Agent surfaces uncertainty explicitly when source passage is ambiguous; never confidently fabricates.
-  - [ ] Every claim cited; tool-call breadcrumbs visible for audit.
+- [ ] **Supportiveness bar (per `AGENT-DOCTRINE.md` + evidence gate `docs/adr/supportiveness-evidence-gate.md`):** every check below validated via `apps/backend/scripts/smoke-supportiveness.ts` w/ scripted scenario + auto-judge + captured JSON in `apps/backend/test-fixtures/supportiveness-evidence/<scenario-id>.json`. Ledger notes reference the JSON path per tick.
+  - [ ] Cross-reference scenario: agent's answer mentions related shared-corpus obligation not in user's question. Captured `cross-reference-proactively.json` verdict=pass.
+  - [ ] Risk-spot scenario: agent flags auto-renewal clause unsolicited. Captured `spot-risks-unsolicited.json` verdict=pass.
+  - [ ] Dot-connect scenario: agent computes date arithmetic across offer letter + bonus policy. Captured `connect-dots-multi-doc.json` verdict=pass.
+  - [ ] Pre-empt scenario: agent covers carryover + parental leave intersection w/o being asked. Captured `pre-empt-follow-ups.json` verdict=pass.
+  - [ ] Gap-flag scenario: agent says "not in corpus" + recommends action. Captured `flag-corpus-gaps.json` verdict=pass.
+  - [ ] Uncertainty scenario: agent surfaces ambiguity instead of picking one interpretation. Captured `surface-uncertainty.json` verdict=pass.
+  - [ ] Citations + tool-call breadcrumbs: every factual claim has `<docId§section>` chip; stream contains ≥1 `tool_use` block. Captured `citations-and-breadcrumbs.json` verdict=pass.
 - [ ] **Conflict resolution flow** (real-world example per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`):
   - User uploads doc A (offer letter saying "15 days PTO") and doc B (PTO policy saying "20 days").
   - User asks "compare these 2 docs".

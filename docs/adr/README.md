@@ -103,6 +103,7 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 ## Agent behavior
 
 - [`auto-resolve-via-shared-kb-on-conflict`](./auto-resolve-via-shared-kb-on-conflict.md) — `docs conflict` semantic scan + agent auto-probes shared-scope canonical on factual conflict + cites all sources
+- [`supportiveness-evidence-gate`](./supportiveness-evidence-gate.md) — scripted 7+ scenarios w/ auto-judge + captured traces archive supportiveness-bar evidence as launch gate
 
 ## Process
 
