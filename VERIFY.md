@@ -70,6 +70,14 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] User asks a semantic question; agent calls `byerag docs similar` then `byerag docs read`; cites in answer.
 - [ ] Admin app analog works on shared docs.
 - [ ] Resume: close tab, reopen, prior chat history visible; resume on prior thread continues the SDK session.
+- [ ] **Supportiveness bar (per `AGENT-DOCTRINE.md`):**
+  - [ ] User asks about one doc → agent surfaces related shared-corpus obligations even when not literally asked.
+  - [ ] Agent flags risks unsolicited (short-notice clauses, auto-renewals, policy conflicts).
+  - [ ] Agent connects dots across multi-doc context (date arithmetic, dependency surfacing).
+  - [ ] Agent pre-empts likely follow-up questions in the same response.
+  - [ ] Agent flags corpus gaps when answer doesn't exist; recommends upload-this / escalate-to-admin.
+  - [ ] Agent surfaces uncertainty explicitly when source passage is ambiguous; never confidently fabricates.
+  - [ ] Every claim cited; tool-call breadcrumbs visible for audit.
 - [ ] **Conflict resolution flow** (real-world example per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`):
   - User uploads doc A (offer letter saying "15 days PTO") and doc B (PTO policy saying "20 days").
   - User asks "compare these 2 docs".
