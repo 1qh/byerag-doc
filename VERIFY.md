@@ -70,6 +70,14 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] User asks a semantic question; agent calls `byerag docs similar` then `byerag docs read`; cites in answer.
 - [ ] Admin app analog works on shared docs.
 - [ ] Resume: close tab, reopen, prior chat history visible; resume on prior thread continues the SDK session.
+- [ ] **Conflict resolution flow** (real-world example per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`):
+  - User uploads doc A (offer letter saying "15 days PTO") and doc B (PTO policy saying "20 days").
+  - User asks "compare these 2 docs".
+  - Agent autonomously runs `docs read` × 2 + `docs conflict --a --b` + `docs similar --scope shared` + `docs read` on canonical hit.
+  - Final answer cites all three sources with `<docId§section>` chips.
+  - When no canonical exists (no shared doc cosine ≥ 0.8), answer says "no shared-corpus authority found; recommend escalating to admin."
+  - Excerpts in `docs conflict` output are literal substrings of source texts (server grep-verified; hallucinations dropped).
+  - Hard cap 3 canonical probes per user-question respected.
 
 ## Sandbox
 

@@ -50,8 +50,11 @@ Listed canonically in `CLI-SURFACE.md`. Includes at minimum:
 - `byerag docs list --scope shared|mine|both`
 - `byerag docs read --id <docId>`
 - `byerag docs grep --pattern <regex> --scope <s> [--limit N]`
-- `byerag docs diff --a <docIdA> --b <docIdB>`
+- `byerag docs diff --a <docIdA> --b <docIdB>` (mechanical unified diff)
+- `byerag docs conflict --a <docIdA> --b <docIdB>` (semantic conflict scan; LLM-driven; per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`)
 - `byerag docs similar --query <text> --scope <s> [--limit N] [--dim 256|512|768]`
+
+When agent detects a factual conflict between two docs, system prompt instructs autonomous probe of shared-scope corpus for canonical authority + incorporate into answer with citations.
 
 ## Sandbox
 
