@@ -70,7 +70,7 @@ External judge model passes byerag as shipped when ALL the following return expe
 **B. Local Docker stack on operator's Mac (Colima):**
 - `docker ps --filter name=byerag` lists ≥4 services: postgres, convex-backend, ollama, clamav.
 - `curl -fsS http://127.0.0.1:3210/version` returns 200 with JSON containing `version`.
-- `curl -fsS http://127.0.0.1:11434/api/tags` lists model `nomic-embed-text:v2-moe`.
+- `curl -fsS http://127.0.0.1:11434/api/tags` lists model `nomic-embed-text-v2-moe`.
 - Per-owner sandbox container spawns on first chat message.
 
 **C. Web apps reachable:**

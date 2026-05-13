@@ -12,7 +12,7 @@ Locked stack. Each pick has an ADR with rejection rationale for alternatives. Re
 | LLM | Kimi (Anthropic-protocol-compatible) | `docs/adr/kimi-as-llm.md` |
 | Agent loop | `@anthropic-ai/claude-agent-sdk` inside sandbox | `docs/adr/agent-sdk-inside-sandbox.md` |
 | Sandbox runtime | Docker + gVisor (`runsc`) | `docs/adr/docker-gvisor-sandbox.md` |
-| Embedding | Ollama serving `nomic-embed-text:v2-moe` | `docs/adr/ollama-nomic-embed-v2-moe.md` |
+| Embedding | Ollama serving `nomic-embed-text-v2-moe` | `docs/adr/ollama-nomic-embed-v2-moe.md` |
 | Vector store | Convex `vectorIndex` | `docs/adr/vector-search-via-convex-vectorindex.md` |
 | Upload virus scan | self-host ClamAV stateless scan service | `docs/adr/clamav-stateless-scan-service.md` |
 | Frontend shared lib | `packages/react` chat hooks + components | `docs/adr/shared-react-package-for-chat-ui.md` |

@@ -6,7 +6,19 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## Convex self-host
 
-(none yet)
+- **Postgres 18+ breaks default volume mount path** — PGDATA moved to `/var/lib/postgresql/<MAJOR>/docker`. Stick to `postgres:17-alpine`. Surfaced 2026-05-14 P0 boot.
+- **POSTGRES_URL must NOT include `/dbname`** — Convex backend errors `cluster url already contains db name`. Use `postgres://user:pass@host:port`; Convex derives db name from `INSTANCE_NAME` (dashes→underscores). Surfaced 2026-05-14 P0 boot.
+- **`docker compose restart` ignores `.env` changes** — env substitution happens at container create time. Use `docker compose up -d --force-recreate <service>`. Surfaced 2026-05-14 P0 boot.
+
+## Ollama embedding
+
+- **Native Mac Ollama, NOT dockerized** — `ollama serve` runs on host; Convex container reaches via `host.docker.internal:11434`. Containerized Ollama wastes RAM + duplicates model file. Surfaced 2026-05-14 P0 boot.
+- **Model slug `nomic-embed-text-v2-moe`** (dashes, single segment). NOT colon-tag form `nomic-embed-text:v2-moe` — that's wrong; non-existent tag of a different base model. Library URL is authoritative. Surfaced 2026-05-14 P0 boot when pull returned `Error: pull model manifest: file does not exist`.
+- **Use OpenAI-compat `/v1/embeddings`** endpoint, NOT native `/api/embed` — portable across providers. Same model name, OpenAI-shape request/response.
+
+## ClamAV scan
+
+- **`clamav/clamav:latest` is amd64-only** — no arm64 manifest. Use `clamav/clamav-debian:latest` (multi-arch) on Apple Silicon. Surfaced 2026-05-14 P0 boot.
 
 ## Docker + gVisor
 

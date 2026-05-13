@@ -46,7 +46,7 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 
 ## P4 — Embedding + similar
 
-- Ollama compose service running `nomic-embed-text:v2-moe`.
+- Ollama compose service running `nomic-embed-text-v2-moe`.
 - Chunking action per `embedding-chunking-strategy.md`: sliding window 400/50 over `docs.extractedText`, writes `docChunks` rows.
 - Embedding action POSTing to `http://ollama:11434/api/embed` with `search_document: ` prefix.
 - Per-doc `docs.embedding` = centroid of `docChunks.embedding`.

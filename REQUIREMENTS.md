@@ -74,7 +74,7 @@ When agent detects a factual conflict between two docs, system prompt instructs 
 
 ## Embedding
 
-- On doc upload: text extracted (`pdftotext`, `pandoc`, etc.) → first `min(8K, content)` chars sent to local Ollama at `/api/embed` w/ `model="nomic-embed-text:v2-moe"`, prefix `search_document: `.
+- On doc upload: text extracted (`pdftotext`, `pandoc`, etc.) → first `min(8K, content)` chars sent to local Ollama at `/api/embed` w/ `model="nomic-embed-text-v2-moe"`, prefix `search_document: `.
 - Embedding stored as `docs.embedding` field, indexed via `vectorIndex` with `dimensions=768`, filter fields `owner`, `scope`.
 - On `docs similar` tool call: query text prefixed `search_query: `, embedded, `ctx.vectorSearch` with ACL filter pushdown.
 

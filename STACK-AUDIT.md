@@ -35,7 +35,7 @@ Inherited from the substrate reference, stripped of domain-specific apps + tools
 - `apps/backend/secrets/postgres_password.txt` + `apps/backend/secrets/convex_instance_secret.txt` (compose secrets files).
 - Convex compose stack running on the host.
 - gVisor (`runsc`) installed and registered as a Docker runtime.
-- Ollama daemon running with `nomic-embed-text:v2-moe` pulled.
+- Ollama daemon running with `nomic-embed-text-v2-moe` pulled.
 - ClamAV daemon.
 - Host nftables ruleset applied per `network-bridge-rules.md`.
 - Cron entries for daily backup + monthly restore drill.

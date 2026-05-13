@@ -12,6 +12,7 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 ## Backend + auth
 
 - [`convex-self-host-on-this-machine`](./convex-self-host-on-this-machine.md) — Convex backend in local Docker compose
+- [`postgres-backs-convex-self-host`](./postgres-backs-convex-self-host.md) — Postgres 17 is Convex self-host's mandatory durable storage; apps never talk to it directly
 - [`google-oauth-via-convex-auth`](./google-oauth-via-convex-auth.md) — `@convex-dev/auth` Google provider
 - [`role-on-user-profile`](./role-on-user-profile.md) — role stored on `userProfiles.role`; bootstrap admin via env; no network/VPN gating
 
@@ -37,7 +38,7 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 
 - [`docs-table-via-convex-storage`](./docs-table-via-convex-storage.md) — `docs` row + `_storage` blob; no external blob store
 - [`clamav-via-convex-action`](./clamav-stateless-scan-service.md) — Convex action talks to clamd directly; no wrapper service
-- [`ollama-nomic-embed-v2-moe`](./ollama-nomic-embed-v2-moe.md) — local Ollama serving `nomic-embed-text:v2-moe`
+- [`ollama-nomic-embed-v2-moe`](./ollama-nomic-embed-v2-moe.md) — local Ollama serving `nomic-embed-text-v2-moe`
 - [`vector-search-via-convex-vectorindex`](./vector-search-via-convex-vectorindex.md) — Convex `vectorIndex` is the vector store
 
 ## Operations
