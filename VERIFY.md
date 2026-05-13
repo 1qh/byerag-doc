@@ -4,9 +4,14 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Auth
 
-- [ ] Admin app: Google OAuth sign-in completes; session cookie set; role stamped `admin`.
-- [ ] User app: same on user app; role stamped `user`.
-- [ ] Cross-app cookies don't leak: signing into user app does not grant admin app access.
+- [ ] Google OAuth sign-in completes on either app; session cookie set.
+- [ ] First sign-in creates `userProfiles` row with `role='user'` by default.
+- [ ] Bootstrap: email matching `BOOTSTRAP_ADMIN_EMAIL` env (comma-separated) gets `role='admin'` seeded on first sign-in.
+- [ ] Admin app `/admin/*` routes: signed-in user with `role='admin'` → access granted; non-admin → 403.
+- [ ] User app routes: any signed-in user grants access.
+- [ ] Promote: admin changes another user's `role` to `'admin'`; after that user's next session refresh, admin routes are accessible.
+- [ ] Demote: admin changes a user's `role` to `'user'`; admin routes return 403 after session refresh.
+- [ ] Self-demotion prevented if it would leave zero admins; UI blocks.
 - [ ] Sign-out clears the cookie; next request 401.
 - [ ] CLI device-flow login completes; PAT issuance works; revocation breaks the token immediately.
 
@@ -253,7 +258,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Departments
 
-- [ ] `userProfiles` table active w/ `department ∈ {'HR', 'Sales', 'IT', null}`.
+- [ ] `userProfiles` table active w/ `role ∈ {'admin', 'user'}` and `department ∈ {'HR', 'Sales', 'IT', null}`.
 - [ ] Admin sets a user's department via admin UI; audit row recorded.
 - [ ] Department NULL for admin role accounts.
 - [ ] Department NULL for unset role=user accounts (group "Unassigned" on gradebook).

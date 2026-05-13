@@ -104,7 +104,7 @@ Per `book/PHILOSOPHY.md` "Unlimited rework pre-launch — throw away code freely
 
 ## Confidentiality scope
 
-byerag-docs is private. Product-specific concepts (internal docs platform, admin doc upload, user doc upload, byerag-specific tools, role-by-app pattern) live ONLY here.
+byerag-docs is private. Product-specific concepts (internal docs platform, admin doc upload, user doc upload, byerag-specific tools, role-on-user-profile pattern) live ONLY here.
 
 byerag code repo stays generic-engineering-only. No product domain leak in commits, source, README, lint output, comments, help text. Per `book/SUBSTRATE.md` confidentiality discipline.
 

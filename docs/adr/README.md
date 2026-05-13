@@ -13,7 +13,7 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 
 - [`convex-self-host-on-this-machine`](./convex-self-host-on-this-machine.md) — Convex backend in local Docker compose
 - [`google-oauth-via-convex-auth`](./google-oauth-via-convex-auth.md) — `@convex-dev/auth` Google provider
-- [`role-by-app-not-allowlist`](./role-by-app-not-allowlist.md) — role determined by app the user signed into; no email allowlist
+- [`role-on-user-profile`](./role-on-user-profile.md) — role stored on `userProfiles.role`; bootstrap admin via env; no network/VPN gating
 
 ## Agent + LLM
 

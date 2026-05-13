@@ -41,7 +41,7 @@
 
 - **One terminal running everything**: log streams interleave; debugging hard.
 - **No compose, run each service via OS package manager**: drift between dev and prod; "works on my machine".
-- **Single-port dev (admin + user behind one Next instance)**: breaks the role-by-app boundary.
+- **Single-port dev (admin + user behind one Next instance)**: breaks the apps-as-separate-origins shape; complicates cookie scoping + route guards.
 
 ## Real cost
 

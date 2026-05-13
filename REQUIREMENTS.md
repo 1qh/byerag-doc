@@ -5,7 +5,11 @@ Feature catalog. Canonical state, not transition. Each row is required for the l
 ## Auth
 
 - Google OAuth sign-in on both apps via `@convex-dev/auth`.
-- Role determined by which app the OAuth callback originated from (admin app → admin role; user app → user role).
+- Role stored on `userProfiles.role: 'admin' | 'user'` per `docs/adr/role-on-user-profile.md`.
+- First sign-in: role defaults `'user'`. Bootstrap admin via env `BOOTSTRAP_ADMIN_EMAIL` (comma-separated allowed); first sign-in by matching email seeds `role='admin'`.
+- Existing admins promote/demote other users via admin UI (impl deferred).
+- Admin app `/admin/*` routes guarded by `userProfiles.role === 'admin'`. Non-admin → 403.
+- User app: any signed-in account.
 - Session persisted in Convex `authTables`.
 - Sign-out clears session cookie.
 

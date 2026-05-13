@@ -16,7 +16,7 @@ mindmap
       ROADMAP — phase sequence
       STACK — locked stack
       SCHEMAS — convex tables
-      AUTH — google oauth, role-by-app
+      AUTH — google oauth, role on user account
       AGENT-DOCTRINE — agent loop and prompts
       CLI-SURFACE — docs CLI commands agent sees
       UX-DOCTRINE — admin app and user app shape

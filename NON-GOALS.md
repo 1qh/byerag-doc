@@ -20,7 +20,7 @@ One LLM provider per deployment. The proxy speaks Anthropic protocol; swap upstr
 
 ## Anonymous public access
 
-No anonymous sign-in. No public landing page. Self-host on a private network; OAuth is the identity gate. Network ACL is the access gate.
+No anonymous sign-in. No public landing page. Google OAuth is the identity gate. `userProfiles.role` is the role gate (per `docs/adr/role-on-user-profile.md`). No network-segmentation requirement.
 
 ## Cross-team sharing
 

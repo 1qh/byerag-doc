@@ -8,14 +8,15 @@ Convex tables. Canonical. The byerag code repo's `apps/backend/convex/schema.ts`
 
 ## userProfiles
 
-Persistent per-user metadata (separate from `userContexts` which is transient tab-active state). Per `docs/adr/departments.md`.
+Persistent per-user metadata (separate from `userContexts` which is transient tab-active state). Per `docs/adr/role-on-user-profile.md` + `docs/adr/departments.md`.
 
 - `userId: string` — lowercase email
+- `role: 'admin' | 'user'` — access gate
 - `department: 'HR' | 'Sales' | 'IT' | null` — null when role=admin or unset
 - `updatedAt: number`
 - `updatedBy: string` — admin email who set/changed (or `'self'` on first sign-in seed)
 
-Index: `by_userId`.
+Index: `by_userId`, `by_role`.
 
 ## costRecords
 
