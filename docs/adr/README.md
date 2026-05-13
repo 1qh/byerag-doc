@@ -36,7 +36,7 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 ## Docs corpus
 
 - [`docs-table-via-convex-storage`](./docs-table-via-convex-storage.md) — `docs` row + `_storage` blob; no external blob store
-- [`clamav-stateless-scan-service`](./clamav-stateless-scan-service.md) — self-host ClamAV called as a function (bytes → verdict)
+- [`clamav-via-convex-action`](./clamav-stateless-scan-service.md) — Convex action talks to clamd directly; no wrapper service
 - [`ollama-nomic-embed-v2-moe`](./ollama-nomic-embed-v2-moe.md) — local Ollama serving `nomic-embed-text:v2-moe`
 - [`vector-search-via-convex-vectorindex`](./vector-search-via-convex-vectorindex.md) — Convex `vectorIndex` is the vector store
 

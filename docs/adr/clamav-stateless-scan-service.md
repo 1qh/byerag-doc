@@ -1,25 +1,34 @@
-# clamav-stateless-scan-service
+# clamav-via-convex-action
 
-A self-host ClamAV-based scan service (one Docker container) exposes `POST /scan` taking file bytes → returns `{ok, type, sha256, virus?}`. Stateless: no file storage on the scan side. Called by the upload service before any blob lands in Convex `_storage`.
+Upload virus-scan is a Convex `'use node'` action talking directly to `clamd`'s TCP socket via `node:net`. ClamAV daemon runs as one compose service; no scan wrapper service in between.
+
+## Mechanism
+
+`internal.docs.scan({bytes}) → {ok, mime, sha256} | {ok: false, signature}`:
+
+1. Connect TCP to `clamav:3310`.
+2. Send `zINSTREAM\0`, 4-byte big-endian length, then bytes, then 4-byte zero terminator.
+3. Read response; parse for `FOUND` / `OK`.
+4. Compute sha256 + magic-byte mime sniff in parallel.
+
+Action runs inside Convex's Node runtime. Upload mutation calls it inline; on pass writes the blob to `_storage` + the `docs` row.
 
 ## Beats
 
-- **No scan**: every uploaded doc is potentially malicious. Internal team isn't a zero-threat environment.
-- **Scan inline in upload handler**: pulls ClamAV into the upload server's process; harder to scale; harder to swap the scanner.
-- **External scan SaaS (VirusTotal etc.)**: outbound network dest; violates self-host invariant.
+- **Separate scan microservice (Hono / Bun / Express wrapping clamd)**: extra container, extra hop, extra healthcheck. Pure middleman.
+- **Scan in browser before upload**: trust-the-client breaks every threat model.
+- **No scan**: every uploaded doc is potentially malicious.
 
 ## Real cost
 
-- One more container in the compose stack.
-- ClamAV signatures update daily (cron job inside container); old signatures = missed threats.
-- ClamAV cold start ~30s on first scan (loads signature DB into memory). Subsequent scans warm.
+- Convex action runtime hosts the TCP code path; one more reason an action is `'use node'`.
+- File bytes live in action memory during the scan call. Upload bodies are capped to the doc-size limit anyway.
 
 ## Gotcha for Claude
 
-- The scan service is purely a function (bytes → verdict). State (the file in flight) lives in the upload service's staging dir, not the scan service.
-- `INSTREAM` ClamAV command streams the file from socket; scan service exposes HTTP wrapper.
-- Archive recursion limit (`MaxRecursion`) set explicitly; default 16 layers is generous, drop to 4 to defend against zip bombs.
-- File size cap enforced before invoking scan (oversize → 413 at upload service, never reach scan).
-- Magic-byte sniff via libmagic in the scan service (`file -b --mime-type`); don't trust `Content-Type` from the client.
-- On scan pass: upload service moves staging file → Convex `_storage`; writes the `docs` row with `scanStatus='clean'`, `sha256=<from scan>`.
-- On scan fail: upload service deletes staging file; writes a `docs` row with `scanStatus='quarantined'` for audit, no blob persisted, surfaces reason in UI.
+- `zINSTREAM` (with leading `z`) returns NUL-terminated reply; without leading `z` returns newline-terminated. Pick one and parse consistently.
+- 4-byte length is big-endian unsigned 32-bit. Encode with a DataView, not number-to-string.
+- 4-byte zero terminator after the data block tells clamd "stream done".
+- Archive recursion + size limits configured in `clamd.conf` (baked into the clamav image's mounted config). Adjust there, not in the action.
+- Signature DB updates: clamav image runs `freshclam` on boot + periodically. First boot needs network access to fetch the initial DB (one-time exception; document in operator runbook).
+- For very large files (>100 MB), streaming the blob from `_storage` through the action to clamd avoids loading the full bytes into action memory; use Bun's stream-to-socket pattern.
