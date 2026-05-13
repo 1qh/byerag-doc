@@ -57,6 +57,7 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 
 - [`doc-versioning-and-deletion-cascade`](./doc-versioning-and-deletion-cascade.md) — version chain + soft-delete + scheduled hard-purge
 - [`upload-dedup-and-version-prompt`](./upload-dedup-and-version-prompt.md) — duplicate content auto-reject + version-conflict modal (Replace / Keep both / Cancel)
+- [`policy-relevance-classifier`](./policy-relevance-classifier.md) — LLM classifier on every upload; admin-tunable policy text; quarantine queue for review
 - [`concurrency-and-active-context-token`](./concurrency-and-active-context-token.md) — single active tab per user gating
 - [`timestamps-and-timezone`](./timestamps-and-timezone.md) — UTC epoch ms in DB, ISO-Z in ledger, local in UI
 - [`owner-id-canonical-email-lowercase`](./owner-id-canonical-email-lowercase.md) — owner string == lowercase email

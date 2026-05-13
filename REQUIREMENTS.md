@@ -9,21 +9,26 @@ Feature catalog. Canonical state, not transition. Each row is required for the l
 - Session persisted in Convex `authTables`.
 - Sign-out clears session cookie.
 
-## Admin upload
+## Upload pipeline (admin and user)
 
-- Admin uploads a file via the admin app's upload widget.
-- File scanned via Convex action talking to ClamAV daemon before reaching `_storage`.
-- **Malicious file** → row written with `scanStatus='quarantined'`, no blob; UI toast: `⚠️ Your file was rejected because it appeared suspicious. Reason: <signature>.` Audit log records uploader + sha256 + signature.
-- **Duplicate content** (same sha256 in same scope) → no new row; UI toast: `this file is already in your library (uploaded as <filename> on <date>).`
-- **Version conflict** (same filename in same scope, different content) → blocking modal: `a different file with this name already exists. Replace it? Keep both? Cancel?` Admin chooses; server applies per `upload-dedup-and-version-prompt.md`.
-- **Clean insert** → stored as a Convex `_storage` blob; `docs` row with `scope='shared'`, `owner=null`, `uploadedBy=<admin email>`, `version=1`. Visible to every signed-in user across both apps.
+Every upload runs through these gates in order; failure at any gate ends the flow with the matching UI:
 
-## User upload
+1. **Scan** (ClamAV) — malicious → `scanStatus='quarantined'`, no blob; toast: `⚠️ Your file was rejected because it appeared suspicious. Reason: <signature>.` Audit log records.
+2. **Dedup** (sha256 in same scope) — match → no new row; toast: `this file is already in your library (uploaded as <filename> on <date>).`
+3. **Version-conflict** (same filename in same scope, different content) — blocking modal: `Replace · Keep both · Cancel`. Server applies per `upload-dedup-and-version-prompt.md`.
+4. **Policy classifier** (LLM-backed; per `policy-relevance-classifier.md`) — rejected → `policyStatus='rejected'`, blob retained for admin review; toast: `This file is rejected as not matching our policy. Reason: <reason>.` + button: `Request review`.
+5. **Extract + chunk + embed** — produces `extractedText`, `lang`, `docChunks`, `docs.embedding`.
+6. **Clean insert** → doc becomes searchable. Admin upload: `scope='shared'`, `owner=null`. User upload: `scope='mine'`, `owner=<user email>`.
 
-- User uploads a file via the user app's upload widget.
-- Same scan + duplicate + version-conflict UX as admin upload, but `scope='mine'`, `owner=<user email>`.
-- Visible only to the same user across their own sessions.
-- Duplicate / version-conflict checks scoped to the user's own `mine` partition (a shared-scope doc with the same content does NOT block a user's own copy).
+## Cross-scope rule
+
+Dedup + version-conflict checks run within the same `(scope, owner)` partition. A shared-scope doc with content X does NOT block a user uploading content X to `mine` (and vice versa).
+
+## Admin-only surfaces
+
+- **Policy editor** at `/admin/policy` — large textarea + Save. Every save logged.
+- **Quarantine queue** at `/admin/quarantine` — paginated list of `policyStatus='rejected'` docs. Per row: Approve (override → `approved`, `policyOverriddenBy=<admin>`) · Confirm reject (purge blob + chunks; row retained for audit).
+- **Review-request queue** — docs where user clicked `Request review`; sorted by request time. Same approve/confirm-reject actions.
 
 ## Chat (both apps)
 

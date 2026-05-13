@@ -32,6 +32,8 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 - Text extraction action per `text-extraction-by-mime.md` (per-mime extractor, OCR fallback).
 - Language detection on extracted text → `docs.lang`.
 - Versioning + soft-delete + scheduled hard-purge per `doc-versioning-and-deletion-cascade.md`.
+- Policy classifier on every upload per `policy-relevance-classifier.md`; admin policy editor (`/admin/policy`) + quarantine queue (`/admin/quarantine`) + user "Request review" button.
+- `settings` table seeded with default `corpus_policy` text on first compose boot.
 
 ## P3 — Agent tools
 

@@ -90,7 +90,13 @@ The corpus.
 - `deletedAt: number?` — soft-delete tombstone
 - `uploadedAt: number`
 
-Indexes: `by_scope`, `by_owner`, `by_scope_uploadedAt`, `by_supersedes`, `by_deletedAt`, `by_sha256_scope_owner`, `by_filename_scope_owner`.
+- `policyStatus: 'pending' | 'approved' | 'rejected'` — per `policy-relevance-classifier.md`
+- `policyReason: string?` — classifier's short, sanitized reason
+- `policyCategory: 'on-topic' | 'off-topic' | 'spam' | 'prompt-injection' | 'abusive' | 'promotional'?`
+- `policyOverriddenBy: string?` — admin email when force-approved
+- `policyReviewRequestedAt: number?` — when user asked admin to review
+
+Indexes: `by_scope`, `by_owner`, `by_scope_uploadedAt`, `by_supersedes`, `by_deletedAt`, `by_sha256_scope_owner`, `by_filename_scope_owner`, `by_policyStatus`.
 
 Vector index: `by_embedding` (`dimensions: 768`, filter fields: `owner`, `scope`).
 
@@ -187,6 +193,17 @@ CLI long-running command stream buffer (separate from agent streamEvents so CLI 
 - `expiresAt: number`
 
 Indexes: `by_run`, `by_run_seq`, `by_expires`.
+
+## settings
+
+Admin-tunable key/value strings. Currently houses the corpus policy text consumed by the relevance classifier.
+
+- `key: string` — e.g. `'corpus_policy'`
+- `value: string` — large text
+- `updatedAt: number`
+- `updatedBy: string` — admin email who last edited
+
+Index: `by_key`.
 
 ## userContexts
 
