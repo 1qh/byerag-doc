@@ -26,11 +26,11 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Cross-scope dedup: shared doc with content X does NOT block a user uploading content X to `mine` (and vice versa).
 - [ ] Repeated quarantine uploads of the same sha256 from the same uploader within 1 hour → 429 `too many rejected uploads`.
 - [ ] **Admin scan override** (admin app only):
-  - [ ] Admin uploads a virus file → blocking modal with `Type "OVERRIDE"` text input + Force / Cancel buttons.
-  - [ ] Force button disabled until typed input matches `OVERRIDE` exactly (case-sensitive).
-  - [ ] Force click → server verifies role=admin + token + typed confirmation + idempotency; on pass, blob moves to `_storage`, `scanStatus='clean'`, `scanOverriddenBy` + `scanOverriddenAt` + `scanOverrideSignature` populated.
-  - [ ] Force click → audit log row with `severity='high'`, `command='docs.scanOverride'`.
-  - [ ] Cancel button → staging blob deleted; row keeps `scanStatus='quarantined'` + `scanCancelledAt` set.
+  - [ ] Admin uploads a virus file → yes/no confirm modal `⚠ Suspicious file detected. Force upload?` with `[No] [Yes]` buttons.
+  - [ ] `No` is default focus; Enter key does NOT trigger override.
+  - [ ] `Yes` click → server verifies role=admin + token + idempotency; on pass, blob moves to `_storage`, `scanStatus='clean'`, `scanOverriddenBy` + `scanOverriddenAt` + `scanOverrideSignature` populated.
+  - [ ] `Yes` click → audit log row with `severity='high'`, `command='docs.scanOverride'`.
+  - [ ] `No` click → staging blob deleted; row keeps `scanStatus='quarantined'` + `scanCancelledAt` set.
   - [ ] 1-hour TTL expires without decision → scheduled function purges staging blob; row tombstoned.
   - [ ] User app: no override surface visible; user with virus file gets hard reject toast only.
   - [ ] Override does NOT bypass the policy classifier — virus-overridden doc still goes through policy gate; can still be rejected there.
