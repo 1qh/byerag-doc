@@ -72,6 +72,7 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 
 ## P7 — Verify + harden
 
+- Pull real test corpus per `docs/adr/test-corpus-source-and-kimi-knowledge-probe.md`; Kimi-knowledge probe rejects docs Kimi already knows.
 - End-to-end smoke covering: upload → scan → ingest → embed → chat → tool call → answer → citation.
 - Cost-control proof: simulated burst exhausts budget, returns 402.
 - Sandbox isolation proof: prompt-injection inside a doc trying to `curl` outside is blocked at network layer.
