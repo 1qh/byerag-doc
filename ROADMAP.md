@@ -8,7 +8,7 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 - `compose.yml` w/ postgres + convex-backend + ollama + ollama-init + clamav + scan service. Healthchecks per service. Bridges `internal` + `sandbox-egress`.
 - Convex self-host compose stack running locally; admin key + JWT keypair generated to `.env`.
 - Convex schema as canonical in `SCHEMAS.md` (includes `docs`, `docChunks`, `userContexts` and all auxiliary tables).
-- `@convex-dev/auth` wired with Google OAuth client; callback URIs registered for localhost dev ports (3001 admin, 3002 user, 3211 Convex site).
+- `@convex-dev/auth` wired with Google OAuth client; callback URIs registered for localhost dev ports (3001 admin, 3003 user, 3211 Convex site).
 - Two thin apps (`apps/admin`, `apps/user`) scaffolded with a sign-in screen + empty chat screen.
 - Lefthook pre-commit + universal CI from pm4ai.
 - Sandbox image built (`apps/backend/sandbox/Dockerfile`) tagged `byerag-sandbox:latest`.
