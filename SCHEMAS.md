@@ -90,13 +90,17 @@ The corpus.
 - `deletedAt: number?` — soft-delete tombstone
 - `uploadedAt: number`
 
+- `scanOverriddenBy: string?` — admin email who force-approved a scan rejection per `admin-scan-override.md`
+- `scanOverriddenAt: number?`
+- `scanOverrideSignature: string?` — original ClamAV signature (preserved for audit)
+- `scanCancelledAt: number?` — admin pressed Cancel on a scan-override prompt
 - `policyStatus: 'pending' | 'approved' | 'rejected'` — per `policy-relevance-classifier.md`
 - `policyReason: string?` — classifier's short, sanitized reason
 - `policyCategory: 'on-topic' | 'off-topic' | 'spam' | 'prompt-injection' | 'abusive' | 'promotional'?`
 - `policyOverriddenBy: string?` — admin email when force-approved
 - `policyReviewRequestedAt: number?` — when user asked admin to review
 
-Indexes: `by_scope`, `by_owner`, `by_scope_uploadedAt`, `by_supersedes`, `by_deletedAt`, `by_sha256_scope_owner`, `by_filename_scope_owner`, `by_policyStatus`.
+Indexes: `by_scope`, `by_owner`, `by_scope_uploadedAt`, `by_supersedes`, `by_deletedAt`, `by_sha256_scope_owner`, `by_filename_scope_owner`, `by_policyStatus`, `by_scanOverriddenBy`.
 
 Vector index: `by_embedding` (`dimensions: 768`, filter fields: `owner`, `scope`).
 
@@ -140,15 +144,16 @@ Indexes: `by_owner`, `by_updatedAt`.
 
 ## auditLogs
 
-Every CLI exec call.
+Every CLI exec call and every high-severity admin action.
 
 - `owner: string`
 - `command: string`
 - `args: string` — JSON
 - `mode: string` — auth mode the call ran under
 - `ok: boolean`
+- `severity: 'low' | 'medium' | 'high'?` — defaulted low; high triggers real-time alerting (P6+)
 
-Indexes: `by_owner`, `by_command`, `by_owner_command`.
+Indexes: `by_owner`, `by_command`, `by_owner_command`, `by_severity`.
 
 ## CLI auth
 

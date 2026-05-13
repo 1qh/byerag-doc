@@ -13,7 +13,9 @@ Feature catalog. Canonical state, not transition. Each row is required for the l
 
 Every upload runs through these gates in order; failure at any gate ends the flow with the matching UI:
 
-1. **Scan** (ClamAV) — malicious → `scanStatus='quarantined'`, no blob; toast: `⚠️ Your file was rejected because it appeared suspicious. Reason: <signature>.` Audit log records.
+1. **Scan** (ClamAV) — malicious → `scanStatus='quarantined'`, blob retained in 1h staging.
+   - **User app**: hard reject. Toast: `⚠️ Your file was rejected because it appeared suspicious. Reason: <signature>.` No appeal surface for scan failures.
+   - **Admin app**: blocking modal `⚠️ Suspicious file detected. Type "OVERRIDE" to force this upload anyway.` Admin can force-through per `admin-scan-override.md`; logged as `severity='high'`. Cancel → staging blob deleted.
 2. **Dedup** (sha256 in same scope) — match → no new row; toast: `this file is already in your library (uploaded as <filename> on <date>).`
 3. **Version-conflict** (same filename in same scope, different content) — blocking modal: `Replace · Keep both · Cancel`. Server applies per `upload-dedup-and-version-prompt.md`.
 4. **Policy classifier** (LLM-backed; per `policy-relevance-classifier.md`) — rejected → `policyStatus='rejected'`, blob retained for admin review; toast: `This file is rejected as not matching our policy. Reason: <reason>.` + button: `Request review`.
