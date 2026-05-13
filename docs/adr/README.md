@@ -100,6 +100,10 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 
 - [`test-corpus-source-and-kimi-knowledge-probe`](./test-corpus-source-and-kimi-knowledge-probe.md) — post-cutoff real docs + Kimi-knowledge probe + fabricated edge-case fixtures
 
+## Agent behavior
+
+- [`auto-resolve-via-shared-kb-on-conflict`](./auto-resolve-via-shared-kb-on-conflict.md) — `docs conflict` semantic scan + agent auto-probes shared-scope canonical on factual conflict + cites all sources
+
 ## Process
 
 - [`session-start-book-root-only`](./session-start-book-root-only.md) — read `~/tc/book/` root files only at session start; subfolders are other projects

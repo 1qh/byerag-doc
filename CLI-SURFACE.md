@@ -32,11 +32,26 @@ Implementation: iterate `docs` rows in scope (paginated), pull extracted text fr
 
 ## docs diff
 
-Unified diff between two docs (or two versions of one doc when versioning lands).
+Mechanical unified diff between two docs (line-level).
 
 - `--a` (string) required — `docs._id`
 - `--b` (string) required — `docs._id`
 - `--context` (number) — lines of context, default 3
+
+ACL: both rows checked individually. Returns raw diff text.
+
+## docs conflict
+
+Semantic conflict scan between two docs. LLM-driven; structured output. Per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`.
+
+- `--a` (string) required — `docs._id`
+- `--b` (string) required — `docs._id`
+
+Returns JSON array `[{type: 'factual' | 'wording' | 'gap', summary, docA_excerpt, docB_excerpt}]`. Excerpts are literal substrings of source texts (grep-verified by server before return; hallucinated excerpts dropped).
+
+ACL: both rows checked. Chunk-pair fallback when combined text > 100K chars.
+
+Auto-probe rule baked in system prompt: for each `'factual'` conflict, agent should run `docs similar --scope shared` and `docs read` on top match (cosine ≥ 0.8) to surface canonical authority + recommend escalation if no canonical found. Hard cap 3 canonical probes per user-question.
 
 ACL: both rows checked individually.
 
