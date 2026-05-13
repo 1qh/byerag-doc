@@ -90,6 +90,53 @@ Per `docs/adr/assessment-test-overview.md` + siblings. Canonical behavior summar
 - Chat agent gets read-only own-data tools: `byerag training status / attempts / topics / attempt-detail`. No pool leak. No admin-curation access.
 - Question generation cost not budget-gated. Per-user chat budget cap stays.
 
+## Departments
+
+Per `docs/adr/departments.md`.
+
+- Three departments: HR, Sales, IT. Static enum.
+- `userProfiles.department: 'HR' | 'Sales' | 'IT' | null`. Single department per user. Null for admins or unset.
+- Department is a dashboard-filter dimension; does NOT gate assignment scope. Locked rule: `Assign to all users` includes every role=user account regardless of department.
+- Admin sets each user's department via admin UI (impl deferred).
+- Future v1: department-scoped assignment selectors.
+
+## Dashboard (admin app)
+
+Per `docs/adr/dashboard-admin-landing.md` + siblings.
+
+- Admin lands on `/admin/dashboard` after sign-in.
+- **Top strip** (live, reactive sub):
+  - `active / total users` — heartbeat-based active count; total = non-revoked accounts.
+  - Cost cycle (current). Monthly bar chart + per-(user, model) pivot table below.
+  - Docs in corpus — count of approved, non-deleted shared docs.
+- **Cost analytics** (per `docs/adr/dashboard-cost-cycle.md`):
+  - 5th-to-5th cycle. Anchor day fixed at 5; future configurable via `settings.billing_cycle_day`.
+  - Monthly bar chart, scrollable history, current cycle bar partial + live.
+  - Pivot table: per-`(user, model)` rows w/ input/output tokens + cost. Sort by cost desc. Footer totals.
+  - Click bar → re-render pivot for that cycle. Click pivot row → user daily breakdown drill-in.
+- **Gradebook matrix** (per `docs/adr/dashboard-gradebook.md`):
+  - Rows = role=user users; columns = non-deleted topics with pool ≥ 5; cells = glyphs.
+  - Glyphs: `✓` passed, `✗` admin-assigned not passed, `ⓐ` agent-assigned not passed, `·` not assigned.
+  - Row total = `passed/assigned` ratio. Column footer = topic pass rate `passed_assigned / assigned`.
+  - Default sort: rows by Total ascending; columns by topic createdAt ascending.
+  - Dept column visible.
+  - Cell click → user-topic drill-in. Row total click → user detail. Column header click → topic detail.
+  - Refresh cadence: on-demand button (heavy aggregate).
+
+## Agent auto-assign
+
+Per `docs/adr/agent-auto-assign-cron.md`.
+
+- Daily Convex cron at 03:00 UTC.
+- Gated by `settings.agent_auto_assign_enabled` (default `false`). Admin flips once after deploy.
+- Eligibility: pool ≥ 5 AND user not passed (kind='assigned') AND no live assignment.
+- Inserts `testAssignments` with `createdBy='agent'`.
+- No rate limit; every eligible cell fills.
+- No admin notification; admin sees `ⓐ` glyphs on gradebook.
+- No per-topic agent-lock toggle; admin un-assign nukes all rows but next cron refills if conditions hold.
+- User sees no source distinction in badges.
+- One aggregate `auditLogs` row per cron run.
+
 ## Audit
 
 - Every CLI exec call logged to `auditLogs` (owner, command, args summary, ok, mode).

@@ -6,6 +6,35 @@ Convex tables. Canonical. The byerag code repo's `apps/backend/convex/schema.ts`
 
 `authTables` from `@convex-dev/auth/server` — users, accounts, verification tokens. Inherited; no per-row customization.
 
+## userProfiles
+
+Persistent per-user metadata (separate from `userContexts` which is transient tab-active state). Per `docs/adr/departments.md`.
+
+- `userId: string` — lowercase email
+- `department: 'HR' | 'Sales' | 'IT' | null` — null when role=admin or unset
+- `updatedAt: number`
+- `updatedBy: string` — admin email who set/changed (or `'self'` on first sign-in seed)
+
+Index: `by_userId`.
+
+## costRecords
+
+Per-`(owner, model, dayKey)` cost + token aggregation. Drives dashboard cost analytics per `docs/adr/costrecords-table.md`.
+
+- `owner: string` — lowercase email
+- `model: string` — e.g. `kimi-for-coding`
+- `dayKey: string` — `YYYY-MM-DD` UTC
+- `inputTokens: number`
+- `cacheCreationInputTokens: number`
+- `cacheReadInputTokens: number`
+- `outputTokens: number`
+- `cents: number`
+- `callCount: number`
+
+Indexes: `by_owner_model_dayKey`, `by_dayKey`, `by_owner_dayKey`.
+
+Retained forever (analytics value).
+
 ## chats
 
 Per-chat metadata. One row per chat thread.
@@ -201,12 +230,17 @@ Indexes: `by_run`, `by_run_seq`, `by_expires`.
 
 ## settings
 
-Admin-tunable key/value strings. Currently houses the corpus policy text consumed by the relevance classifier.
+Admin-tunable key/value strings. Known keys:
 
-- `key: string` — e.g. `'corpus_policy'`
-- `value: string` — large text
+- `corpus_policy` — corpus relevance-classifier policy text. Seeded with default on first compose boot. Per `docs/adr/policy-relevance-classifier.md`.
+- `agent_auto_assign_enabled` — `'true'` | `'false'`. Default `'false'`. Per `docs/adr/agent-auto-assign-cron.md`.
+
+Schema:
+
+- `key: string`
+- `value: string`
 - `updatedAt: number`
-- `updatedBy: string` — admin email who last edited
+- `updatedBy: string` — admin email who last edited (or `'system'` on default seed)
 
 Index: `by_key`.
 
@@ -290,12 +324,12 @@ Indexes: `by_user`, `by_user_topic`, `by_topic_status`, `by_status_startedAt`.
 
 ### testAssignments
 
-Admin-issued; soft-deleted on un-assign.
+Admin-issued OR agent-cron-issued; soft-deleted on un-assign.
 
 - `userId: string`
 - `topicId: Id<'topics'>`
 - `createdAt: number`
-- `createdBy: string` — admin email
+- `createdBy: string` — admin email OR literal `'agent'` (per `docs/adr/agent-auto-assign-cron.md`)
 - `deletedAt: number?`
 - `deletedBy: string?`
 

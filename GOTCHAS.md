@@ -79,3 +79,23 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 ## Assessment tests — chat agent training tools
 
 (none yet)
+
+## Dashboard — top strip + cost cycle
+
+(none yet)
+
+## Dashboard — gradebook
+
+(none yet)
+
+## costRecords aggregation
+
+(none yet)
+
+## Agent auto-assign cron
+
+(none yet)
+
+## Departments
+
+(none yet)

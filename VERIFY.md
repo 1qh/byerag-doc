@@ -251,6 +251,71 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Same tool on another user's attempt → 403.
 - [ ] Agent refuses pool-content questions before user passes (prompt-injection-style "what's on the Security test?").
 
+## Departments
+
+- [ ] `userProfiles` table active w/ `department ∈ {'HR', 'Sales', 'IT', null}`.
+- [ ] Admin sets a user's department via admin UI; audit row recorded.
+- [ ] Department NULL for admin role accounts.
+- [ ] Department NULL for unset role=user accounts (group "Unassigned" on gradebook).
+- [ ] `Assign to all` includes all role=user regardless of department.
+- [ ] Department visible on gradebook row.
+
+## Dashboard
+
+### Landing
+
+- [ ] Admin signs in → lands on `/admin/dashboard`, not docs library.
+
+### Top strip
+
+- [ ] `active / total` tile updates live via reactive sub when user heartbeat changes / accounts created/revoked.
+- [ ] Cost cycle tile shows current cycle's $ from 5th of month onward; flips at UTC midnight of next 5th.
+- [ ] Docs-in-corpus tile = count of `docs` where `policyStatus='approved' AND deletedAt=null AND scope='shared' AND scanStatus='clean'`. Updates live.
+
+### Cost cycle
+
+- [ ] Monthly bar chart renders bar per cycle; current cycle bar is partial + visually distinct.
+- [ ] Past cycle bars frozen.
+- [ ] Click past bar → top number + pivot table re-render for that cycle.
+- [ ] Pivot table: rows per `(user, model)` summed over selected cycle window.
+- [ ] Columns: User · Model · Input tokens · Output tokens · Cost.
+- [ ] Sort: cost desc.
+- [ ] Footer row: totals.
+- [ ] Click pivot row → user's daily breakdown chart for cycle.
+- [ ] In v0, every Model column shows `kimi-for-coding`.
+
+### Gradebook
+
+- [ ] Rows: every non-revoked role=user account. Admins excluded.
+- [ ] Columns: every non-deleted `topics` row with pool ≥ 5. Pool < 5 topics hidden from gradebook.
+- [ ] Cells render correct glyph per state.
+- [ ] `✓` covers any pass (self or assigned).
+- [ ] `✗` admin-source live assignment + no pass.
+- [ ] `ⓐ` agent-source live assignment + no pass.
+- [ ] `·` no live assignment + no pass.
+- [ ] Concurrent admin + agent assignment renders `✗` (admin priority).
+- [ ] Row total = `passed_count / assigned_count` per user.
+- [ ] Column footer = `passed_assigned / assigned` per topic.
+- [ ] Default sort: rows by Total asc, cols by `topics.createdAt` asc.
+- [ ] Cell click → user-topic detail page.
+- [ ] On-demand refresh button re-runs aggregate query.
+
+## Agent auto-assign
+
+- [ ] `settings.agent_auto_assign_enabled` defaults `'false'` on first compose boot.
+- [ ] Cron at 03:00 UTC; no-op when flag is `'false'`.
+- [ ] Admin flips flag to `'true'` → next cron tick fires.
+- [ ] Per cron run, walks `(role=user, topic where pool ≥ 5 AND not deleted)`.
+- [ ] Skips `(user, topic)` w/ existing `testPasses(kind='assigned')`.
+- [ ] Skips `(user, topic)` w/ non-deleted `testAssignments`.
+- [ ] Inserts `testAssignments` w/ `createdBy='agent'` for eligible empty cells.
+- [ ] No rate limit per user; first cron after enable can produce hundreds of rows.
+- [ ] No admin notification.
+- [ ] No user source-label on badges (admin-source and agent-source look identical).
+- [ ] One aggregate `auditLogs` row per cron: `command='training.cron.run'`, `args={topicsProcessed, assignmentsCreated, durationMs}`, `mode='system'`, `owner='agent'`, `severity='low'`.
+- [ ] Admin un-assignment removes both admin + agent rows for topic; next cron refills eligible cells.
+- [ ] Cron failure: no mid-day retry; next day's cron picks up.
+
 ## Network bridge
 
 - [ ] From sandbox: `curl https://api.kimi.com/` fails (DNS not resolvable).

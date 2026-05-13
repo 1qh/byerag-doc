@@ -79,6 +79,19 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 - [`re-arm-on-substantive-corpus-update`](./re-arm-on-substantive-corpus-update.md) — admin substantive flag invalidates assigned-passes
 - [`chat-agent-training-tools`](./chat-agent-training-tools.md) — read-only own-data CLI surface
 
+## Dashboard
+
+- [`dashboard-admin-landing`](./dashboard-admin-landing.md) — `/admin/dashboard` as default landing route
+- [`dashboard-top-strip`](./dashboard-top-strip.md) — three live tiles: active/total users, cost cycle, docs in corpus
+- [`dashboard-cost-cycle`](./dashboard-cost-cycle.md) — 5th-to-5th cycle, monthly chart, per-(user, model) pivot
+- [`dashboard-gradebook`](./dashboard-gradebook.md) — per-(user, topic) matrix with glyphs + drill-ins
+- [`costrecords-table`](./costrecords-table.md) — per-(owner, model, dayKey) aggregation backing cost analytics
+- [`departments`](./departments.md) — HR/Sales/IT tag on role=user; dashboard-filter affordance only
+
+## Agent auto-assign
+
+- [`agent-auto-assign-cron`](./agent-auto-assign-cron.md) — daily cron + manual enable flag; signal (i) only; no rate limit; aggregate audit per run
+
 ## Process
 
 - [`session-start-book-root-only`](./session-start-book-root-only.md) — read `~/tc/book/` root files only at session start; subfolders are other projects
