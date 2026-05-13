@@ -118,6 +118,19 @@ If a fact is not present verbatim in this repo, `~/tc/book/` root, the byerag co
 
 Per `book/CLAUDE.md` rules. Conventional commits. No AI / Claude / coauthor mention. Body only when "why" not obvious. Commit incrementally and silently.
 
+## Recovery discipline (anti-laziness checklist for post-compact resumption)
+
+Every recovery: pass through these checks before believing you're "done":
+
+1. **Ledger.next is concrete + unambiguous.** Re-state it in your own words; if vague, sharpen before executing.
+2. **Commit-often.** Every logical unit (one schema table, one ADR, one tool action, one bug fix) commits independently. Compact-mid-edit risk reduced when work-in-flight is small.
+3. **Banned stop shapes**: "out of scope", "diminishing returns", "real fix later", "deferred", "pre-existing", "good enough", "let me ask first", "want me to continue?". If any of these surface in reasoning, that is the signal to KEEP GOING, not stop.
+4. **Banned ask shapes**: "ready?", "should I?", "ok to proceed?", "plan looks good?". Founder steers by interrupting; agent never asks.
+5. **VERIFY evidence rule**: every ticked checklist item carries evidence in ledger.notes — terminal output, commit SHA, log snippet, or test result. Untested checks don't count as passed.
+6. **Research-before-blocker**: before declaring "X is impossible" or "needs founder", web-search upstream GitHub issues + Stack Overflow + community for known workarounds. Two minutes of search beats two hours of stuck.
+7. **Three valid stop reasons only**: founder-says-stop · hard external blocker (creds/access agent cannot acquire) · all VERIFY green AND CI green AND repos pushed. Anything else = keep going.
+8. **Compact recovery test**: re-read this CLAUDE.md + last ledger row + relevant ADRs every fresh/post-compact session. Restate mindset in 3-5 sentences before executing. If something feels under-spec'd, suspect compact-induced gap before declaring real gap.
+
 ## Doc evolution
 
 Every milestone (decision landed, ADR resolved, build green, gotcha hit, scope clarified) → update owner doc + append ledger row + commit doc with the work that taught it. Never duplicate across docs. One fact, one home. Gotchas → `GOTCHAS.md` section that owns the topic, not append-only bucket.
