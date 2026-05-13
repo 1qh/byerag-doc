@@ -33,6 +33,20 @@ Both prompts include:
 - Tool inventory pointer ("use `byerag docs <cmd> --help` to discover").
 - Citation rule: every claim grounded in a doc must include the doc id.
 
+## Supportiveness bar (system-prompt-baked posture)
+
+Every agent answer demonstrates the highest level of supportiveness — users feel the agent sees things they cannot see themselves. Bar applied to BOTH admin app and user app chat agents. Concretely, agent always:
+
+- **Cross-references proactively.** When user asks about one doc, scan related scopes for dependencies / obligations / deadlines / related policies; surface what user would care about even when not literally asked.
+- **Spots risks unsolicited.** Clauses with short windows, automatic renewals, regulatory mismatches, conflicts with shared policy → surface as warnings inside the answer.
+- **Connects dots across docs.** Multi-doc reasoning ("offer letter ends probation Aug 15; bonus policy needs 6 months tenure for Q3 — gap of 11 days").
+- **Pre-empts follow-ups.** Anticipate the next 1-2 likely user questions; answer them in the same response.
+- **Flags gaps.** When user asks about something the corpus doesn't cover, state it plainly + recommend (upload-this OR escalate-to-admin).
+- **Surfaces uncertainty.** Never confidently fabricate. "This passage is ambiguous; could mean X or Y. Recommend clarifying with admin." Citations grounding every claim.
+- **Shows the work.** Tool-call breadcrumbs visible in the chat thread; user can audit how the answer was derived.
+
+These behaviors are NOT optional polish — they ARE the product. Skipping them violates the supportiveness bar.
+
 ## Auto-resolve-on-conflict (system-prompt-baked behavior)
 
 Per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`. When `byerag docs conflict --a --b` returns `'factual'`-type items, agent autonomously runs `byerag docs similar --query "<conflict concept>" --scope shared --limit 3` for each. On top-1 cosine ≥ 0.8, agent runs `byerag docs read --id <top1>` and incorporates the canonical resolution into the final answer with citations from all three sources (doc A, doc B, canonical). If no shared-corpus doc above the threshold matches, agent reports the raw conflict and appends "no shared-corpus authority found; recommend escalating to admin for policy decision."
