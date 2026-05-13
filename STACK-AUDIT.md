@@ -31,8 +31,17 @@ Inherited from the substrate reference, stripped of domain-specific apps + tools
 
 ### Operator-local (not in repo)
 
-- `.env` with concrete values (`AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `CONVEX_SELF_HOSTED_URL`, `CONVEX_SELF_HOSTED_ADMIN_KEY`, `JWT_PRIVATE_KEY`, `JWKS`, `KIMI_API_KEY`).
+- `.env` with concrete values (`AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `CONVEX_SELF_HOSTED_URL`, `CONVEX_SELF_HOSTED_ADMIN_KEY`, `JWT_PRIVATE_KEY`, `JWKS`, `KIMI_API_KEY`, `BACKUP_AGE_PUBKEY`).
+- `apps/backend/secrets/postgres_password.txt` + `apps/backend/secrets/convex_instance_secret.txt` (compose secrets files).
 - Convex compose stack running on the host.
 - gVisor (`runsc`) installed and registered as a Docker runtime.
 - Ollama daemon running with `nomic-embed-text:v2-moe` pulled.
 - ClamAV daemon.
+- Host nftables ruleset applied per `network-bridge-rules.md`.
+- Cron entries for daily backup + monthly restore drill.
+
+### Added in baseline + gap-fill pass
+
+- `compose.yml` (full stack with healthchecks + bridges).
+- `apps/backend/sandbox/Dockerfile` (sandbox image source).
+- Schema additions: `docs.{extractedText, lang, version, supersedes, supersededBy, deletedAt}` + nullable `docs.storageId` + `docChunks` table.

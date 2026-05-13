@@ -5,10 +5,14 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 ## P0 — Substrate baseline
 
 - Monorepo bootstrap via pm4ai.
-- Convex self-host compose stack running locally (backend + Postgres + admin key generated).
-- Convex schema as canonical in `SCHEMAS.md`.
-- `@convex-dev/auth` wired with Google OAuth client; callback URIs registered for localhost dev ports.
+- `compose.yml` w/ postgres + convex-backend + ollama + ollama-init + clamav + scan service. Healthchecks per service. Bridges `internal` + `sandbox-egress`.
+- Convex self-host compose stack running locally; admin key + JWT keypair generated to `.env`.
+- Convex schema as canonical in `SCHEMAS.md` (includes `docs`, `docChunks`, `userContexts` and all auxiliary tables).
+- `@convex-dev/auth` wired with Google OAuth client; callback URIs registered for localhost dev ports (3001 admin, 3002 user, 3211 Convex site).
 - Two thin apps (`apps/admin`, `apps/user`) scaffolded with a sign-in screen + empty chat screen.
+- Lefthook pre-commit + universal CI from pm4ai.
+- Sandbox image built (`apps/backend/sandbox/Dockerfile`) tagged `byerag-sandbox:latest`.
+- iptables / nftables rules applied per `network-bridge-rules.md`.
 
 ## P1 — Sandbox + proxy
 
@@ -19,12 +23,15 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 
 ## P2 — Docs corpus
 
-- `docs` table schema active in Convex.
+- `docs` + `docChunks` tables active in Convex.
 - Upload endpoint accepting multipart, routing through ClamAV stateless scan service.
 - Convex `_storage` blob write on scan pass.
 - Doc-list + doc-read Convex actions.
 - Admin app upload widget + shared docs panel.
 - User app upload widget + own docs panel.
+- Text extraction action per `text-extraction-by-mime.md` (per-mime extractor, OCR fallback).
+- Language detection on extracted text → `docs.lang`.
+- Versioning + soft-delete + scheduled hard-purge per `doc-versioning-and-deletion-cascade.md`.
 
 ## P3 — Agent tools
 
@@ -38,9 +45,11 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 ## P4 — Embedding + similar
 
 - Ollama compose service running `nomic-embed-text:v2-moe`.
-- Embedding computed on doc ingest (Convex action POSTing to `http://ollama:11434/api/embed`).
-- `vectorIndex` on `docs.embedding`.
-- `byerag docs similar` CLI + action.
+- Chunking action per `embedding-chunking-strategy.md`: sliding window 400/50 over `docs.extractedText`, writes `docChunks` rows.
+- Embedding action POSTing to `http://ollama:11434/api/embed` with `search_document: ` prefix.
+- Per-doc `docs.embedding` = centroid of `docChunks.embedding`.
+- `vectorIndex` on both `docs.embedding` and `docChunks.embedding`.
+- `byerag docs similar` CLI + action (centroid by default; `--granular` for chunk-level).
 
 ## P5 — Chat UX
 
@@ -52,10 +61,12 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 
 ## P6 — Cost + audit
 
-- Daily owner $ cap enforced in proxy.
+- Daily owner $ cap enforced in proxy (per `kimi-cost-rates-and-reservation.md`).
 - Per-chat turn budget.
 - Rate limits (owner + chat).
 - Audit log query view (admin only).
+- Audit retention cron per `audit-retention-and-purge-cron.md` (90d, configurable).
+- Backup script + restore drill per `backups-pg-dump-and-restore-drill.md`.
 
 ## P7 — Verify + harden
 

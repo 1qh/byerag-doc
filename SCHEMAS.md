@@ -72,21 +72,42 @@ Indexes: `by_owner`, `by_lastUsedAt`.
 The corpus.
 
 - `scope: 'shared' | 'mine'`
-- `owner: string?` — email of the owner when `scope='mine'`; null when `scope='shared'`
-- `uploadedBy: string` — email of whoever uploaded
+- `owner: string?` — lowercase email of the owner when `scope='mine'`; null when `scope='shared'`
+- `uploadedBy: string` — lowercase email of whoever uploaded
 - `filename: string`
 - `mime: string`
 - `fileSize: number`
 - `sha256: string`
-- `storageId: Id<'_storage'>` — Convex blob reference
+- `storageId: Id<'_storage'>?` — Convex blob reference; nullable after hard-purge per `doc-versioning-and-deletion-cascade.md`
 - `scanStatus: 'pending' | 'clean' | 'quarantined'`
 - `summary: string?` — optional LLM-generated short summary
-- `embedding: float64[]?` — 768-dim nomic-embed-text-v2-moe vector
+- `extractedText: string?` — raw text post-extraction (per `text-extraction-by-mime.md`)
+- `lang: string?` — ISO 639-1 code or `'mixed'` per `multilingual-corpus-handling.md`
+- `embedding: float64[]?` — 768-dim nomic-embed-text-v2-moe centroid of chunks
+- `version: number` — 1-based; per `doc-versioning-and-deletion-cascade.md`
+- `supersedes: Id<'docs'>?` — previous version in the chain
+- `supersededBy: Id<'docs'>?` — next version in the chain
+- `deletedAt: number?` — soft-delete tombstone
 - `uploadedAt: number`
 
-Indexes: `by_scope`, `by_owner`, `by_scope_uploadedAt`.
+Indexes: `by_scope`, `by_owner`, `by_scope_uploadedAt`, `by_supersedes`, `by_deletedAt`.
 
 Vector index: `by_embedding` (`dimensions: 768`, filter fields: `owner`, `scope`).
+
+## docChunks
+
+Per-chunk text + embedding for a doc. Used for `--granular` similarity queries per `embedding-chunking-strategy.md`.
+
+- `docId: Id<'docs'>`
+- `seq: number` — chunk index within doc
+- `start: number` — char offset start in `docs.extractedText`
+- `end: number` — char offset end exclusive
+- `text: string`
+- `embedding: float64[]` — 768-dim
+
+Indexes: `by_doc`, `by_doc_seq`.
+
+Vector index: `by_embedding` (`dimensions: 768`, filter fields: `docId`).
 
 ## ownerSpend
 

@@ -81,3 +81,56 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Tool-call round trip (Convex action via CLI) < 200ms on warm sandbox.
 - [ ] Convex reactive streamEvent push to client < 100ms median.
 - [ ] Embedding throughput: 1 doc / second on CPU baseline (acceptable for internal team).
+
+## Doc lifecycle
+
+- [ ] Same filename re-upload bumps `docs.version`; `supersedes` chain links walk-able.
+- [ ] Soft-delete (set `deletedAt`) removes doc from `docs list` and `docs similar` results.
+- [ ] Scheduled hard-purge after 30 days deletes `_storage` blob + `docChunks` rows; `docs` row retained for audit.
+- [ ] Citation to a soft-deleted doc renders with "deleted" badge; doesn't 404.
+- [ ] Citation to a superseded doc renders with version + "updated on" badge.
+
+## Concurrency
+
+- [ ] User opens two tabs of the same chat — second tab renders read-only banner.
+- [ ] Heartbeat from active tab maintains token; >15s silence allows other tab to claim.
+- [ ] "Take over" button on banner claims the token; original tab flips to banner.
+- [ ] `messages.send` with mismatched `activeContextToken` returns 403.
+
+## Doc extraction
+
+- [ ] PDF with text layer: `extractedText` populated; OCR not triggered.
+- [ ] Scanned PDF: OCR fallback runs; `extractedText` populated.
+- [ ] docx / pptx / xlsx / epub: extraction works.
+- [ ] Image (png/jpg/tiff): OCR extracts text.
+- [ ] Unsupported mime: upload rejected at the upload endpoint.
+
+## Embedding + chunking
+
+- [ ] Doc with extractedText > 2K chars: chunks created in `docChunks` with sliding window 400/50.
+- [ ] `docs.embedding` is centroid of `docChunks.embedding`.
+- [ ] `docs similar --query X` returns docs ranked by cosine on centroid.
+- [ ] `docs similar --query X --granular` returns (docId, chunkSeq, snippet, score).
+- [ ] Filter pushdown: `--scope mine` excludes other users' chunks.
+
+## CI + lint
+
+- [ ] `bun run fix` exits silently on a clean tree.
+- [ ] `bun run check:schema-drift` fails when `SCHEMAS.md` ≠ `schema.ts`.
+- [ ] `bun run check:doc-leak` fails when a banned string is added to code.
+- [ ] `bun run check:secret-leak` fails when a sk-/JWT-shaped string is added to a tracked file.
+- [ ] CI workflow runs all of the above + sandbox image build smoke.
+
+## Backups
+
+- [ ] `apps/backend/scripts/backup.sh` produces an `age`-encrypted dump.
+- [ ] `restore-drill.sh` recovers a parallel stack from latest dump; row counts match ±5%.
+- [ ] Backup target disk is separate from the Postgres data disk.
+
+## Network bridge
+
+- [ ] From sandbox: `curl https://api.kimi.com/` fails (DNS not resolvable).
+- [ ] From sandbox: `curl http://convex-backend:3210/api/anthropic/v1/messages` succeeds with valid bearer.
+- [ ] From sandbox: `curl http://convex-backend:3210/api/anthropic/v1/messages` with INVALID bearer returns 401.
+- [ ] From sandbox: `curl http://attacker.local/` (anything other than convex) fails at the iptables FORWARD rule.
+- [ ] Host: `nft list ruleset` shows `output policy drop` with only Kimi IPs in the allowlist set.

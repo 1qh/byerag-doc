@@ -40,6 +40,30 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 - [`ollama-nomic-embed-v2-moe`](./ollama-nomic-embed-v2-moe.md) — local Ollama serving `nomic-embed-text:v2-moe`
 - [`vector-search-via-convex-vectorindex`](./vector-search-via-convex-vectorindex.md) — Convex `vectorIndex` is the vector store
 
+## Operations
+
+- [`sandbox-image-and-cli-delivery`](./sandbox-image-and-cli-delivery.md) — sandbox image content + CLI injected at agent-run
+- [`text-extraction-by-mime`](./text-extraction-by-mime.md) — per-mime extractor table + OCR fallback
+- [`embedding-chunking-strategy`](./embedding-chunking-strategy.md) — docChunks table + sliding window + per-doc centroid
+- [`kimi-cost-rates-and-reservation`](./kimi-cost-rates-and-reservation.md) — rates table + reservation math + defaults
+- [`system-prompts`](./system-prompts.md) — per-app prompt shape + substitution rules
+- [`ci-and-pre-commit-gates`](./ci-and-pre-commit-gates.md) — lefthook + universal CI + drift/leak checks
+- [`backups-pg-dump-and-restore-drill`](./backups-pg-dump-and-restore-drill.md) — daily age-encrypted pg_dump + monthly restore drill
+- [`local-dev-loop`](./local-dev-loop.md) — `bun dev`, port map, hot reload
+- [`network-bridge-rules`](./network-bridge-rules.md) — sandbox-egress bridge + iptables + DNS isolation
+- [`audit-retention-and-purge-cron`](./audit-retention-and-purge-cron.md) — 90d retention + nightly purge
+
+## Data model details
+
+- [`doc-versioning-and-deletion-cascade`](./doc-versioning-and-deletion-cascade.md) — version chain + soft-delete + scheduled hard-purge
+- [`concurrency-and-active-context-token`](./concurrency-and-active-context-token.md) — single active tab per user gating
+- [`timestamps-and-timezone`](./timestamps-and-timezone.md) — UTC epoch ms in DB, ISO-Z in ledger, local in UI
+- [`owner-id-canonical-email-lowercase`](./owner-id-canonical-email-lowercase.md) — owner string == lowercase email
+- [`ui-error-surfacing`](./ui-error-surfacing.md) — inline / toast / banner per error class
+- [`long-running-tool-call-policy`](./long-running-tool-call-policy.md) — per-tool deadlines + streaming exec
+- [`multilingual-corpus-handling`](./multilingual-corpus-handling.md) — single embedding model handles ~100 langs + `docs.lang` for display
+- [`schema-spec-fields-canonical`](./schema-spec-fields-canonical.md) — identity / time / enum / index naming conventions
+
 ## Process
 
 - [`session-start-book-root-only`](./session-start-book-root-only.md) — read `~/tc/book/` root files only at session start; subfolders are other projects
