@@ -8,11 +8,11 @@ Google OAuth via `@convex-dev/auth`. One OAuth client registered in Google Cloud
 
 ## Callback URIs
 
-- `http://localhost:<admin_port>/api/auth/callback/google`
-- `http://localhost:<user_port>/api/auth/callback/google`
-- `http://localhost:3210/.well-known/openid-configuration/callback/google` (Convex site URL)
+- `http://localhost:3001/api/auth/callback/google` (admin app)
+- `http://localhost:3003/api/auth/callback/google` (user app)
+- `http://localhost:3211/.well-known/openid-configuration/callback/google` (Convex site)
 
-Concrete port numbers operator-local.
+Ports per `docs/adr/local-dev-loop.md`. User app picks `3003` because `3002` is occupied by another operator service.
 
 ## Role determination
 
