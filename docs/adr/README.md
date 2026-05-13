@@ -96,6 +96,10 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 
 - [`prod-deployment-pattern-dokploy`](./prod-deployment-pattern-dokploy.md) — Dokploy on operator VM; git-push auto-deploy; read-only API access from agent; concrete creds in agent memory
 
+## Test corpus
+
+- [`test-corpus-source-and-kimi-knowledge-probe`](./test-corpus-source-and-kimi-knowledge-probe.md) — post-cutoff real docs + Kimi-knowledge probe + fabricated edge-case fixtures
+
 ## Process
 
 - [`session-start-book-root-only`](./session-start-book-root-only.md) — read `~/tc/book/` root files only at session start; subfolders are other projects
