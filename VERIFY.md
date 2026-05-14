@@ -337,7 +337,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Cron at 03:00 UTC; no-op when flag is `'false'`.
 - [x] Admin flips flag to `'true'` → next cron tick fires.
 - [x] Per cron run, walks `(role=user, topic where pool ≥ 5 AND not deleted)`.
-- [ ] Skips `(user, topic)` w/ existing `testPasses(kind='assigned')`.
+- [x] Skips `(user, topic)` w/ existing `testPasses(kind='assigned')`.
 - [x] Skips `(user, topic)` w/ non-deleted `testAssignments`.
 - [x] Inserts `testAssignments` w/ `createdBy='agent'` for eligible empty cells.
 - [ ] No rate limit per user; first cron after enable can produce hundreds of rows.
