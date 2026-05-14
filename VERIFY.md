@@ -212,7 +212,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Cap-swap card: same options; Keep both stretches pool with banner.
 - [x] Approve writes canonical `testQuestions`; suggestion `status='resolved'`.
 - [x] Source-doc delete → pending suggestions auto-rejected w/ `resolvedReason='source-doc-deleted'`.
-- [ ] Topic delete → pending suggestions auto-rejected w/ `resolvedReason='topic-deleted'`.
+- [x] Topic delete → pending suggestions auto-rejected w/ `resolvedReason='topic-deleted'`.
 
 ### Canonical admin actions
 
