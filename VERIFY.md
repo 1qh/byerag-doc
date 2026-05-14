@@ -260,7 +260,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Badge persists until passing via `kind='assigned'` attempt.
 - [x] Re-fire skips active passes; no duplicate rows.
 - [x] Un-assign → all assignment rows `deletedAt` set; badges vanish via reactive sub; in-progress assigned-kind attempts → `cancelled`; past `testPasses` retained.
-- [ ] Un-assign audit `severity='medium'`.
+- [x] Un-assign audit `severity='medium'`.
 
 ### Substantive update re-arm
 
@@ -288,7 +288,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Admin sets a user's department via admin UI; audit row recorded.
 - [x] Department NULL for admin role accounts.
 - [x] Department NULL for unset role=user accounts (group "Unassigned" on gradebook).
-- [ ] `Assign to all` includes all role=user regardless of department.
+- [x] `Assign to all` includes all role=user regardless of department.
 - [x] Department visible on gradebook row.
 
 ## Dashboard
@@ -333,16 +333,16 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Agent auto-assign
 
-- [ ] `settings.agent_auto_assign_enabled` defaults `'false'` on first compose boot.
+- [x] `settings.agent_auto_assign_enabled` defaults `'false'` on first compose boot.
 - [x] Cron at 03:00 UTC; no-op when flag is `'false'`.
 - [x] Admin flips flag to `'true'` → next cron tick fires.
 - [x] Per cron run, walks `(role=user, topic where pool ≥ 5 AND not deleted)`.
 - [x] Skips `(user, topic)` w/ existing `testPasses(kind='assigned')`.
 - [x] Skips `(user, topic)` w/ non-deleted `testAssignments`.
 - [x] Inserts `testAssignments` w/ `createdBy='agent'` for eligible empty cells.
-- [ ] No rate limit per user; first cron after enable can produce hundreds of rows.
-- [ ] No admin notification.
-- [ ] No user source-label on badges (admin-source and agent-source look identical).
+- [x] No rate limit per user; first cron after enable can produce hundreds of rows.
+- [x] No admin notification.
+- [x] No user source-label on badges (admin-source and agent-source look identical).
 - [x] One aggregate `auditLogs` row per cron: `command='training.cron.run'`, `args={topicsProcessed, assignmentsCreated, durationMs}`, `mode='system'`, `owner='agent'`, `severity='low'`.
 - [ ] Admin un-assignment removes both admin + agent rows for topic; next cron refills eligible cells.
 - [x] Cron failure: no mid-day retry; next day's cron picks up.
