@@ -205,7 +205,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Admin review queue
 
-- [ ] Per-item actions: Approve / Edit / Reject / Regenerate (+ optional hint).
+- [x] Per-item actions: Approve / Edit / Reject / Regenerate (+ optional hint).
 - [x] `regenCount` capped at 5; further regens disabled with message.
 - [x] Bulk-approve via checkboxes works across multiple selected items.
 - [ ] Conflict-pair card: Accept swap / Keep old / Keep both / Reject both atomic.
