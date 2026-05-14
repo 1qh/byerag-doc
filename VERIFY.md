@@ -216,9 +216,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Canonical admin actions
 
-- [ ] Admin can edit approved question (prompt/choices/correctIndex); `revision` increments; audit `severity='low'`.
+- [x] Admin can edit approved question (prompt/choices/correctIndex); `revision` increments; audit `severity='low'`.
 - [ ] Admin force-regenerate (+ hint) → new suggestion enters queue w/ `kind='revision'`; audit `severity='medium'`.
-- [ ] Admin retire → `deletedAt` set; audit `severity='medium'`.
+- [x] Admin retire → `deletedAt` set; audit `severity='medium'`.
 - [ ] No manual-from-scratch create UI exposed.
 
 ### Pool soft cap
