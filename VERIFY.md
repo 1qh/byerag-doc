@@ -23,8 +23,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Oversized file (>configured cap) rejected at the upload endpoint before reaching scan.
 - [ ] Zip bomb rejected by ClamAV with recursion-limit error; same quarantine path.
 - [x] **Duplicate content** (re-upload same sha256, same scope): no new row; toast `this file is already in your library (uploaded as <filename> on <date>).`
-- [ ] **Version conflict** (same filename, same scope, different content): blocking modal `a different file with this name already exists. Replace it? Keep both? Cancel?`
-  - [ ] **Replace** → new row `version=2`, `supersedes=<prev>`; prev row gets `supersededBy=<new>` + `deletedAt=now`; prev blob scheduled for 30-day hard-purge.
+- [x] **Version conflict** (same filename, same scope, different content): blocking modal `a different file with this name already exists. Replace it? Keep both? Cancel?`
+  - [x] **Replace** → new row `version=2`, `supersedes=<prev>`; prev row gets `supersededBy=<new>` + `deletedAt=now`; prev blob scheduled for 30-day hard-purge.
   - [ ] **Keep both** → new row with filename suffix `(2)`; both rows independent (`supersedes=null`).
   - [ ] **Cancel** → no row, no blob; staged tmp file deleted.
 - [ ] User app surfaces same dedup + version-conflict UX scoped to `mine`.
@@ -138,7 +138,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Doc lifecycle
 
-- [ ] Same filename re-upload bumps `docs.version`; `supersedes` chain links walk-able.
+- [x] Same filename re-upload bumps `docs.version`; `supersedes` chain links walk-able.
 - [ ] Soft-delete (set `deletedAt`) removes doc from `docs list` and `docs similar` results.
 - [ ] Scheduled hard-purge after 30 days deletes `_storage` blob + `docChunks` rows; `docs` row retained for audit.
 - [ ] Citation to a soft-deleted doc renders with "deleted" badge; doesn't 404.
