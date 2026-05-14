@@ -149,7 +149,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] User opens two tabs of the same chat — second tab renders read-only banner.
 - [x] Heartbeat from active tab maintains token; >15s silence allows other tab to claim.
 - [x] "Take over" button on banner claims the token; original tab flips to banner.
-- [ ] `messages.send` with mismatched `activeContextToken` returns 403.
+- [x] `messages.send` with mismatched `activeContextToken` returns 403.
 
 ## Doc extraction
 
