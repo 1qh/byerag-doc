@@ -223,9 +223,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Pool soft cap
 
-- [ ] Default cap 50 stored as `topics.poolCap`.
+- [x] Default cap 50 stored as `topics.poolCap`.
 - [ ] 51st approval (stretch path) succeeds with banner.
-- [ ] Admin can adjust `poolCap` per topic.
+- [x] Admin can adjust `poolCap` per topic.
 
 ### Topic management
 
