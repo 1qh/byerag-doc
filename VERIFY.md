@@ -20,7 +20,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Admin uploads a clean PDF; row appears in `docs` with `scope='shared'`, `scanStatus='clean'`, `version=1`.
 - [ ] User uploads a clean PDF; row appears with `scope='mine'`, `owner=<user>`, `scanStatus='clean'`, `version=1`.
 - [x] EICAR test virus → `docs` row with `scanStatus='quarantined'`, no blob; UI toast `⚠️ Your file was rejected because it appeared suspicious. Reason: <sig>.`; audit row recorded.
-- [ ] Oversized file (>configured cap) rejected at the upload endpoint before reaching scan.
+- [x] Oversized file (>configured cap) rejected at the upload endpoint before reaching scan.
 - [ ] Zip bomb rejected by ClamAV with recursion-limit error; same quarantine path.
 - [x] **Duplicate content** (re-upload same sha256, same scope): no new row; toast `this file is already in your library (uploaded as <filename> on <date>).`
 - [x] **Version conflict** (same filename, same scope, different content): blocking modal `a different file with this name already exists. Replace it? Keep both? Cancel?`
