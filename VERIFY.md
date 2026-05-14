@@ -139,8 +139,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 ## Doc lifecycle
 
 - [x] Same filename re-upload bumps `docs.version`; `supersedes` chain links walk-able.
-- [ ] Soft-delete (set `deletedAt`) removes doc from `docs list` and `docs similar` results.
-- [ ] Scheduled hard-purge after 30 days deletes `_storage` blob + `docChunks` rows; `docs` row retained for audit.
+- [x] Soft-delete (set `deletedAt`) removes doc from `docs list` and `docs similar` results.
+- [x] Scheduled hard-purge after 30 days deletes `_storage` blob + `docChunks` rows; `docs` row retained for audit.
 - [ ] Citation to a soft-deleted doc renders with "deleted" badge; doesn't 404.
 - [ ] Citation to a superseded doc renders with version + "updated on" badge.
 
