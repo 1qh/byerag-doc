@@ -86,7 +86,7 @@ Read-only own-data tools the chat agent uses to coach the user through assessmen
 - `training status` — caller-scoped topic-status list
 - `training attempts` — caller-scoped attempt list
 - `training topics` — topic list with pool sizes; no question content
-- `training attempt-detail --id <attemptId>` — full snapshot on caller's passed attempt; score-only on failed/cancelled
+- `training attemptDetail --id <attemptId>` — full snapshot on caller's passed attempt; score-only on failed/cancelled
 
 ## Output shape
 
