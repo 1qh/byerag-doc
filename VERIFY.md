@@ -211,7 +211,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Conflict-pair card: Accept swap / Keep old / Keep both / Reject both atomic.
 - [ ] Cap-swap card: same options; Keep both stretches pool with banner.
 - [x] Approve writes canonical `testQuestions`; suggestion `status='resolved'`.
-- [ ] Source-doc delete → pending suggestions auto-rejected w/ `resolvedReason='source-doc-deleted'`.
+- [x] Source-doc delete → pending suggestions auto-rejected w/ `resolvedReason='source-doc-deleted'`.
 - [ ] Topic delete → pending suggestions auto-rejected w/ `resolvedReason='topic-deleted'`.
 
 ### Canonical admin actions
