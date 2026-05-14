@@ -170,7 +170,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 ## CI + lint
 
 - [ ] `bun run fix` exits silently on a clean tree.
-- [ ] `bun run check:schema-drift` fails when `SCHEMAS.md` ≠ `schema.ts`.
+- [x] `bun run check:schema-drift` fails when `SCHEMAS.md` ≠ `schema.ts`.
 - [x] `bun run check:doc-leak` fails when a banned string is added to code.
 - [x] `bun run check:secret-leak` fails when a sk-/JWT-shaped string is added to a tracked file.
 - [ ] CI workflow runs all of the above + sandbox image build smoke.
