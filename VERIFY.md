@@ -78,7 +78,7 @@ End-state checklist. Every item must pass before the project counts as launched 
   - [x] Gap-flag scenario: agent says "not in corpus" + recommends action. Captured `flag-corpus-gaps.json` verdict=pass.
   - [x] Uncertainty scenario: agent surfaces ambiguity instead of picking one interpretation. Captured `surface-uncertainty.json` verdict=pass.
   - [x] Citations + tool-call breadcrumbs: every factual claim has `<docId§section>` chip; stream contains ≥1 `tool_use` block. Captured `citations-and-breadcrumbs.json` verdict=pass.
-- [ ] **Conflict resolution flow** (real-world example per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`):
+- [x] **Conflict resolution flow** (real-world example per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`):
   - User uploads doc A (offer letter saying "15 days PTO") and doc B (PTO policy saying "20 days").
   - User asks "compare these 2 docs".
   - Agent autonomously runs `docs read` × 2 + `docs conflict --a --b` + `docs similar --scope shared` + `docs read` on canonical hit.
