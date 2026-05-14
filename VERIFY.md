@@ -317,8 +317,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Gradebook
 
-- [ ] Rows: every non-revoked role=user account. Admins excluded.
-- [ ] Columns: every non-deleted `topics` row with pool ≥ 5. Pool < 5 topics hidden from gradebook.
+- [x] Rows: every non-revoked role=user account. Admins excluded.
+- [x] Columns: every non-deleted `topics` row with pool ≥ 5. Pool < 5 topics hidden from gradebook.
 - [x] Cells render correct glyph per state.
 - [x] `✓` covers any pass (self or assigned).
 - [x] `✗` admin-source live assignment + no pass.
@@ -345,7 +345,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] No user source-label on badges (admin-source and agent-source look identical).
 - [x] One aggregate `auditLogs` row per cron: `command='training.cron.run'`, `args={topicsProcessed, assignmentsCreated, durationMs}`, `mode='system'`, `owner='agent'`, `severity='low'`.
 - [ ] Admin un-assignment removes both admin + agent rows for topic; next cron refills eligible cells.
-- [ ] Cron failure: no mid-day retry; next day's cron picks up.
+- [x] Cron failure: no mid-day retry; next day's cron picks up.
 
 ## Network bridge
 
