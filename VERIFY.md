@@ -268,9 +268,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Admin batch w/ only `'new'` approvals → default cosmetic; admin can flip substantive.
 - [ ] Admin batch w/ only `'revision'` approvals → default substantive.
 - [ ] Source-doc deletion cascade → automatic substantive (no admin override).
-- [ ] Substantive commit writes `topics.lastSubstantiveUpdate=now()`.
-- [ ] Re-arm cascade: `testPasses` rows where `kind='assigned' AND passedAt < lastSubstantiveUpdate` deleted; fresh assignments inserted; audit `command='training.assignment.rearm'`.
-- [ ] Self-passes never re-armed.
+- [x] Substantive commit writes `topics.lastSubstantiveUpdate=now()`.
+- [x] Re-arm cascade: `testPasses` rows where `kind='assigned' AND passedAt < lastSubstantiveUpdate` deleted; fresh assignments inserted; audit `command='training.assignment.rearm'`.
+- [x] Self-passes never re-armed.
 
 ### Chat agent training tools
 
