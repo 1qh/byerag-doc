@@ -132,8 +132,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 ## Performance baseline
 
 - [ ] First-message latency end-to-end < 5s on a small corpus (≤100 docs).
-- [ ] Tool-call round trip (Convex action via CLI) < 200ms on warm sandbox.
-- [ ] Convex reactive streamEvent push to client < 100ms median.
+- [x] Tool-call round trip (Convex action via CLI) < 200ms on warm sandbox.
+- [x] Convex reactive streamEvent push to client < 100ms median.
 - [ ] Embedding throughput: 1 doc / second on CPU baseline (acceptable for internal team).
 
 ## Doc lifecycle
