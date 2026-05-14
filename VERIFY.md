@@ -5,8 +5,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 ## Auth
 
 - [ ] Google OAuth sign-in completes on either app; session cookie set.
-- [ ] First sign-in creates `userProfiles` row with `role='user'` by default.
-- [ ] Bootstrap: email matching `BOOTSTRAP_ADMIN_EMAIL` env (comma-separated) gets `role='admin'` seeded on first sign-in.
+- [x] First sign-in creates `userProfiles` row with `role='user'` by default.
+- [x] Bootstrap: email matching `BOOTSTRAP_ADMIN_EMAIL` env (comma-separated) gets `role='admin'` seeded on first sign-in.
 - [x] Admin app `/admin/*` routes: signed-in user with `role='admin'` → access granted; non-admin → 403.
 - [x] User app routes: any signed-in user grants access.
 - [x] Promote: admin changes another user's `role` to `'admin'`; after that user's next session refresh, admin routes are accessible.
@@ -157,7 +157,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Scanned PDF: OCR fallback runs; `extractedText` populated.
 - [x] docx / pptx / xlsx / epub: extraction works.
 - [ ] Image (png/jpg/tiff): OCR extracts text.
-- [ ] Unsupported mime: upload rejected at the upload endpoint.
+- [x] Unsupported mime: upload rejected at the upload endpoint.
 
 ## Embedding + chunking
 
