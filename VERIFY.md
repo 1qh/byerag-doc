@@ -238,7 +238,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 ### Attempts
 
 - [x] Start → server picks 5 random from approved pool; shuffles questions + choices; pins snapshot.
-- [ ] Question + choice order varies per attempt.
+- [x] Question + choice order varies per attempt.
 - [x] `kind='assigned'` if user has pending assignment; else `'self'`.
 - [x] Pool < 5 → `Start` server returns 400.
 - [x] Submit all correct → `status='passed'`; `testPasses` row inserted/updated for `(user, topic, kind)`.
@@ -247,8 +247,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] `attempt-detail` on passed → full pinned snapshot w/ `correctIndexShuffled`.
 - [x] On failed/cancelled → only `{score, total: 5}`.
 - [x] Retake: new attempt for same (user, topic) atomically deletes prior row.
-- [ ] No time limit; no cooldown; no rate limit.
-- [ ] Tab close + restart → fresh random 5; orphan flips to `cancelled` on new insert.
+- [x] No time limit; no cooldown; no rate limit.
+- [x] Tab close + restart → fresh random 5; orphan flips to `cancelled` on new insert.
 
 ### Assignments
 
