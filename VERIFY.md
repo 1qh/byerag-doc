@@ -255,8 +255,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] `Assign to all` with pool < 5 → 400.
 - [x] `Assign to all` with pool ≥ 5 → rows inserted for every role=user except those w/ existing `testPasses(kind='assigned')`.
 - [x] Admins excluded from "all users".
-- [ ] Real-time fire via Convex reactive sub.
-- [ ] Offline user sees badge on next sign-in.
+- [x] Real-time fire via Convex reactive sub.
+- [x] Offline user sees badge on next sign-in.
 - [x] Badge persists until passing via `kind='assigned'` attempt.
 - [x] Re-fire skips active passes; no duplicate rows.
 - [x] Un-assign → all assignment rows `deletedAt` set; badges vanish via reactive sub; in-progress assigned-kind attempts → `cancelled`; past `testPasses` retained.
@@ -299,7 +299,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Top strip
 
-- [ ] `active / total` tile updates live via reactive sub when user heartbeat changes / accounts created/revoked.
+- [x] `active / total` tile updates live via reactive sub when user heartbeat changes / accounts created/revoked.
 - [x] Cost cycle tile shows current cycle's $ from 5th of month onward; flips at UTC midnight of next 5th.
 - [x] Docs-in-corpus tile = count of `docs` where `policyStatus='approved' AND deletedAt=null AND scope='shared' AND scanStatus='clean'`. Updates live.
 
