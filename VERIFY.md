@@ -319,11 +319,11 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 - [ ] Rows: every non-revoked role=user account. Admins excluded.
 - [ ] Columns: every non-deleted `topics` row with pool ≥ 5. Pool < 5 topics hidden from gradebook.
-- [ ] Cells render correct glyph per state.
-- [ ] `✓` covers any pass (self or assigned).
-- [ ] `✗` admin-source live assignment + no pass.
-- [ ] `ⓐ` agent-source live assignment + no pass.
-- [ ] `·` no live assignment + no pass.
+- [x] Cells render correct glyph per state.
+- [x] `✓` covers any pass (self or assigned).
+- [x] `✗` admin-source live assignment + no pass.
+- [x] `ⓐ` agent-source live assignment + no pass.
+- [x] `·` no live assignment + no pass.
 - [ ] Concurrent admin + agent assignment renders `✗` (admin priority).
 - [ ] Row total = `passed_count / assigned_count` per user.
 - [ ] Column footer = `passed_assigned / assigned` per topic.
