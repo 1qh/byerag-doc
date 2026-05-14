@@ -46,15 +46,15 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Off-topic doc (e.g. a novel chapter) → `policyStatus='rejected'`, `category='off-topic'`, UI toast `This file is rejected as not matching our policy. Reason: <reason>.` + `Request review` button visible.
 - [x] Prompt-injection doc (content tries to manipulate the assistant) → `policyStatus='rejected'`, `category='prompt-injection'`. Admin override of this category emits an extra audit warning.
 - [x] Spam/promotional doc → `policyStatus='rejected'`, `category='spam'|'promotional'`.
-- [ ] Abusive content → `policyStatus='rejected'`, `category='abusive'`.
-- [ ] `Request review` button → marks `policyReviewRequestedAt`; admin sees in queue.
+- [x] Abusive content → `policyStatus='rejected'`, `category='abusive'`.
+- [x] `Request review` button → marks `policyReviewRequestedAt`; admin sees in queue.
 - [ ] Admin approves a rejected doc in `/admin/quarantine` → `policyStatus='approved'`, `policyOverriddenBy=<admin>`; doc becomes searchable; audit log records override.
 - [ ] Admin confirms reject in `/admin/quarantine` → blob purged immediately; row retained with `storageId=null`; audit log records.
 - [ ] Classifier failure (timeout / 5xx) → `policyStatus='pending'` retained; retry once after backoff; if both fail, surface to admin queue as "classifier error" with manual review.
 - [ ] Classifier cost (~$0.001/upload) deducted from uploader's `ownerSpend`; daily cap exhausted → upload blocked w/ standard 402 message.
 - [ ] Policy text editable by admin via `/admin/policy`; saves audited; new policy applies to subsequent uploads only.
 - [ ] Classifier output rendering in toast: HTML escaped, capped at 200 chars, no script-shaped patterns.
-- [ ] Request-review rate limit: 1 per file per uploader per day.
+- [x] Request-review rate limit: 1 per file per uploader per day.
 
 ## Embedding
 
