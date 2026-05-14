@@ -29,7 +29,7 @@ End-state checklist. Every item must pass before the project counts as launched 
   - [ ] **Cancel** → no row, no blob; staged tmp file deleted.
 - [ ] User app surfaces same dedup + version-conflict UX scoped to `mine`.
 - [x] Cross-scope dedup: shared doc with content X does NOT block a user uploading content X to `mine` (and vice versa).
-- [ ] Repeated quarantine uploads of the same sha256 from the same uploader within 1 hour → 429 `too many rejected uploads`.
+- [x] Repeated quarantine uploads of the same sha256 from the same uploader within 1 hour → 429 `too many rejected uploads`.
 - [ ] **Admin scan override** (admin app only):
   - [ ] Admin uploads a virus file → yes/no confirm modal `⚠ Suspicious file detected. Force upload?` with `[No] [Yes]` buttons.
   - [ ] `No` is default focus; Enter key does NOT trigger override.
