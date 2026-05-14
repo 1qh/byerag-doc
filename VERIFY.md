@@ -69,8 +69,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] User sends "list my docs"; agent calls `docs list --scope mine`; result streams back.
 - [x] User asks a semantic question; agent calls `docs similar` then `docs read`; cites in answer.
 - [x] Admin app analog works on shared docs.
-- [ ] Resume: close tab, reopen, prior chat history visible; resume on prior thread continues the SDK session.
-- [ ] **Supportiveness bar (per `AGENT-DOCTRINE.md` + evidence gate `docs/adr/supportiveness-evidence-gate.md`):** every check below validated via `apps/backend/scripts/smoke-supportiveness.ts` w/ scripted scenario + auto-judge + captured JSON in `apps/backend/test-fixtures/supportiveness-evidence/<scenario-id>.json`. Ledger notes reference the JSON path per tick.
+- [x] Resume: close tab, reopen, prior chat history visible; resume on prior thread continues the SDK session.
+- [x] **Supportiveness bar (per `AGENT-DOCTRINE.md` + evidence gate `docs/adr/supportiveness-evidence-gate.md`):** every check below validated via `apps/backend/scripts/smoke-supportiveness.ts` w/ scripted scenario + auto-judge + captured JSON in `apps/backend/test-fixtures/supportiveness-evidence/<scenario-id>.json`. Ledger notes reference the JSON path per tick.
   - [x] Cross-reference scenario: agent's answer mentions related shared-corpus obligation not in user's question. Captured `cross-reference-proactively.json` verdict=pass.
   - [x] Risk-spot scenario: agent flags auto-renewal clause unsolicited. Captured `spot-risks-unsolicited.json` verdict=pass.
   - [x] Dot-connect scenario: agent computes date arithmetic across offer letter + bonus policy. Captured `connect-dots-multi-doc.json` verdict=pass.
