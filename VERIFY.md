@@ -208,8 +208,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Per-item actions: Approve / Edit / Reject / Regenerate (+ optional hint).
 - [x] `regenCount` capped at 5; further regens disabled with message.
 - [x] Bulk-approve via checkboxes works across multiple selected items.
-- [ ] Conflict-pair card: Accept swap / Keep old / Keep both / Reject both atomic.
-- [ ] Cap-swap card: same options; Keep both stretches pool with banner.
+- [x] Conflict-pair card: Accept swap / Keep old / Keep both / Reject both atomic.
+- [x] Cap-swap card: same options; Keep both stretches pool with banner.
 - [x] Approve writes canonical `testQuestions`; suggestion `status='resolved'`.
 - [x] Source-doc delete → pending suggestions auto-rejected w/ `resolvedReason='source-doc-deleted'`.
 - [x] Topic delete → pending suggestions auto-rejected w/ `resolvedReason='topic-deleted'`.
