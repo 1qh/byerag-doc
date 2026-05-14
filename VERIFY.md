@@ -264,9 +264,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Substantive update re-arm
 
-- [ ] Admin batch w/ at least one `'retire'` approval → default substantive; admin can flip cosmetic.
-- [ ] Admin batch w/ only `'new'` approvals → default cosmetic; admin can flip substantive.
-- [ ] Admin batch w/ only `'revision'` approvals → default substantive.
+- [x] Admin batch w/ at least one `'retire'` approval → default substantive; admin can flip cosmetic.
+- [x] Admin batch w/ only `'new'` approvals → default cosmetic; admin can flip substantive.
+- [x] Admin batch w/ only `'revision'` approvals → default substantive.
 - [x] Source-doc deletion cascade → automatic substantive (no admin override).
 - [x] Substantive commit writes `topics.lastSubstantiveUpdate=now()`.
 - [x] Re-arm cascade: `testPasses` rows where `kind='assigned' AND passedAt < lastSubstantiveUpdate` deleted; fresh assignments inserted; audit `command='training.assignment.rearm'`.
