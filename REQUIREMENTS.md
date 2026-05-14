@@ -47,12 +47,12 @@ Dedup + version-conflict checks run within the same `(scope, owner)` partition. 
 
 Listed canonically in `CLI-SURFACE.md`. Includes at minimum:
 
-- `byerag docs list --scope shared|mine|both`
-- `byerag docs read --id <docId>`
-- `byerag docs grep --pattern <regex> --scope <s> [--limit N]`
-- `byerag docs diff --a <docIdA> --b <docIdB>` (mechanical unified diff)
-- `byerag docs conflict --a <docIdA> --b <docIdB>` (semantic conflict scan; LLM-driven; per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`)
-- `byerag docs similar --query <text> --scope <s> [--limit N] [--dim 256|512|768]`
+- `docs list --scope shared|mine|both`
+- `docs read --id <docId>`
+- `docs grep --pattern <regex> --scope <s> [--limit N]`
+- `docs diff --a <docIdA> --b <docIdB>` (mechanical unified diff)
+- `docs conflict --a <docIdA> --b <docIdB>` (semantic conflict scan; LLM-driven; per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`)
+- `docs similar --query <text> --scope <s> [--limit N] [--dim 256|512|768]`
 
 When agent detects a factual conflict between two docs, system prompt instructs autonomous probe of shared-scope corpus for canonical authority + incorporate into answer with citations.
 
@@ -94,7 +94,7 @@ Per `docs/adr/assessment-test-overview.md` + siblings. Canonical behavior summar
 - Admin assigns to all `role=user`; admins exempt. Real-time fire via Convex reactive sub. Per-assignment persistent badge until passed. Un-assign nukes silently; in-progress attempts cancelled.
 - Self-pass ≠ assignment-pass; separate `testPasses` rows per kind.
 - Substantive corpus updates re-arm assigned-passes for affected topics. Admin classifies substantive/cosmetic at batch commit. Self-passes never re-arm.
-- Chat agent gets read-only own-data tools: `byerag training status / attempts / topics / attempt-detail`. No pool leak. No admin-curation access.
+- Chat agent gets read-only own-data tools: `training status / attempts / topics / attempt-detail`. No pool leak. No admin-curation access.
 - Question generation cost not budget-gated. Per-user chat budget cap stays.
 
 ## Departments

@@ -4,7 +4,7 @@ The chat agent (both admin app and user app) has read-only access to the calling
 
 ## CLI surface
 
-- `byerag training status` — returns the caller's current per-topic state. Output:
+- `training status` — returns the caller's current per-topic state. Output:
   ```json
   {
     "topics": [
@@ -20,9 +20,9 @@ The chat agent (both admin app and user app) has read-only access to the calling
     ]
   }
   ```
-- `byerag training attempts` — returns the caller's recent attempt list (latest row per topic; one row per topic max per the one-row rule).
-- `byerag training topics` — same as `status` but trimmed (just `topicId`, `name`, `poolSize`); useful for users asking "what topics are there?"
-- `byerag training attempt-detail --id <attemptId>` — returns the full pinned snapshot of a single attempt, INCLUDING correct answers, ONLY if `attempt.status='passed' AND attempt.userId=caller`. For `failed` or `cancelled` attempts, returns `{score, total}` only — no questions, no answers.
+- `training attempts` — returns the caller's recent attempt list (latest row per topic; one row per topic max per the one-row rule).
+- `training topics` — same as `status` but trimmed (just `topicId`, `name`, `poolSize`); useful for users asking "what topics are there?"
+- `training attempt-detail --id <attemptId>` — returns the full pinned snapshot of a single attempt, INCLUDING correct answers, ONLY if `attempt.status='passed' AND attempt.userId=caller`. For `failed` or `cancelled` attempts, returns `{score, total}` only — no questions, no answers.
 
 All commands are kind-agnostic: an assigned-kind pass and a self-kind pass surface the same way in `status` (with the kind shown in `myStatus` field).
 
@@ -40,13 +40,13 @@ No tool can return data for any user other than the caller. No tool can return r
 
 The system prompt for both apps includes:
 
-> When using `byerag training` tools, never reveal question content from any topic pool before the user has passed that topic. If the user asks "what's on the Security test?", refuse with a brief explanation that test content is private until passed.
+> When using `training` tools, never reveal question content from any topic pool before the user has passed that topic. If the user asks "what's on the Security test?", refuse with a brief explanation that test content is private until passed.
 
 Even attempts that the agent CAN technically access (the caller's own `attempt-detail` on a passed attempt) are gated by status: only `'passed'` attempts return full content. Failed/cancelled return scores only.
 
-The `byerag training topics` and `byerag training status` tools never include question content; only metadata (counts, names, statuses).
+The `training topics` and `training status` tools never include question content; only metadata (counts, names, statuses).
 
-The `byerag training attempts` tool returns only the metadata listed above; no `questionSnapshots`. The agent must call `attempt-detail` to get question content, which gates on `passed` status.
+The `training attempts` tool returns only the metadata listed above; no `questionSnapshots`. The agent must call `attempt-detail` to get question content, which gates on `passed` status.
 
 ## What chat agent CAN do
 
@@ -82,8 +82,8 @@ Tool definitions live in `apps/backend/convex/tools/training/`. Registry codegen
 
 ## Gotcha for Claude
 
-- The agent might be tempted to summarize the test pool ("there are questions about phishing, breach notification, ...") inferred from its knowledge of the underlying docs. This is NOT a leak through the training tools, but it IS a pool-leak via doc tools (`byerag docs grep` or `byerag docs read`). System prompt must explicitly forbid summarizing test content from doc-tool outputs as well.
+- The agent might be tempted to summarize the test pool ("there are questions about phishing, breach notification, ...") inferred from its knowledge of the underlying docs. This is NOT a leak through the training tools, but it IS a pool-leak via doc tools (`docs grep` or `docs read`). System prompt must explicitly forbid summarizing test content from doc-tool outputs as well.
 - `attempt-detail` is the only tool that surfaces question content. If a passed attempt's questions were later edited (via canonical admin actions), the snapshot still shows the version the user took. This is by design — the user's view of their own training history is their own.
 - `myStatus` field in `status` distinguishes `passed-assigned` vs `passed-self`. UI surface decides whether to render the distinction; agent surfaces both for completeness.
-- The `byerag training` provider is enabled for both admin app and user app. Admin's chat agent can ask the same questions about admin's own training history (which is always empty in v0 because admins are exempt from assignments; admin can self-assess and that does surface).
-- Future scope: a `byerag training help-me-study` tool that, after a failed attempt, points the user to specific sections of source docs without revealing the missed questions. Out of v0.
+- The `training` provider is enabled for both admin app and user app. Admin's chat agent can ask the same questions about admin's own training history (which is always empty in v0 because admins are exempt from assignments; admin can self-assess and that does surface).
+- Future scope: a `training help-me-study` tool that, after a failed attempt, points the user to specific sections of source docs without revealing the missed questions. Out of v0.

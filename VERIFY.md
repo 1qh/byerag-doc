@@ -66,8 +66,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 ## Chat
 
 - [ ] User starts a new chat in user app; row inserted with `app='user'`.
-- [ ] User sends "list my docs"; agent calls `byerag docs list --scope mine`; result streams back.
-- [ ] User asks a semantic question; agent calls `byerag docs similar` then `byerag docs read`; cites in answer.
+- [ ] User sends "list my docs"; agent calls `docs list --scope mine`; result streams back.
+- [ ] User asks a semantic question; agent calls `docs similar` then `docs read`; cites in answer.
 - [ ] Admin app analog works on shared docs.
 - [ ] Resume: close tab, reopen, prior chat history visible; resume on prior thread continues the SDK session.
 - [ ] **Supportiveness bar (per `AGENT-DOCTRINE.md` + evidence gate `docs/adr/supportiveness-evidence-gate.md`):** every check below validated via `apps/backend/scripts/smoke-supportiveness.ts` w/ scripted scenario + auto-judge + captured JSON in `apps/backend/test-fixtures/supportiveness-evidence/<scenario-id>.json`. Ledger notes reference the JSON path per tick.
@@ -274,10 +274,10 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Chat agent training tools
 
-- [ ] `byerag training status` returns caller-scoped topic status list.
-- [ ] `byerag training attempts` returns caller-scoped attempt list.
-- [ ] `byerag training topics` returns topic list w/ pool sizes; no question content.
-- [ ] `byerag training attempt-detail --id X` on caller's passed attempt → full snapshot.
+- [ ] `training status` returns caller-scoped topic status list.
+- [ ] `training attempts` returns caller-scoped attempt list.
+- [ ] `training topics` returns topic list w/ pool sizes; no question content.
+- [ ] `training attempt-detail --id X` on caller's passed attempt → full snapshot.
 - [ ] Same tool on caller's failed/cancelled attempt → only score.
 - [ ] Same tool on another user's attempt → 403.
 - [ ] Agent refuses pool-content questions before user passes (prompt-injection-style "what's on the Security test?").

@@ -45,3 +45,40 @@ Inherited from the substrate reference, stripped of domain-specific apps + tools
 - `compose.yml` (full stack with healthchecks + bridges).
 - `apps/backend/sandbox/Dockerfile` (sandbox image source).
 - Schema additions: `docs.{extractedText, lang, version, supersedes, supersededBy, deletedAt}` + nullable `docs.storageId` + `docChunks` table.
+
+### P2 — docs corpus shipped
+
+- `apps/backend/convex/docs.ts` — V8 queries/mutations for `docs` lifecycle: `findBySha256`, `findByFilename`, `insertRow`, `insertQuarantined`, `getForExtract`, `setExtracted`, `getForClassify`, `setPolicy`, `upload` action, `listMine`, `listShared`.
+- `apps/backend/convex/docsUpload.ts` (`'use node'`): sha256 dedup → filename-version-conflict check → ClamAV TCP scan (zINSTREAM) → insertRow on clean / insertQuarantined on hit.
+- `apps/backend/convex/docsExtract.ts` (`'use node'`): per-mime text extractor via sandbox `commands.run` (pdftotext + tesseract OCR fallback, pandoc, raw utf-8) + lang heuristic (CJK + Vietnamese diacritic regex).
+- `apps/backend/convex/docsPolicy.ts` (`'use node'`): Kimi `/v1/messages` policy classifier; setPolicy mutation patches doc + schedules embed on approved.
+- `apps/backend/convex/settings.ts`: get / seedDefaults / set; corpus_policy + agent_auto_assign_enabled keys seeded.
+- `clamd` TCP scan service running on `clamd:3310` per `compose.yml`.
+
+### P3 — agent tools shipped
+
+- `apps/backend/convex/tools/docs/_provider.ts` declares the `docs` provider.
+- `apps/backend/convex/tools/docs/{list,read,grep,diff,similar,conflict}.ts` — six tools, each a `defineQuery` or `defineTool`. ACL pushed into queries (mine-scope rows filtered by `owner === caller.email`; shared open).
+- `apps/backend/convex/tools/generated/registry.ts` — codegen output from `x-codegen`.
+- `apps/user/server/index.ts`: `cliProviders: ['docs']` so the agent-launch action ships the `docs` wrapper binary to the sandbox.
+
+### P4 — embed + similar + conflict shipped
+
+- `apps/backend/convex/docsEmbed.ts` (`'use node'`): sliding-window chunker (1600 / 200, sentence-boundary lookback) + Ollama `nomic-embed-text-v2-moe` via OpenAI-compat `/v1/embeddings` with `search_document:` / `search_query:` prefixes; per-doc centroid stored as `docs.embedding`.
+- `apps/backend/convex/docs.ts` extensions: `getForEmbed`, `persistChunks`, `getRowsSnippet`, `getForConflict`; setPolicy schedules embed on approved.
+- `apps/backend/convex/tools/docs/similar.ts`: `defineTool` action — `ctx.vectorSearch('docs','by_embedding',{filter,vector})` per scope, top-K cosine, runQuery `getRowsSnippet` for filename + 160-char snippet enrichment.
+- `apps/backend/convex/tools/docs/conflict.ts`: `defineTool` action — Kimi semantic conflict scan w/ excerpt grep-verification per `auto-resolve-via-shared-kb-on-conflict.md`; sort factual→gap→wording; report `droppedHallucinated` count for excerpts that failed substring check.
+
+### P7 — verify + harden in progress
+
+- `apps/backend/scripts/smoke-supportiveness.ts` — 7-scenario harness driving the agent over scripted corpus seeds; deterministic auto-judge (tool-trace + keyword match + citation regex).
+- `apps/backend/test-fixtures/supportiveness-scenarios.json` — committed manifest of scenarios (corpus seeds + prompts + expected tools + keyword/citation gates).
+- `apps/backend/scripts/pull-test-corpus.ts` — Kimi-knowledge probe per `test-corpus-source-and-kimi-knowledge-probe.md`; reads `probe-candidates.jsonl`, runs Kimi w/ no doc context + Ollama embedding cosine; rejects docs Kimi already knows, writes accepted docs to `test-fixtures/docs/real/` (gitignored) + appends to `test-fixtures/probe-log.jsonl`.
+- `apps/backend/scripts/smoke-agent-docs.ts` — end-to-end agent-uses-tools smoke (seed conflicting PTO docs → chat → assert agent invokes docs tools).
+
+### Operator-local fixtures (gitignored)
+
+- `apps/backend/test-fixtures/probe-candidates.jsonl` — operator-supplied probe candidates.
+- `apps/backend/test-fixtures/probe-log.jsonl` — appended per probe run.
+- `apps/backend/test-fixtures/docs/real/` — accepted real corpus snippets.
+- `apps/backend/test-fixtures/supportiveness-evidence/` — per-scenario JSON evidence captures.

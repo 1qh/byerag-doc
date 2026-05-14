@@ -38,7 +38,7 @@ Standard `@convex-dev/auth` cookie session. Sign-out clears the cookie. Role cha
 
 Separate from web auth. CLI tokens live in `cliTokens` table:
 
-- **Device flow** (`bunx byerag login`): opens browser tab, user authorizes via Google OAuth, token returned.
+- **Device flow** (`bunx docs login`): opens browser tab, user authorizes via Google OAuth, token returned.
 - **PAT** (admin-issued): admin generates a labeled token for service / CI; plaintext shown once.
 
 CLI tokens are scoped to the user; calls hit `/api/cli/exec` with `Authorization: Bearer <token>`. Server resolves token → user → `userProfiles.role` → permitted commands.

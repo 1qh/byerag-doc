@@ -37,11 +37,21 @@ Effect: sandbox compromise = blast radius bounded to one chat's quota.
 
 - **Per-owner daily $ cap**: pre-call estimate (worst-case input tokens × rate + max_tokens × output rate) reserved against `ownerSpend.centsToday`; settled post-call with actual usage. Reservation prevents concurrent over-spend.
 - **Per-chat turn budget**: `chatRuntime.proxyCallsThisTurn` decremented per call; exhausted → 429.
-- **Per-chat rate limit**: token bucket, 300 calls/min.
-- **Per-owner rate limit**: token bucket, 600 calls/min.
 - **Body cap**: max request body size enforced before forwarding.
 - **Upstream path allowlist**: only `/v1/messages` + `/v1/messages/count_tokens` permitted; everything else 403.
 - **Upstream host re-validated**: URL parsed, host re-checked against `api.kimi.com`; mismatched host → 400 (defends against URL parse-confusion SSRF).
+
+### Rate limits
+
+Two-axis token-bucket caps, each refilled across a 60-second window. Caps differ by traffic class because Kimi streaming emits per-token deltas that vastly outnumber LLM-proxy calls.
+
+| Axis | Per-chat cap | Per-owner cap | Endpoint |
+|---|---|---|---|
+| LLM proxy calls (`/api/anthropic/*`) | 300 / min | 600 / min | proxy |
+| Stream-event ingestion (`/api/stream/event`) | 8_000 / min | 20_000 / min | stream-event sink |
+| Chat send (`messages.send`) | — | 30 / min | mutation |
+
+Stream-event caps must accommodate the fine-grained deltas (`text_delta`, `thinking_delta`, `input_json_delta`) the Claude Agent SDK emits when `CLAUDE_CODE_INCLUDE_PARTIAL_MESSAGES=1`. A single multi-tool agent turn legitimately produces low-thousands of stream events. Caps below ~5_000 starve the chat of events and corrupt `complete`-time message reconstruction (events drop at the http layer with 429 before the insert mutation runs). Captured in `GOTCHAS.md` "Kimi proxy".
 
 ### Sandbox runtime
 

@@ -91,7 +91,7 @@ External judge model passes byerag as shipped when ALL the following return expe
 
 **F. Chat via Kimi proxy:**
 - User sends message → SSE stream from `/api/anthropic/v1/messages` via per-chat bearer.
-- Agent calls `byerag docs list/read/grep/diff/similar` tools.
+- Agent calls `docs list/read/grep/diff/similar` tools.
 - Answer includes citations.
 - Upstream = `api.kimi.com`.
 

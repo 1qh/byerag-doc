@@ -2,7 +2,7 @@
 
 Canonical agent-facing CLI commands. Each command is a Convex action registered in the tool registry; the CLI binary is a thin dispatcher.
 
-Pattern: `byerag <category> <verb> [--flag value ...]`.
+Pattern: `<provider> <verb> [--flag value ...]`. Each provider installs as its own top-level binary in the sandbox. Provider name = binary name. P0 providers: `docs`, `training`.
 
 ## docs list
 
@@ -26,7 +26,7 @@ Regex match across docs in scope. Returns matching `(docId, lineNumber, snippet)
 
 - `--pattern` (string) required — regex (re2 dialect)
 - `--scope` (union) required enum: `shared | mine | both`
-- `--limit` (number) — default 50
+- `--limit` (number) — default 50, max 200
 
 Implementation: iterate `docs` rows in scope (paginated), pull extracted text from `_storage` (or cached text field), run regex, return hits.
 
@@ -51,9 +51,7 @@ Returns JSON array `[{type: 'factual' | 'wording' | 'gap', summary, docA_excerpt
 
 ACL: both rows checked. Chunk-pair fallback when combined text > 100K chars.
 
-Auto-probe rule baked in system prompt: for each `'factual'` conflict, agent should run `docs similar --scope shared` and `docs read` on top match (cosine ≥ 0.8) to surface canonical authority + recommend escalation if no canonical found. Hard cap 3 canonical probes per user-question.
-
-ACL: both rows checked individually.
+Auto-probe rule baked in system prompt: for each `'factual'` conflict, agent runs `docs similar --scope shared` and `docs read` on top match (cosine ≥ 0.8) to surface canonical authority + recommend escalation if no canonical found. Hard cap 3 canonical probes per user-question.
 
 ## docs similar
 
@@ -81,6 +79,19 @@ Mint a stable citation handle from a doc id + line range, used in agent answers.
 - `--from` (number) — line, default 1
 - `--to` (number) — line, default `min(end, from+20)`
 
+## training (P8)
+
+Read-only own-data tools the chat agent uses to coach the user through assessment tests. Per `docs/adr/chat-agent-training-tools.md`. Provider binary: `training`.
+
+- `training status` — caller-scoped topic-status list
+- `training attempts` — caller-scoped attempt list
+- `training topics` — topic list with pool sizes; no question content
+- `training attempt-detail --id <attemptId>` — full snapshot on caller's passed attempt; score-only on failed/cancelled
+
 ## Output shape
 
 All commands return JSON on success. On error: `{error: {category, code, message, retryable, details?}}` and non-zero exit. Categories: `auth | input | permanent | transient | upstream`.
+
+## Brand
+
+Provider binaries are generic names (`docs`, `training`) — agent-visible surface carries no project-repository-name branding. The repo name is internal-only.

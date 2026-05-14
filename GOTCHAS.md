@@ -24,10 +24,14 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 - **`node:20-slim` preinstalls a `node` user at UID 1000** — `useradd -u 1000 agent` fails with `useradd: UID 1000 is not unique`. Drop the existing user first: `RUN userdel -r node 2>/dev/null || true` before `useradd -m -u 1000 -s /bin/bash agent`. Surfaced 2026-05-14 P0 sandbox image build.
 - **Local dev uses plain `runc`, not `runsc`** — gVisor deferred to prod Linux per `docker-gvisor-sandbox.md`. Colima on Mac doesn't ship `runsc`; trying `--runtime=runsc` locally fails. Local hardening relies on `--cap-drop ALL --security-opt no-new-privileges` instead.
+- **Sandbox runs as `User: agent` (uid 1000) — cannot write to `/usr/local/bin`** — any CLI wrapper / symlink the agent-run action places must land under a path the `agent` user owns. `/home/agent/.bun/bin/` is part of the container's default `PATH` (`/home/agent/.bun/bin:/usr/local/bin:/usr/bin:/bin`), is `agent`-owned, and is the canonical home for provider wrappers (`docs`, `training`, …) per `sandbox-image-and-cli-delivery.md`.
+- **`SANDBOX_PATH` env-override does not always reach the Claude SDK Bash subshell** — the Claude Agent SDK spawns child Bash processes whose `PATH` is inherited from the container default, not always from the parent agent process's env-set `PATH`. The defense: place CLI wrappers at a path already on the container default `PATH` (`/home/agent/.bun/bin/`); don't rely on the env override propagating.
+- **POSIX wrapper, not symlink, for CLI provider binaries** — a symlink at `/home/agent/.bun/bin/<provider>` pointing to `/home/agent/cli.mjs` lets the next `printf … > path` overwrite cli.mjs through the symlink. Use a 45-byte wrapper script (`#!/bin/sh\nexec node /home/agent/cli.mjs "$@"`) written via `printf` after `rm -f` of any prior file; chmod +x in the same `&&` chain.
 
 ## Kimi proxy
 
-(none yet)
+- **`stop_reason="tool_use"` after the last tool call leaves the result empty** — Kimi sometimes ends an agent turn with a tool_use block and never emits the follow-up text turn that would synthesize the answer; the SDK records `result.result = ""` and the chat shows no answer body. Mitigations baked into `system-prompts.md`: explicit "final-answer protocol" mandating a plain-text response after the tool chain; smoke harness asserts non-empty assistant text + keyword + citation match per scenario.
+- **Stream-event firehose exceeds default rate-limit caps** — Kimi emits per-token deltas during streaming; an agent that composes 4+ tool calls in one turn produces 1K–8K stream events. Default per-chat cap (300/min) and per-owner cap (900/min) starved the chat of events and corrupted `complete`-time message reconstruction. Canonical caps for `/api/stream/event`: per-chat 8_000, per-owner 20_000, refilled across a 60s window. Captured in `SECURITY.md` rate-caps table.
 
 ## Ollama embedding
 

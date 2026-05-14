@@ -4,7 +4,7 @@ When agent detects a conflict between two docs (typically user's uploaded doc vs
 
 ## CLI tool surface addition
 
-`byerag docs conflict --a <docIdA> --b <docIdB>` — semantic conflict scan.
+`docs conflict --a <docIdA> --b <docIdB>` — semantic conflict scan.
 
 - Sends both docs' extracted texts to Kimi w/ contradiction-finding prompt:
   ```
@@ -23,7 +23,7 @@ When agent detects a conflict between two docs (typically user's uploaded doc vs
 
 After `docs conflict` returns conflicts, agent's system prompt instructs:
 
-> For each `'factual'`-type conflict, run `byerag docs similar --query "<conflict concept extracted>" --scope shared --limit 3`. If top-1 cosine ≥ 0.8, `byerag docs read --id <top1>` and incorporate canonical resolution into the answer.
+> For each `'factual'`-type conflict, run `docs similar --query "<conflict concept extracted>" --scope shared --limit 3`. If top-1 cosine ≥ 0.8, `docs read --id <top1>` and incorporate canonical resolution into the answer.
 > 
 > If top-1 cosine < 0.8 for all candidates, report the conflict without a canonical and append: "no shared-corpus authority found on this; recommend escalating to admin for policy decision."
 > 

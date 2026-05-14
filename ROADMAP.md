@@ -37,12 +37,12 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 
 ## P3 — Agent tools
 
-- `byerag docs list` CLI command + Convex action.
-- `byerag docs read` CLI + action.
-- `byerag docs grep` CLI + action (iterate matching rows, regex over content text).
-- `byerag docs diff` CLI + action.
+- `docs list` CLI command + Convex action.
+- `docs read` CLI + action.
+- `docs grep` CLI + action (iterate matching rows, regex over content text).
+- `docs diff` CLI + action.
 - Tool registry codegen wired (`packages/cli/bin/x-codegen.ts`).
-- Skill blob served at `/api/cli/skill` describes byerag CLI surface.
+- Skill blob served at `/api/cli/skill` describes the CLI surface.
 
 ## P4 — Embedding + similar
 
@@ -51,7 +51,7 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 - Embedding action POSTing to `http://ollama:11434/api/embed` with `search_document: ` prefix.
 - Per-doc `docs.embedding` = centroid of `docChunks.embedding`.
 - `vectorIndex` on both `docs.embedding` and `docChunks.embedding`.
-- `byerag docs similar` CLI + action (centroid by default; `--granular` for chunk-level).
+- `docs similar` CLI + action (centroid by default; `--granular` for chunk-level).
 
 ## P5 — Chat UX
 
@@ -90,7 +90,7 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 - Attempt flow: random 5, 100% pass, shuffled order, pinned snapshot, open-book, reveal-on-pass.
 - Assignment flow: admin to role=user, real-time fire, persistent per-assignment badge, un-assign nuke.
 - Re-arm cascade on substantive-flagged batch commits.
-- `byerag training` provider exposed to chat agent (read-only own-data).
+- `training` provider exposed to chat agent (read-only own-data).
 - `lastSubstantiveUpdate` field active on `topics`.
 
 ## P9 — Departments + dashboard + agent auto-assign
