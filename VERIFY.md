@@ -109,7 +109,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Isolation
 
-- [ ] User A uploads private doc. User B signed into user app cannot see it via `docs list --scope mine`.
+- [x] User A uploads private doc. User B signed into user app cannot see it via `docs list --scope mine`.
 - [ ] User B's sandbox `/workspace/mine/` mount contains B's docs only.
 - [ ] User A's chat sandbox cannot reach user B's chat data via Convex (different per-chat secret).
 - [ ] Prompt injection in a doc trying to `curl evil.com` fails at sandbox network layer.
