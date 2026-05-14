@@ -206,7 +206,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 ### Admin review queue
 
 - [ ] Per-item actions: Approve / Edit / Reject / Regenerate (+ optional hint).
-- [ ] `regenCount` capped at 5; further regens disabled with message.
+- [x] `regenCount` capped at 5; further regens disabled with message.
 - [x] Bulk-approve via checkboxes works across multiple selected items.
 - [ ] Conflict-pair card: Accept swap / Keep old / Keep both / Reject both atomic.
 - [ ] Cap-swap card: same options; Keep both stretches pool with banner.
@@ -217,7 +217,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 ### Canonical admin actions
 
 - [x] Admin can edit approved question (prompt/choices/correctIndex); `revision` increments; audit `severity='low'`.
-- [ ] Admin force-regenerate (+ hint) → new suggestion enters queue w/ `kind='revision'`; audit `severity='medium'`.
+- [x] Admin force-regenerate (+ hint) → new suggestion enters queue w/ `kind='revision'`; audit `severity='medium'`.
 - [x] Admin retire → `deletedAt` set; audit `severity='medium'`.
 - [ ] No manual-from-scratch create UI exposed.
 
