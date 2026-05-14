@@ -198,9 +198,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Admin uploads a shared doc → scan-clean + policy-approved → background gen fires; 10 candidates land in `testQuestionSuggestions` w/ `status='pending'`.
 - [ ] Doc gen async — doc shows in library + chat immediately; candidates lag ~10-30 sec.
 - [x] Each candidate Vietnamese; technical terms preserved original.
-- [ ] Each candidate has `choices.length === 3`, `correctIndex ∈ {0,1,2}`.
+- [x] Each candidate has `choices.length === 3`, `correctIndex ∈ {0,1,2}`.
 - [x] Dup scan: candidates with cosine ≥ 0.85 vs existing pool flagged via `conflictsWith`.
-- [ ] Contradiction scan: paired retire-suggestion emitted with `pairKind='conflict'`.
+- [x] Contradiction scan: paired retire-suggestion emitted with `pairKind='conflict'`.
 - [x] At-cap (≥50 approved): new candidate gets paired retire with `pairKind='cap-swap'`.
 
 ### Admin review queue
