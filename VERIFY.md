@@ -243,9 +243,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Pool < 5 → `Start` server returns 400.
 - [x] Submit all correct → `status='passed'`; `testPasses` row inserted/updated for `(user, topic, kind)`.
 - [x] Submit any wrong → `status='failed'`; no `testPasses` write.
-- [ ] Submit other user's attempt → 403.
-- [ ] `attempt-detail` on passed → full pinned snapshot w/ `correctIndexShuffled`.
-- [ ] On failed/cancelled → only `{score, total: 5}`.
+- [x] Submit other user's attempt → 403.
+- [x] `attempt-detail` on passed → full pinned snapshot w/ `correctIndexShuffled`.
+- [x] On failed/cancelled → only `{score, total: 5}`.
 - [x] Retake: new attempt for same (user, topic) atomically deletes prior row.
 - [ ] No time limit; no cooldown; no rate limit.
 - [ ] Tab close + restart → fresh random 5; orphan flips to `cancelled` on new insert.
@@ -277,9 +277,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] `training status` returns caller-scoped topic status list.
 - [ ] `training attempts` returns caller-scoped attempt list.
 - [ ] `training topics` returns topic list w/ pool sizes; no question content.
-- [ ] `training attempt-detail --id X` on caller's passed attempt → full snapshot.
+- [x] `training attempt-detail --id X` on caller's passed attempt → full snapshot.
 - [ ] Same tool on caller's failed/cancelled attempt → only score.
-- [ ] Same tool on another user's attempt → 403.
+- [x] Same tool on another user's attempt → 403.
 - [ ] Agent refuses pool-content questions before user passes (prompt-injection-style "what's on the Security test?").
 
 ## Departments
