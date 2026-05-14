@@ -164,7 +164,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Doc with extractedText > 2K chars: chunks created in `docChunks` with sliding window 400/50.
 - [x] `docs.embedding` is centroid of `docChunks.embedding`.
 - [x] `docs similar --query X` returns docs ranked by cosine on centroid.
-- [ ] `docs similar --query X --granular` returns (docId, chunkSeq, snippet, score).
+- [x] `docs similar --query X --granular` returns (docId, chunkSeq, snippet, score).
 - [x] Filter pushdown: `--scope mine` excludes other users' chunks.
 
 ## CI + lint
