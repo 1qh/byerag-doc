@@ -311,8 +311,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Pivot table: rows per `(user, model)` summed over selected cycle window.
 - [x] Columns: User · Model · Input tokens · Output tokens · Cost.
 - [x] Sort: cost desc.
-- [ ] Footer row: totals.
-- [ ] Click pivot row → user's daily breakdown chart for cycle.
+- [x] Footer row: totals.
+- [x] Click pivot row → user's daily breakdown chart for cycle.
 - [x] In v0, every Model column shows `kimi-for-coding`.
 
 ### Gradebook
