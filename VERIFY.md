@@ -17,12 +17,12 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Upload
 
-- [ ] Admin uploads a clean PDF; row appears in `docs` with `scope='shared'`, `scanStatus='clean'`, `version=1`.
+- [x] Admin uploads a clean PDF; row appears in `docs` with `scope='shared'`, `scanStatus='clean'`, `version=1`.
 - [ ] User uploads a clean PDF; row appears with `scope='mine'`, `owner=<user>`, `scanStatus='clean'`, `version=1`.
-- [ ] EICAR test virus → `docs` row with `scanStatus='quarantined'`, no blob; UI toast `⚠️ Your file was rejected because it appeared suspicious. Reason: <sig>.`; audit row recorded.
+- [x] EICAR test virus → `docs` row with `scanStatus='quarantined'`, no blob; UI toast `⚠️ Your file was rejected because it appeared suspicious. Reason: <sig>.`; audit row recorded.
 - [ ] Oversized file (>configured cap) rejected at the upload endpoint before reaching scan.
 - [ ] Zip bomb rejected by ClamAV with recursion-limit error; same quarantine path.
-- [ ] **Duplicate content** (re-upload same sha256, same scope): no new row; toast `this file is already in your library (uploaded as <filename> on <date>).`
+- [x] **Duplicate content** (re-upload same sha256, same scope): no new row; toast `this file is already in your library (uploaded as <filename> on <date>).`
 - [ ] **Version conflict** (same filename, same scope, different content): blocking modal `a different file with this name already exists. Replace it? Keep both? Cancel?`
   - [ ] **Replace** → new row `version=2`, `supersedes=<prev>`; prev row gets `supersededBy=<new>` + `deletedAt=now`; prev blob scheduled for 30-day hard-purge.
   - [ ] **Keep both** → new row with filename suffix `(2)`; both rows independent (`supersedes=null`).
@@ -42,7 +42,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Policy classifier
 
-- [ ] Clean, on-topic doc → `policyStatus='approved'`, classifier `category='on-topic'`, doc searchable.
+- [x] Clean, on-topic doc → `policyStatus='approved'`, classifier `category='on-topic'`, doc searchable.
 - [ ] Off-topic doc (e.g. a novel chapter) → `policyStatus='rejected'`, `category='off-topic'`, UI toast `This file is rejected as not matching our policy. Reason: <reason>.` + `Request review` button visible.
 - [ ] Prompt-injection doc (content tries to manipulate the assistant) → `policyStatus='rejected'`, `category='prompt-injection'`. Admin override of this category emits an extra audit warning.
 - [ ] Spam/promotional doc → `policyStatus='rejected'`, `category='spam'|'promotional'`.
@@ -58,26 +58,26 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Embedding
 
-- [ ] Ollama running with `nomic-embed-text-v2-moe` model pulled.
-- [ ] On clean upload: embedding written to `docs.embedding` within N seconds.
-- [ ] `docs similar` query returns docs with cosine-rank ordering, filter pushdown by scope+owner verified.
+- [x] Ollama running with `nomic-embed-text-v2-moe` model pulled.
+- [x] On clean upload: embedding written to `docs.embedding` within N seconds.
+- [x] `docs similar` query returns docs with cosine-rank ordering, filter pushdown by scope+owner verified.
 - [ ] Matryoshka 256 / 512 / 768 dim queries all return results.
 
 ## Chat
 
-- [ ] User starts a new chat in user app; row inserted with `app='user'`.
-- [ ] User sends "list my docs"; agent calls `docs list --scope mine`; result streams back.
-- [ ] User asks a semantic question; agent calls `docs similar` then `docs read`; cites in answer.
+- [x] User starts a new chat in user app; row inserted with `app='user'`.
+- [x] User sends "list my docs"; agent calls `docs list --scope mine`; result streams back.
+- [x] User asks a semantic question; agent calls `docs similar` then `docs read`; cites in answer.
 - [ ] Admin app analog works on shared docs.
 - [ ] Resume: close tab, reopen, prior chat history visible; resume on prior thread continues the SDK session.
 - [ ] **Supportiveness bar (per `AGENT-DOCTRINE.md` + evidence gate `docs/adr/supportiveness-evidence-gate.md`):** every check below validated via `apps/backend/scripts/smoke-supportiveness.ts` w/ scripted scenario + auto-judge + captured JSON in `apps/backend/test-fixtures/supportiveness-evidence/<scenario-id>.json`. Ledger notes reference the JSON path per tick.
-  - [ ] Cross-reference scenario: agent's answer mentions related shared-corpus obligation not in user's question. Captured `cross-reference-proactively.json` verdict=pass.
-  - [ ] Risk-spot scenario: agent flags auto-renewal clause unsolicited. Captured `spot-risks-unsolicited.json` verdict=pass.
-  - [ ] Dot-connect scenario: agent computes date arithmetic across offer letter + bonus policy. Captured `connect-dots-multi-doc.json` verdict=pass.
-  - [ ] Pre-empt scenario: agent covers carryover + parental leave intersection w/o being asked. Captured `pre-empt-follow-ups.json` verdict=pass.
-  - [ ] Gap-flag scenario: agent says "not in corpus" + recommends action. Captured `flag-corpus-gaps.json` verdict=pass.
-  - [ ] Uncertainty scenario: agent surfaces ambiguity instead of picking one interpretation. Captured `surface-uncertainty.json` verdict=pass.
-  - [ ] Citations + tool-call breadcrumbs: every factual claim has `<docId§section>` chip; stream contains ≥1 `tool_use` block. Captured `citations-and-breadcrumbs.json` verdict=pass.
+  - [x] Cross-reference scenario: agent's answer mentions related shared-corpus obligation not in user's question. Captured `cross-reference-proactively.json` verdict=pass.
+  - [x] Risk-spot scenario: agent flags auto-renewal clause unsolicited. Captured `spot-risks-unsolicited.json` verdict=pass.
+  - [x] Dot-connect scenario: agent computes date arithmetic across offer letter + bonus policy. Captured `connect-dots-multi-doc.json` verdict=pass.
+  - [x] Pre-empt scenario: agent covers carryover + parental leave intersection w/o being asked. Captured `pre-empt-follow-ups.json` verdict=pass.
+  - [x] Gap-flag scenario: agent says "not in corpus" + recommends action. Captured `flag-corpus-gaps.json` verdict=pass.
+  - [x] Uncertainty scenario: agent surfaces ambiguity instead of picking one interpretation. Captured `surface-uncertainty.json` verdict=pass.
+  - [x] Citations + tool-call breadcrumbs: every factual claim has `<docId§section>` chip; stream contains ≥1 `tool_use` block. Captured `citations-and-breadcrumbs.json` verdict=pass.
 - [ ] **Conflict resolution flow** (real-world example per `docs/adr/auto-resolve-via-shared-kb-on-conflict.md`):
   - User uploads doc A (offer letter saying "15 days PTO") and doc B (PTO policy saying "20 days").
   - User asks "compare these 2 docs".
@@ -89,7 +89,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Sandbox
 
-- [ ] First chat message spawns a Docker container with gVisor runtime (verified via `docker inspect`).
+- [x] First chat message spawns a Docker container with gVisor runtime (verified via `docker inspect`).
 - [ ] Second message reuses the same container.
 - [ ] `docker network ls` shows sandbox attached to restricted bridge, not default.
 - [ ] From inside sandbox: `curl https://api.kimi.com/` fails (no DNS / no route).
@@ -98,7 +98,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Proxy
 
-- [ ] Valid bearer → LLM call forwards → response streams back.
+- [x] Valid bearer → LLM call forwards → response streams back.
 - [ ] Invalid bearer → 401.
 - [ ] Path other than `/v1/messages` → 403.
 - [ ] Body over cap → 413.
@@ -117,10 +117,10 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Audit
 
-- [ ] Every CLI exec call recorded in `auditLogs`.
-- [ ] Admin can query the log; user cannot.
-- [ ] Sign-in events recorded.
-- [ ] Log retention policy active (configurable; default 90 days).
+- [x] Every CLI exec call recorded in `auditLogs`.
+- [x] Admin can query the log; user cannot.
+- [x] Sign-in events recorded.
+- [x] Log retention policy active (configurable; default 90 days).
 
 ## Operations
 
@@ -155,7 +155,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 - [ ] PDF with text layer: `extractedText` populated; OCR not triggered.
 - [ ] Scanned PDF: OCR fallback runs; `extractedText` populated.
-- [ ] docx / pptx / xlsx / epub: extraction works.
+- [x] docx / pptx / xlsx / epub: extraction works.
 - [ ] Image (png/jpg/tiff): OCR extracts text.
 - [ ] Unsupported mime: upload rejected at the upload endpoint.
 
@@ -229,7 +229,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Topic management
 
-- [ ] Topics flat (no parentId on row).
+- [x] Topics flat (no parentId on row).
 - [ ] Topic delete cascades: questions soft-delete w/ `deleteReason='topic-cascade'`; pending suggestions auto-rejected; assignments cancelled; in-progress attempts cancelled.
 - [ ] Empty topic (pool=0) hidden from user app's training page.
 - [ ] 0 < pool < 5: visible to user, `Start` disabled.
@@ -349,8 +349,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Network bridge
 
-- [ ] From sandbox: `curl https://api.kimi.com/` fails (DNS not resolvable).
+- [x] From sandbox: `curl https://api.kimi.com/` fails (DNS not resolvable).
 - [ ] From sandbox: `curl http://convex-backend:3210/api/anthropic/v1/messages` succeeds with valid bearer.
 - [ ] From sandbox: `curl http://convex-backend:3210/api/anthropic/v1/messages` with INVALID bearer returns 401.
-- [ ] From sandbox: `curl http://attacker.local/` (anything other than convex) fails at the iptables FORWARD rule.
+- [x] From sandbox: `curl http://attacker.local/` (anything other than convex) fails at the iptables FORWARD rule.
 - [ ] Host: `nft list ruleset` shows `output policy drop` with only Kimi IPs in the allowlist set.
