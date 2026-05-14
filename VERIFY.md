@@ -43,9 +43,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 ## Policy classifier
 
 - [x] Clean, on-topic doc → `policyStatus='approved'`, classifier `category='on-topic'`, doc searchable.
-- [ ] Off-topic doc (e.g. a novel chapter) → `policyStatus='rejected'`, `category='off-topic'`, UI toast `This file is rejected as not matching our policy. Reason: <reason>.` + `Request review` button visible.
-- [ ] Prompt-injection doc (content tries to manipulate the assistant) → `policyStatus='rejected'`, `category='prompt-injection'`. Admin override of this category emits an extra audit warning.
-- [ ] Spam/promotional doc → `policyStatus='rejected'`, `category='spam'|'promotional'`.
+- [x] Off-topic doc (e.g. a novel chapter) → `policyStatus='rejected'`, `category='off-topic'`, UI toast `This file is rejected as not matching our policy. Reason: <reason>.` + `Request review` button visible.
+- [x] Prompt-injection doc (content tries to manipulate the assistant) → `policyStatus='rejected'`, `category='prompt-injection'`. Admin override of this category emits an extra audit warning.
+- [x] Spam/promotional doc → `policyStatus='rejected'`, `category='spam'|'promotional'`.
 - [ ] Abusive content → `policyStatus='rejected'`, `category='abusive'`.
 - [ ] `Request review` button → marks `policyReviewRequestedAt`; admin sees in queue.
 - [ ] Admin approves a rejected doc in `/admin/quarantine` → `policyStatus='approved'`, `policyOverriddenBy=<admin>`; doc becomes searchable; audit log records override.
