@@ -230,7 +230,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 ### Topic management
 
 - [x] Topics flat (no parentId on row).
-- [ ] Topic delete cascades: questions soft-delete w/ `deleteReason='topic-cascade'`; pending suggestions auto-rejected; assignments cancelled; in-progress attempts cancelled.
+- [x] Topic delete cascades: questions soft-delete w/ `deleteReason='topic-cascade'`; pending suggestions auto-rejected; assignments cancelled; in-progress attempts cancelled.
 - [ ] Empty topic (pool=0) hidden from user app's training page.
 - [ ] 0 < pool < 5: visible to user, `Start` disabled.
 - [ ] Pool ≥ 5: testable.
