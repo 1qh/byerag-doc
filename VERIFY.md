@@ -257,7 +257,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Admins excluded from "all users".
 - [ ] Real-time fire via Convex reactive sub.
 - [ ] Offline user sees badge on next sign-in.
-- [ ] Badge persists until passing via `kind='assigned'` attempt.
+- [x] Badge persists until passing via `kind='assigned'` attempt.
 - [x] Re-fire skips active passes; no duplicate rows.
 - [x] Un-assign → all assignment rows `deletedAt` set; badges vanish via reactive sub; in-progress assigned-kind attempts → `cancelled`; past `testPasses` retained.
 - [x] Un-assign audit `severity='medium'`.
@@ -267,7 +267,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Admin batch w/ at least one `'retire'` approval → default substantive; admin can flip cosmetic.
 - [ ] Admin batch w/ only `'new'` approvals → default cosmetic; admin can flip substantive.
 - [ ] Admin batch w/ only `'revision'` approvals → default substantive.
-- [ ] Source-doc deletion cascade → automatic substantive (no admin override).
+- [x] Source-doc deletion cascade → automatic substantive (no admin override).
 - [x] Substantive commit writes `topics.lastSubstantiveUpdate=now()`.
 - [x] Re-arm cascade: `testPasses` rows where `kind='assigned' AND passedAt < lastSubstantiveUpdate` deleted; fresh assignments inserted; audit `command='training.assignment.rearm'`.
 - [x] Self-passes never re-armed.
@@ -313,7 +313,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Sort: cost desc.
 - [ ] Footer row: totals.
 - [ ] Click pivot row → user's daily breakdown chart for cycle.
-- [ ] In v0, every Model column shows `kimi-for-coding`.
+- [x] In v0, every Model column shows `kimi-for-coding`.
 
 ### Gradebook
 
@@ -324,7 +324,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] `✗` admin-source live assignment + no pass.
 - [x] `ⓐ` agent-source live assignment + no pass.
 - [x] `·` no live assignment + no pass.
-- [ ] Concurrent admin + agent assignment renders `✗` (admin priority).
+- [x] Concurrent admin + agent assignment renders `✗` (admin priority).
 - [ ] Row total = `passed_count / assigned_count` per user.
 - [ ] Column footer = `passed_assigned / assigned` per topic.
 - [ ] Default sort: rows by Total asc, cols by `topics.createdAt` asc.
