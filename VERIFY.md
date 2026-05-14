@@ -38,7 +38,7 @@ End-state checklist. Every item must pass before the project counts as launched 
   - [ ] `No` click → staging blob deleted; row keeps `scanStatus='quarantined'` + `scanCancelledAt` set.
   - [x] 1-hour TTL expires without decision → scheduled function purges staging blob; row tombstoned.
   - [ ] User app: no override surface visible; user with virus file gets hard reject toast only.
-  - [ ] Override does NOT bypass the policy classifier — virus-overridden doc still goes through policy gate; can still be rejected there.
+  - [x] Override does NOT bypass the policy classifier — virus-overridden doc still goes through policy gate; can still be rejected there.
 
 ## Policy classifier
 
@@ -100,8 +100,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 - [x] Valid bearer → LLM call forwards → response streams back.
 - [x] Invalid bearer → 401.
-- [ ] Path other than `/v1/messages` → 403.
-- [ ] Body over cap → 413.
+- [x] Path other than `/v1/messages` → 403.
+- [x] Body over cap → 413.
 - [x] Burst exceeding per-chat rate → 429.
 - [x] Daily $ cap exhausted → 402.
 - [x] Per-chat turn budget exhausted → 429.
