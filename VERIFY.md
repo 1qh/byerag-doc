@@ -36,7 +36,7 @@ End-state checklist. Every item must pass before the project counts as launched 
   - [x] `Yes` click → server verifies role=admin + token + idempotency; on pass, blob moves to `_storage`, `scanStatus='clean'`, `scanOverriddenBy` + `scanOverriddenAt` + `scanOverrideSignature` populated.
   - [x] `Yes` click → audit log row with `severity='high'`, `command='docs.scanOverride'`.
   - [ ] `No` click → staging blob deleted; row keeps `scanStatus='quarantined'` + `scanCancelledAt` set.
-  - [ ] 1-hour TTL expires without decision → scheduled function purges staging blob; row tombstoned.
+  - [x] 1-hour TTL expires without decision → scheduled function purges staging blob; row tombstoned.
   - [ ] User app: no override surface visible; user with virus file gets hard reject toast only.
   - [ ] Override does NOT bypass the policy classifier — virus-overridden doc still goes through policy gate; can still be rejected there.
 
