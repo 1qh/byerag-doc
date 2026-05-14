@@ -60,7 +60,7 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## Vector search filter pushdown
 
-(none yet)
+- **Matryoshka shorter-dim queries against a fixed-dim index**: Convex `vectorIndex` declares `dimensions: 768` and accepts only that exact length. Matryoshka prefix queries (256 / 512) are realized by truncating the query vector to the first N dims and zero-padding the remainder back to 768. Cosine over the zero-padded query equals dot-product over the first N dims of the stored vector (zero positions contribute 0), giving the canonical Matryoshka semantics without re-indexing. Top-score increases monotonically with dim because more signal is included; rank is preserved. Helper: `matryoshkaTruncate(vec, dim)` in `apps/backend/convex/docsEmbed.ts`; consumed by `tools/docs/similar.ts`.
 
 ## Sandbox lifecycle (create / resume / kill)
 

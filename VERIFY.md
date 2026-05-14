@@ -61,7 +61,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Ollama running with `nomic-embed-text-v2-moe` model pulled.
 - [x] On clean upload: embedding written to `docs.embedding` within N seconds.
 - [x] `docs similar` query returns docs with cosine-rank ordering, filter pushdown by scope+owner verified.
-- [ ] Matryoshka 256 / 512 / 768 dim queries all return results.
+- [x] Matryoshka 256 / 512 / 768 dim queries all return results.
 
 ## Chat
 
