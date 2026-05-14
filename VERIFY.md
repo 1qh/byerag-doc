@@ -35,9 +35,9 @@ End-state checklist. Every item must pass before the project counts as launched 
   - [ ] `No` is default focus; Enter key does NOT trigger override.
   - [x] `Yes` click → server verifies role=admin + token + idempotency; on pass, blob moves to `_storage`, `scanStatus='clean'`, `scanOverriddenBy` + `scanOverriddenAt` + `scanOverrideSignature` populated.
   - [x] `Yes` click → audit log row with `severity='high'`, `command='docs.scanOverride'`.
-  - [ ] `No` click → staging blob deleted; row keeps `scanStatus='quarantined'` + `scanCancelledAt` set.
+  - [x] `No` click → staging blob deleted; row keeps `scanStatus='quarantined'` + `scanCancelledAt` set.
   - [x] 1-hour TTL expires without decision → scheduled function purges staging blob; row tombstoned.
-  - [ ] User app: no override surface visible; user with virus file gets hard reject toast only.
+  - [x] User app: no override surface visible; user with virus file gets hard reject toast only.
   - [x] Override does NOT bypass the policy classifier — virus-overridden doc still goes through policy gate; can still be rejected there.
 
 ## Policy classifier
@@ -295,7 +295,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Landing
 
-- [ ] Admin signs in → lands on `/admin/dashboard`, not docs library.
+- [x] Admin signs in → lands on `/admin/dashboard`, not docs library.
 
 ### Top strip
 
@@ -344,7 +344,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] No admin notification.
 - [x] No user source-label on badges (admin-source and agent-source look identical).
 - [x] One aggregate `auditLogs` row per cron: `command='training.cron.run'`, `args={topicsProcessed, assignmentsCreated, durationMs}`, `mode='system'`, `owner='agent'`, `severity='low'`.
-- [ ] Admin un-assignment removes both admin + agent rows for topic; next cron refills eligible cells.
+- [x] Admin un-assignment removes both admin + agent rows for topic; next cron refills eligible cells.
 - [x] Cron failure: no mid-day retry; next day's cron picks up.
 
 ## Network bridge
