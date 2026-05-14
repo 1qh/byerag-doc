@@ -237,16 +237,16 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Attempts
 
-- [ ] Start → server picks 5 random from approved pool; shuffles questions + choices; pins snapshot.
+- [x] Start → server picks 5 random from approved pool; shuffles questions + choices; pins snapshot.
 - [ ] Question + choice order varies per attempt.
-- [ ] `kind='assigned'` if user has pending assignment; else `'self'`.
+- [x] `kind='assigned'` if user has pending assignment; else `'self'`.
 - [ ] Pool < 5 → `Start` server returns 400.
-- [ ] Submit all correct → `status='passed'`; `testPasses` row inserted/updated for `(user, topic, kind)`.
-- [ ] Submit any wrong → `status='failed'`; no `testPasses` write.
+- [x] Submit all correct → `status='passed'`; `testPasses` row inserted/updated for `(user, topic, kind)`.
+- [x] Submit any wrong → `status='failed'`; no `testPasses` write.
 - [ ] Submit other user's attempt → 403.
 - [ ] `attempt-detail` on passed → full pinned snapshot w/ `correctIndexShuffled`.
 - [ ] On failed/cancelled → only `{score, total: 5}`.
-- [ ] Retake: new attempt for same (user, topic) atomically deletes prior row.
+- [x] Retake: new attempt for same (user, topic) atomically deletes prior row.
 - [ ] No time limit; no cooldown; no rate limit.
 - [ ] Tab close + restart → fresh random 5; orphan flips to `cancelled` on new insert.
 
