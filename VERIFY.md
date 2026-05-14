@@ -308,9 +308,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Monthly bar chart renders bar per cycle; current cycle bar is partial + visually distinct.
 - [ ] Past cycle bars frozen.
 - [ ] Click past bar → top number + pivot table re-render for that cycle.
-- [ ] Pivot table: rows per `(user, model)` summed over selected cycle window.
-- [ ] Columns: User · Model · Input tokens · Output tokens · Cost.
-- [ ] Sort: cost desc.
+- [x] Pivot table: rows per `(user, model)` summed over selected cycle window.
+- [x] Columns: User · Model · Input tokens · Output tokens · Cost.
+- [x] Sort: cost desc.
 - [ ] Footer row: totals.
 - [ ] Click pivot row → user's daily breakdown chart for cycle.
 - [ ] In v0, every Model column shows `kimi-for-coding`.
