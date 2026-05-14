@@ -305,9 +305,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Cost cycle
 
-- [ ] Monthly bar chart renders bar per cycle; current cycle bar is partial + visually distinct.
-- [ ] Past cycle bars frozen.
-- [ ] Click past bar → top number + pivot table re-render for that cycle.
+- [x] Monthly bar chart renders bar per cycle; current cycle bar is partial + visually distinct.
+- [x] Past cycle bars frozen.
+- [x] Click past bar → top number + pivot table re-render for that cycle.
 - [x] Pivot table: rows per `(user, model)` summed over selected cycle window.
 - [x] Columns: User · Model · Input tokens · Output tokens · Cost.
 - [x] Sort: cost desc.
