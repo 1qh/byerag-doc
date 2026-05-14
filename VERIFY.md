@@ -18,7 +18,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 ## Upload
 
 - [x] Admin uploads a clean PDF; row appears in `docs` with `scope='shared'`, `scanStatus='clean'`, `version=1`.
-- [ ] User uploads a clean PDF; row appears with `scope='mine'`, `owner=<user>`, `scanStatus='clean'`, `version=1`.
+- [x] User uploads a clean PDF; row appears with `scope='mine'`, `owner=<user>`, `scanStatus='clean'`, `version=1`.
 - [x] EICAR test virus → `docs` row with `scanStatus='quarantined'`, no blob; UI toast `⚠️ Your file was rejected because it appeared suspicious. Reason: <sig>.`; audit row recorded.
 - [x] Oversized file (>configured cap) rejected at the upload endpoint before reaching scan.
 - [ ] Zip bomb rejected by ClamAV with recursion-limit error; same quarantine path.
@@ -53,7 +53,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Classifier failure (timeout / 5xx) → `policyStatus='pending'` retained; retry once after backoff; if both fail, surface to admin queue as "classifier error" with manual review.
 - [x] Classifier cost (~$0.001/upload) deducted from uploader's `ownerSpend`; daily cap exhausted → upload blocked w/ standard 402 message.
 - [x] Policy text editable by admin via `/admin/policy`; saves audited; new policy applies to subsequent uploads only.
-- [ ] Classifier output rendering in toast: HTML escaped, capped at 200 chars, no script-shaped patterns.
+- [x] Classifier output rendering in toast: HTML escaped, capped at 200 chars, no script-shaped patterns.
 - [x] Request-review rate limit: 1 per file per uploader per day.
 
 ## Embedding
