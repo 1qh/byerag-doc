@@ -127,7 +127,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] `pg_dump` of Convex's backing Postgres completes; restore on a clean instance produces identical state.
 - [ ] Host firewall blocks all egress except `api.kimi.com:443` (verified via `iptables -L` or equivalent).
 - [ ] Convex backend restart preserves all data (volume mount validated).
-- [ ] `bunx pm4ai@latest fix` exits silently on the byerag code repo.
+- [x] `bunx pm4ai@latest fix` exits silently on the byerag code repo.
 
 ## Performance baseline
 
@@ -169,7 +169,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## CI + lint
 
-- [ ] `bun run fix` exits silently on a clean tree.
+- [x] `bun run fix` exits silently on a clean tree.
 - [x] `bun run check:schema-drift` fails when `SCHEMAS.md` ≠ `schema.ts`.
 - [x] `bun run check:doc-leak` fails when a banned string is added to code.
 - [x] `bun run check:secret-leak` fails when a sk-/JWT-shaped string is added to a tracked file.
