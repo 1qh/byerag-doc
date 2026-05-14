@@ -350,7 +350,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 ## Network bridge
 
 - [x] From sandbox: `curl https://api.kimi.com/` fails (DNS not resolvable).
-- [ ] From sandbox: `curl http://convex-backend:3210/api/anthropic/v1/messages` succeeds with valid bearer.
-- [ ] From sandbox: `curl http://convex-backend:3210/api/anthropic/v1/messages` with INVALID bearer returns 401.
+- [x] From sandbox: `curl http://convex-backend:3210/api/anthropic/v1/messages` succeeds with valid bearer.
+- [x] From sandbox: `curl http://convex-backend:3210/api/anthropic/v1/messages` with INVALID bearer returns 401.
 - [x] From sandbox: `curl http://attacker.local/` (anything other than convex) fails at the iptables FORWARD rule.
 - [ ] Host: `nft list ruleset` shows `output policy drop` with only Kimi IPs in the allowlist set.
