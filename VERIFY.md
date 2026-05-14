@@ -112,7 +112,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] User A uploads private doc. User B signed into user app cannot see it via `docs list --scope mine`.
 - [ ] User B's sandbox `/workspace/mine/` mount contains B's docs only.
 - [ ] User A's chat sandbox cannot reach user B's chat data via Convex (different per-chat secret).
-- [ ] Prompt injection in a doc trying to `curl evil.com` fails at sandbox network layer.
+- [x] Prompt injection in a doc trying to `curl evil.com` fails at sandbox network layer.
 - [ ] Prompt injection in a doc trying to read `/etc/passwd` fails at gVisor isolation.
 
 ## Audit
@@ -161,8 +161,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Embedding + chunking
 
-- [ ] Doc with extractedText > 2K chars: chunks created in `docChunks` with sliding window 400/50.
-- [ ] `docs.embedding` is centroid of `docChunks.embedding`.
+- [x] Doc with extractedText > 2K chars: chunks created in `docChunks` with sliding window 400/50.
+- [x] `docs.embedding` is centroid of `docChunks.embedding`.
 - [ ] `docs similar --query X` returns docs ranked by cosine on centroid.
 - [ ] `docs similar --query X --granular` returns (docId, chunkSeq, snippet, score).
 - [ ] Filter pushdown: `--scope mine` excludes other users' chunks.
