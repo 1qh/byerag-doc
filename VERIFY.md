@@ -7,8 +7,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Google OAuth sign-in completes on either app; session cookie set.
 - [ ] First sign-in creates `userProfiles` row with `role='user'` by default.
 - [ ] Bootstrap: email matching `BOOTSTRAP_ADMIN_EMAIL` env (comma-separated) gets `role='admin'` seeded on first sign-in.
-- [ ] Admin app `/admin/*` routes: signed-in user with `role='admin'` → access granted; non-admin → 403.
-- [ ] User app routes: any signed-in user grants access.
+- [x] Admin app `/admin/*` routes: signed-in user with `role='admin'` → access granted; non-admin → 403.
+- [x] User app routes: any signed-in user grants access.
 - [x] Promote: admin changes another user's `role` to `'admin'`; after that user's next session refresh, admin routes are accessible.
 - [x] Demote: admin changes a user's `role` to `'user'`; admin routes return 403 after session refresh.
 - [x] Self-demotion prevented if it would leave zero admins; UI blocks.
