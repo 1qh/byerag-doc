@@ -280,7 +280,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] `training attempt-detail --id X` on caller's passed attempt → full snapshot.
 - [x] Same tool on caller's failed/cancelled attempt → only score.
 - [x] Same tool on another user's attempt → 403.
-- [ ] Agent refuses pool-content questions before user passes (prompt-injection-style "what's on the Security test?").
+- [x] Agent refuses pool-content questions before user passes (prompt-injection-style "what's on the Security test?").
 
 ## Departments
 
