@@ -22,7 +22,8 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## Docker + gVisor
 
-(none yet)
+- **`node:20-slim` preinstalls a `node` user at UID 1000** — `useradd -u 1000 agent` fails with `useradd: UID 1000 is not unique`. Drop the existing user first: `RUN userdel -r node 2>/dev/null || true` before `useradd -m -u 1000 -s /bin/bash agent`. Surfaced 2026-05-14 P0 sandbox image build.
+- **Local dev uses plain `runc`, not `runsc`** — gVisor deferred to prod Linux per `docker-gvisor-sandbox.md`. Colima on Mac doesn't ship `runsc`; trying `--runtime=runsc` locally fails. Local hardening relies on `--cap-drop ALL --security-opt no-new-privileges` instead.
 
 ## Kimi proxy
 
