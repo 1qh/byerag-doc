@@ -289,7 +289,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Department NULL for admin role accounts.
 - [x] Department NULL for unset role=user accounts (group "Unassigned" on gradebook).
 - [ ] `Assign to all` includes all role=user regardless of department.
-- [ ] Department visible on gradebook row.
+- [x] Department visible on gradebook row.
 
 ## Dashboard
 
