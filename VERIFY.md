@@ -177,8 +177,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Backups
 
-- [ ] `apps/backend/scripts/backup.sh` produces an `age`-encrypted dump.
-- [ ] `restore-drill.sh` recovers a parallel stack from latest dump; row counts match ±5%.
+- [x] `apps/backend/scripts/backup.sh` produces an `age`-encrypted dump.
+- [x] `restore-drill.sh` recovers a parallel stack from latest dump; row counts match ±5%.
 - [ ] Backup target disk is separate from the Postgres data disk.
 
 ## Test corpus
