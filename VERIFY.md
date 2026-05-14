@@ -51,7 +51,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Admin approves a rejected doc in `/admin/quarantine` → `policyStatus='approved'`, `policyOverriddenBy=<admin>`; doc becomes searchable; audit log records override.
 - [x] Admin confirms reject in `/admin/quarantine` → blob purged immediately; row retained with `storageId=null`; audit log records.
 - [x] Classifier failure (timeout / 5xx) → `policyStatus='pending'` retained; retry once after backoff; if both fail, surface to admin queue as "classifier error" with manual review.
-- [ ] Classifier cost (~$0.001/upload) deducted from uploader's `ownerSpend`; daily cap exhausted → upload blocked w/ standard 402 message.
+- [x] Classifier cost (~$0.001/upload) deducted from uploader's `ownerSpend`; daily cap exhausted → upload blocked w/ standard 402 message.
 - [x] Policy text editable by admin via `/admin/policy`; saves audited; new policy applies to subsequent uploads only.
 - [ ] Classifier output rendering in toast: HTML escaped, capped at 200 chars, no script-shaped patterns.
 - [x] Request-review rate limit: 1 per file per uploader per day.
