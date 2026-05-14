@@ -284,10 +284,10 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Departments
 
-- [ ] `userProfiles` table active w/ `role ∈ {'admin', 'user'}` and `department ∈ {'HR', 'Sales', 'IT', null}`.
-- [ ] Admin sets a user's department via admin UI; audit row recorded.
-- [ ] Department NULL for admin role accounts.
-- [ ] Department NULL for unset role=user accounts (group "Unassigned" on gradebook).
+- [x] `userProfiles` table active w/ `role ∈ {'admin', 'user'}` and `department ∈ {'HR', 'Sales', 'IT', null}`.
+- [x] Admin sets a user's department via admin UI; audit row recorded.
+- [x] Department NULL for admin role accounts.
+- [x] Department NULL for unset role=user accounts (group "Unassigned" on gradebook).
 - [ ] `Assign to all` includes all role=user regardless of department.
 - [ ] Department visible on gradebook row.
 
