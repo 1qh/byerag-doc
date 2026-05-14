@@ -328,8 +328,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Row total = `passed_count / assigned_count` per user.
 - [x] Column footer = `passed_assigned / assigned` per topic.
 - [x] Default sort: rows by Total asc, cols by `topics.createdAt` asc.
-- [ ] Cell click → user-topic detail page.
-- [ ] On-demand refresh button re-runs aggregate query.
+- [x] Cell click → user-topic detail page.
+- [x] On-demand refresh button re-runs aggregate query.
 
 ## Agent auto-assign
 
