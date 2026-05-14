@@ -274,11 +274,11 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Chat agent training tools
 
-- [ ] `training status` returns caller-scoped topic status list.
-- [ ] `training attempts` returns caller-scoped attempt list.
-- [ ] `training topics` returns topic list w/ pool sizes; no question content.
+- [x] `training status` returns caller-scoped topic status list.
+- [x] `training attempts` returns caller-scoped attempt list.
+- [x] `training topics` returns topic list w/ pool sizes; no question content.
 - [x] `training attempt-detail --id X` on caller's passed attempt → full snapshot.
-- [ ] Same tool on caller's failed/cancelled attempt → only score.
+- [x] Same tool on caller's failed/cancelled attempt → only score.
 - [x] Same tool on another user's attempt → 403.
 - [ ] Agent refuses pool-content questions before user passes (prompt-injection-style "what's on the Security test?").
 
