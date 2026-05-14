@@ -99,7 +99,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 ## Proxy
 
 - [x] Valid bearer → LLM call forwards → response streams back.
-- [ ] Invalid bearer → 401.
+- [x] Invalid bearer → 401.
 - [ ] Path other than `/v1/messages` → 403.
 - [ ] Body over cap → 413.
 - [x] Burst exceeding per-chat rate → 429.
