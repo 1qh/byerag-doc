@@ -9,9 +9,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Bootstrap: email matching `BOOTSTRAP_ADMIN_EMAIL` env (comma-separated) gets `role='admin'` seeded on first sign-in.
 - [ ] Admin app `/admin/*` routes: signed-in user with `role='admin'` → access granted; non-admin → 403.
 - [ ] User app routes: any signed-in user grants access.
-- [ ] Promote: admin changes another user's `role` to `'admin'`; after that user's next session refresh, admin routes are accessible.
-- [ ] Demote: admin changes a user's `role` to `'user'`; admin routes return 403 after session refresh.
-- [ ] Self-demotion prevented if it would leave zero admins; UI blocks.
+- [x] Promote: admin changes another user's `role` to `'admin'`; after that user's next session refresh, admin routes are accessible.
+- [x] Demote: admin changes a user's `role` to `'user'`; admin routes return 403 after session refresh.
+- [x] Self-demotion prevented if it would leave zero admins; UI blocks.
 - [ ] Sign-out clears the cookie; next request 401.
 - [ ] CLI device-flow login completes; PAT issuance works; revocation breaks the token immediately.
 
