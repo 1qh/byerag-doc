@@ -104,7 +104,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] Body over cap → 413.
 - [x] Burst exceeding per-chat rate → 429.
 - [x] Daily $ cap exhausted → 402.
-- [ ] Per-chat turn budget exhausted → 429.
+- [x] Per-chat turn budget exhausted → 429.
 - [ ] Cost settled post-call: `ownerSpend.centsToday` reflects actual usage.
 
 ## Isolation

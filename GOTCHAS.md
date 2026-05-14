@@ -48,7 +48,7 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## pm4ai + lintmax
 
-(none yet)
+- **`bun run fix` auto-fix can strip `await` from chained Convex `.first()` calls** when the value variable looks unused at the syntactic level (linter's "remove redundant await on non-Promise" pass triggers on the misclassification). The Convex query chain returns a thenable; dropping `await` leaves the variable as `{kind:'first', ...}` query token, and downstream `.patch(existing._id, ...)` blows up with `Must provide arg 1 'id' to 'patch'`. Defense: keep the variable in a clear `await x.first()` shape; add a use of the variable in the same expression (e.g. `if (existing?._id)`) when the linter trips again. Captured 2026-05-14 from turn-budget smoke regression in `testing.ensureChatRuntime`.
 
 ## Next.js 16 + Turbopack
 
