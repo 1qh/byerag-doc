@@ -325,9 +325,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] `ⓐ` agent-source live assignment + no pass.
 - [x] `·` no live assignment + no pass.
 - [x] Concurrent admin + agent assignment renders `✗` (admin priority).
-- [ ] Row total = `passed_count / assigned_count` per user.
-- [ ] Column footer = `passed_assigned / assigned` per topic.
-- [ ] Default sort: rows by Total asc, cols by `topics.createdAt` asc.
+- [x] Row total = `passed_count / assigned_count` per user.
+- [x] Column footer = `passed_assigned / assigned` per topic.
+- [x] Default sort: rows by Total asc, cols by `topics.createdAt` asc.
 - [ ] Cell click → user-topic detail page.
 - [ ] On-demand refresh button re-runs aggregate query.
 
