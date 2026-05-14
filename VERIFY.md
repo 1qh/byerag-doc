@@ -300,8 +300,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 ### Top strip
 
 - [ ] `active / total` tile updates live via reactive sub when user heartbeat changes / accounts created/revoked.
-- [ ] Cost cycle tile shows current cycle's $ from 5th of month onward; flips at UTC midnight of next 5th.
-- [ ] Docs-in-corpus tile = count of `docs` where `policyStatus='approved' AND deletedAt=null AND scope='shared' AND scanStatus='clean'`. Updates live.
+- [x] Cost cycle tile shows current cycle's $ from 5th of month onward; flips at UTC midnight of next 5th.
+- [x] Docs-in-corpus tile = count of `docs` where `policyStatus='approved' AND deletedAt=null AND scope='shared' AND scanStatus='clean'`. Updates live.
 
 ### Cost cycle
 
