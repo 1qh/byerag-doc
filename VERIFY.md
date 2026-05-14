@@ -240,7 +240,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Start → server picks 5 random from approved pool; shuffles questions + choices; pins snapshot.
 - [ ] Question + choice order varies per attempt.
 - [x] `kind='assigned'` if user has pending assignment; else `'self'`.
-- [ ] Pool < 5 → `Start` server returns 400.
+- [x] Pool < 5 → `Start` server returns 400.
 - [x] Submit all correct → `status='passed'`; `testPasses` row inserted/updated for `(user, topic, kind)`.
 - [x] Submit any wrong → `status='failed'`; no `testPasses` write.
 - [ ] Submit other user's attempt → 403.
