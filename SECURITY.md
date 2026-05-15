@@ -81,6 +81,10 @@ Archive recursion limit on ClamAV configured (zip-of-zips DoS defense).
 - Sandbox `--network none` + scope-gated mounts mean even successful hijack can't exfil cross-user data or call external services.
 - Output filter (regex layer in proxy) scrubs known secret-shaped patterns (`sk-...`, JWT prefixes, IP addresses, base64 blobs >256 chars) from tool results before returning to the model. Aggressive enough to prevent inadvertent re-emission.
 
+### Kimi key handling
+
+Kimi API key value lives only in operator-local `apps/backend/.env` (gitignored) per `book/HARD-RULES.md` "Single secrets root". `sync.ts` pushes it to Convex env on boot. Sandbox never sees the real key — the proxy-per-chat-bearer pattern (`docs/adr/proxy-per-chat-bearer-cost-controls.md`) swaps the bearer for the real key server-side. Rotation: operator-driven, no agent block; rotate by replacing env value + re-running `sync.ts`. Endpoint `https://api.kimi.com/coding/` (Anthropic-protocol-compatible); verified capabilities documented in `docs/adr/kimi-as-llm.md`.
+
 ### CLI tokens
 
 - Token hash (bcrypt-style) only persisted; plaintext shown once at issue.

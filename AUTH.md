@@ -26,6 +26,8 @@ Role is `userProfiles.role: 'admin' | 'user'`.
 
 No `ALLOWED_EMAILS` env, no VPN gating.
 
+Dev-mode provider list extends with `@convex-dev/auth/providers/Anonymous` when both `ALLOW_DEV_TOKENS=1` (server) and `NEXT_PUBLIC_ALLOW_DEV_TOKENS=1` (client) plus `NEXT_PUBLIC_DEV_SIGN_IN_EMAIL=<seed>` are set. Default absence = off; production never sets these. Anonymous provider exercises identical Convex Auth session-minting path as Google; `createOrUpdateUser` callback seeds `userProfiles.role` from `BOOTSTRAP_ADMIN_EMAIL` regardless of provider. `jwt.customClaims` injects `users.email` into the JWT identity so identity-email-keyed lookups work across all providers.
+
 ## Session lifecycle
 
 Standard `@convex-dev/auth` cookie session. Sign-out clears the cookie. Role changes (promote/demote) take effect on next session refresh (operator must sign-out/sign-in OR a session-rotate hook fires).

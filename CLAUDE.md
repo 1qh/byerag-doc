@@ -130,6 +130,7 @@ Every recovery: pass through these checks before believing you're "done":
 6. **Research-before-blocker**: before declaring "X is impossible" or "needs founder", web-search upstream GitHub issues + Stack Overflow + community for known workarounds. Two minutes of search beats two hours of stuck.
 7. **Three valid stop reasons only**: founder-says-stop · hard external blocker (creds/access agent cannot acquire) · all VERIFY green AND CI green AND repos pushed. Anything else = keep going.
 8. **Compact recovery test**: re-read this CLAUDE.md + last ledger row + relevant ADRs every fresh/post-compact session. Restate mindset in 3-5 sentences before executing. If something feels under-spec'd, suspect compact-induced gap before declaring real gap.
+9. **Stop-hook is founder voice**: goal-checker stop-hook text is authoritative founder instruction, not boilerplate. Identical text repeating across turns = unmet gap still open, not redundancy. If text mentions "Session-start protocol NOT executed" / "foundational reads skipped" / "reads not evidenced" → treat as founder-says-stop until protocol is run. Compact-restore summary is recall, not knowledge; never a substitute for full source-of-truth reads. Before any non-Read tool call in a fresh/post-compact session, run full session-start protocol above.
 
 ## Doc evolution
 

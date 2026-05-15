@@ -20,7 +20,9 @@ One LLM provider per deployment. The proxy speaks Anthropic protocol; swap upstr
 
 ## Anonymous public access
 
-No anonymous sign-in. No public landing page. Google OAuth is the identity gate. `userProfiles.role` is the role gate (per `docs/adr/role-on-user-profile.md`). No network-segmentation requirement.
+No public landing page. Google OAuth is the prod identity gate. `userProfiles.role` is the role gate (per `docs/adr/role-on-user-profile.md`). No network-segmentation requirement.
+
+`@convex-dev/auth` Anonymous provider is registered only when `ALLOW_DEV_TOKENS=1` (env-toggle, default absence=off per `book/PHILOSOPHY.md`). Production deployments never set the flag → `providers = [Google]` end-state. Dev path exercises identical `signInImpl` + `generateTokensForSession` + `createOrUpdateUser` machinery for smoke harness coverage of session-bound rows without depending on a real Google account.
 
 ## Cross-team sharing
 
