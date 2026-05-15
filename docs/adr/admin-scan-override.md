@@ -4,7 +4,7 @@ ClamAV-rejected uploads in the admin app trigger a standard yes/no confirm modal
 
 ## Flow
 
-Admin uploads → ClamAV reports `FOUND`. Server writes `docs` row with `scanStatus='quarantined'`, blob retained in tmp staging dir for 1 hour pending decision (NOT yet moved to `_storage`). Server returns rejection response with a one-time override token (random UUID, 1-hour TTL).
+Admin uploads → ClamAV reports `FOUND`. Server writes `docs` row with `scanStatus='quarantined'` and `storageId` set (blob persists in Convex `_storage`, isolated from search by the `scanStatus` gate — no row in `docs list` until override flips status). Override is a role-gated mutation keyed by `docId`; admin role + idempotency on `scanStatus==='quarantined'` is the safety surface (no rotating token).
 
 UI renders a standard yes/no confirm modal:
 
@@ -20,18 +20,15 @@ Force upload?
 
 `No` is default focus; Enter key does NOT trigger override.
 
-`Yes` click → mutation `internal.docs.scanOverride({docId, token})`:
+`Yes` click → mutation `docs.adminScanOverride({docId})`:
 
 1. Verify caller role `admin`.
-2. Verify token matches + unexpired.
-3. Verify `docs.scanStatus === 'quarantined'` (idempotency).
-4. Move staging blob to `_storage`; set `storageId`, `scanStatus='clean'`, `scanOverriddenBy=<admin email>`, `scanOverriddenAt=now()`, `scanOverrideSignature=<matched signature>`.
-5. Proceed to next gate (policy classifier). Policy classifier may still reject the override'd file.
-6. Audit log row `severity='high'`.
+2. Verify `docs.scanStatus === 'quarantined'` (idempotency — second click on flipped row no-ops).
+3. Set `scanStatus='clean'`, `scanOverriddenBy=<admin email>`, `scanOverriddenAt=now()`, `scanOverrideSignature=<matched signature>`. Blob already in `_storage` from initial quarantine insert.
+4. Proceed to next gate (policy classifier). Policy classifier may still reject the override'd file.
+5. Audit log row `severity='high'`.
 
-`No` click → blob deleted from staging immediately; row updated with `scanCancelledAt=now()` (kept for audit, no further state changes).
-
-1-hour TTL expires without decision → scheduled function purges staging blob; row tombstoned.
+`No` click → `docs.adminScanCancel({docId})`: blob deleted from `_storage`, `storageId` nulled, `scanCancelledAt=now()` set (row retained for audit, no further state changes).
 
 ## User app
 
@@ -76,7 +73,7 @@ Override → `auditLogs` row:
 
 ## Gotcha for Claude
 
-- Token single-use; once consumed (Yes or No) deleted, second click no-op. Admin closes tab + reopens → re-upload (no re-prompt for abandoned staging — purge handles cleanup).
+- Mutation is idempotent on `scanStatus`; second click after override no-ops because `scanStatus !== 'quarantined'`. Admin closes tab + reopens → quarantine row visible in `/admin/quarantine` (scanStatus filter); admin can override/cancel from there.
 - Re-uploaded file (same sha256) after previous override is NOT auto-cleared — ClamAV signature DB may have been updated; always re-scan, always re-prompt on fail.
 - Policy classifier runs AFTER the override; an overridden virus that's also off-topic still gets rejected on the policy gate (admin can override that too via `/admin/quarantine`).
 - Audit alerting (P6+) fires on `severity='high'` rows so override surfaces in real-time monitoring.
