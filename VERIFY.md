@@ -125,7 +125,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 ## Operations
 
 - [x] `pg_dump` of Convex's backing Postgres completes; restore on a clean instance produces identical state.
-- [ ] Host firewall blocks all egress except `api.kimi.com:443` (verified via `iptables -L` or equivalent).
+- [x] Host firewall blocks all egress except `api.kimi.com:443` (verified via `iptables -L` or equivalent).
 - [x] Convex backend restart preserves all data (volume mount validated).
 - [x] `bunx pm4ai@latest fix` exits silently on the byerag code repo.
 
@@ -353,4 +353,4 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] From sandbox: `curl http://convex-backend:3210/api/anthropic/v1/messages` succeeds with valid bearer.
 - [x] From sandbox: `curl http://convex-backend:3210/api/anthropic/v1/messages` with INVALID bearer returns 401.
 - [x] From sandbox: `curl http://attacker.local/` (anything other than convex) fails at the iptables FORWARD rule.
-- [ ] Host: `nft list ruleset` shows `output policy drop` with only Kimi IPs in the allowlist set.
+- [x] Host: `nft list ruleset` shows `output policy drop` with only Kimi IPs in the allowlist set.
