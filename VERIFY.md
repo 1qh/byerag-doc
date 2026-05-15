@@ -30,9 +30,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] User app surfaces same dedup + version-conflict UX scoped to `mine`.
 - [x] Cross-scope dedup: shared doc with content X does NOT block a user uploading content X to `mine` (and vice versa).
 - [x] Repeated quarantine uploads of the same sha256 from the same uploader within 1 hour → 429 `too many rejected uploads`.
-- [ ] **Admin scan override** (admin app only):
-  - [ ] Admin uploads a virus file → yes/no confirm modal `⚠ Suspicious file detected. Force upload?` with `[No] [Yes]` buttons.
-  - [ ] `No` is default focus; Enter key does NOT trigger override.
+- [x] **Admin scan override** (admin app only):
+  - [x] Admin uploads a virus file → yes/no confirm modal `⚠ Suspicious file detected. Force upload?` with `[No] [Yes]` buttons.
+  - [x] `No` is default focus; Enter key does NOT trigger override.
   - [x] `Yes` click → server verifies role=admin + token + idempotency; on pass, blob moves to `_storage`, `scanStatus='clean'`, `scanOverriddenBy` + `scanOverriddenAt` + `scanOverrideSignature` populated.
   - [x] `Yes` click → audit log row with `severity='high'`, `command='docs.scanOverride'`.
   - [x] `No` click → staging blob deleted; row keeps `scanStatus='quarantined'` + `scanCancelledAt` set.
