@@ -111,7 +111,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 - [x] User A uploads private doc. User B signed into user app cannot see it via `docs list --scope mine`.
 - [ ] User B's sandbox `/workspace/mine/` mount contains B's docs only.
-- [ ] User A's chat sandbox cannot reach user B's chat data via Convex (different per-chat secret).
+- [x] User A's chat sandbox cannot reach user B's chat data via Convex (different per-chat secret).
 - [x] Prompt injection in a doc trying to `curl evil.com` fails at sandbox network layer.
 - [ ] Prompt injection in a doc trying to read `/etc/passwd` fails at gVisor isolation.
 
