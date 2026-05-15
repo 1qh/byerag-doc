@@ -92,8 +92,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] First chat message spawns a Docker container with gVisor runtime (verified via `docker inspect`).
 - [x] Second message reuses the same container.
 - [x] `docker network ls` shows sandbox attached to restricted bridge, not default.
-- [ ] From inside sandbox: `curl https://api.kimi.com/` fails (no DNS / no route).
-- [ ] From inside sandbox: `curl <convex-internal>/api/anthropic/v1/messages` with valid bearer succeeds.
+- [x] From inside sandbox: `curl https://api.kimi.com/` fails (no DNS / no route).
+- [x] From inside sandbox: `curl <convex-internal>/api/anthropic/v1/messages` with valid bearer succeeds.
 - [x] On chat delete: container killed; `sandboxes` row removed.
 
 ## Proxy
