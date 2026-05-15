@@ -126,7 +126,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 - [ ] `pg_dump` of Convex's backing Postgres completes; restore on a clean instance produces identical state.
 - [ ] Host firewall blocks all egress except `api.kimi.com:443` (verified via `iptables -L` or equivalent).
-- [ ] Convex backend restart preserves all data (volume mount validated).
+- [x] Convex backend restart preserves all data (volume mount validated).
 - [x] `bunx pm4ai@latest fix` exits silently on the byerag code repo.
 
 ## Performance baseline
