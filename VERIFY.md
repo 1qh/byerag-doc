@@ -4,7 +4,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Auth
 
-- [ ] Google OAuth sign-in completes on either app; session cookie set.
+- [x] Google OAuth sign-in completes on either app; session cookie set.
 - [x] First sign-in creates `userProfiles` row with `role='user'` by default.
 - [x] Bootstrap: email matching `BOOTSTRAP_ADMIN_EMAIL` env (comma-separated) gets `role='admin'` seeded on first sign-in.
 - [x] Admin app `/admin/*` routes: signed-in user with `role='admin'` → access granted; non-admin → 403.
