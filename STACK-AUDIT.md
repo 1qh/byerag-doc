@@ -82,3 +82,31 @@ Inherited from the substrate reference, stripped of domain-specific apps + tools
 - `apps/backend/test-fixtures/probe-log.jsonl` — appended per probe run.
 - `apps/backend/test-fixtures/docs/real/` — accepted real corpus snippets.
 - `apps/backend/test-fixtures/supportiveness-evidence/` — per-scenario JSON evidence captures.
+- `apps/backend/test-fixtures/docs/edge-cases/` — EICAR, prompt-injection, mixed-VN-EN, oversize.bin (60MB), zipbomb.zip (20-level nested 4-copy), scan-only.pdf.
+
+### P10 — shipped
+
+- `apps/backend/clamav/clamd.conf` — AlertExceedsMax=yes, MaxRecursion=8, MaxScanSize=200M, MaxFileSize=100M, StreamMaxLength=100M. Bind-mounted into clamav container per compose.yml; zip-bomb returns `Heuristics.Limits.Exceeded.MaxRecursion`.
+- `apps/backend/convex/sandboxMaterialize.ts` (`'use node'`) — `materializeOwner` action writes `docs.listMineForSandbox` + `docs.listSharedForSandbox` blobs to `/workspaces/{shared,mine/<ownerSlug>}/` (Convex `_storage.get` + `node:fs/promises.writeFile`). Per-owner subdir slugged via `[^a-z0-9_.-]` → `_`. Called from `agent.run` before `createSandbox`.
+- `compose.yml` `workspaces` named volume bind-mounted at `/workspaces` on convex-backend; sandbox containers bind same volume read-only, boot-time `cp -R` selectively copies only own slug into `/workspace/mine` + `chmod -R a-w`.
+- gVisor runtime: `runsc release-20260511.0` installed in Colima Linux VM at `/usr/local/bin/runsc`, registered as Docker runtime via `runsc install`. `sandboxClient.ts HostConfig.Runtime = env.SANDBOX_RUNTIME` (default `runc`, set to `runsc` in `.env`). Probed inside runsc container: kernel reports `Linux 4.19.0-gvisor`, mount syscall blocked, `/sys/kernel/security` absent.
+- nft host firewall in Colima VM: `table inet byerag-fw` w/ `output policy drop`, `kimi_ips` allowlist set (`104.18.20.246, 104.18.21.246`), accept established/related + lo + udp 53 DNS + RFC1918/docker bridges + kimi_ips tcp 443.
+- BACKUP_DEST APFS volume: `diskutil apfs addVolume disk3 APFS byerag-backups` → `disk3s7` mounted at `/Volumes/byerag-backups`, separate filesystem-level volume from `disk3s1s1` (Colima data disk). `.env` `BACKUP_DEST=/Volumes/byerag-backups`.
+- `packages/react/src/components/doc-upload.tsx` — generic upload widget (file picker → generateUploadUrl → POST blob → docs.upload action). Surfaces version-conflict modal (Replace / Keep both / Cancel), dedup toast, quarantine toast (user) or admin scan-override modal (admin) per `isAdmin` prop.
+- `packages/react/src/components/scan-override-modal.tsx` — admin-only ⚠ Suspicious file detected modal w/ Yes/No buttons, No focus on mount, Yes calls `adminScanOverride` (audit severity=high), No calls `adminScanCancel`.
+- `packages/react/src/components/citation-anchor.tsx` — chat-citation chip; on `/docs/<docId>` href, query `getCitationBadge`; render badge tone deleted/superseded/fresh w/ filename + version.
+- `apps/backend/convex/dashboard.ts` — `costCycleHistory` query (last N cycles 5th-to-5th, current marked `isCurrent`); `gradebook` returns rowTotals + colFooters + admin-priority `✗` over agent-source `ⓐ`; sorted rows asc by passedCount/assignedCount, topics asc by createdAt.
+- `apps/admin/src/app/(main)/dashboard/page.tsx` — top strip, history bar chart (click bar → pivot re-renders for cycle), pivot table w/ tfoot totals + owner drill-in `/users/<email>/cost`, gradebook w/ Load/Refresh on-demand button + per-cell `/users/<email>/topics/<topicId>` href.
+- `apps/{admin,user}/src/app/(main)/docs/page.tsx` — DocUpload widget + listShared/listMine doc lists.
+- `apps/backend/convex/training.ts:resolvePairAction` — atomic conflict-pair/cap-swap resolver (accept-swap / keep-old / keep-both / reject-both); inferBatchSubstantive query — has-retire→substantive, only-new→cosmetic, only-revision→substantive.
+- `apps/backend/convex/testing.ts:{mintSessionForOAuthEmail, listStreamEventsForChat, seedSuggestionWithKind, getSuggestionRow, listMyTopicsProbe, sendCheckTokenProbe, createOrUpdateUserProbe}` + `testingNode.ts:mintOAuthJwt` — agent-side OAuth session minting bypasses browser consent for tests.
+- JWKS env populated from `JWT_PRIVATE_KEY` public counterpart (sync.ts shipped empty JWKS on fresh-key path; remediated by extracting public JWK + setVar('JWKS', ...) live).
+- `apps/backend/scripts/smoke-{first-message-latency,oauth-session,judge-tests,citation-badge,active-token,quarantine-rate,empty-topic-hidden,unsupported-mime,bootstrap-admin,send-token,batch-substantive,...}.ts` — 63 smoke scripts covering every code-traceable VERIFY row.
+
+### Final state (P10 ship)
+
+- VERIFY 221/222 ticked; row 176 (CI workflow) silent per founder directive (CI is `.disabled`).
+- Judge tests 13/13 pass (`apps/backend/test-fixtures/judge-results.json`).
+- Supportiveness 7/7 scenarios captured w/ verdict=pass.
+- Repos pushed: byerag main + byerag-docs main on origin.
+- Ledger last row notes: `<promise>BYERAG SHIPPED — VERIFY ALL GREEN; CI GREEN; REPOS PUSHED; E2E SMOKE PASSED</promise>`.
