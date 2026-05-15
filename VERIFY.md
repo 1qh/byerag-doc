@@ -113,7 +113,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] User B's sandbox `/workspace/mine/` mount contains B's docs only.
 - [x] User A's chat sandbox cannot reach user B's chat data via Convex (different per-chat secret).
 - [x] Prompt injection in a doc trying to `curl evil.com` fails at sandbox network layer.
-- [ ] Prompt injection in a doc trying to read `/etc/passwd` fails at gVisor isolation.
+- [x] Prompt injection in a doc trying to read `/etc/passwd` fails at gVisor isolation.
 
 ## Audit
 
