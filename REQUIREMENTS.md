@@ -159,5 +159,5 @@ Per `docs/adr/agent-auto-assign-cron.md`.
 ## Operations
 
 - Egress firewall on the host blocks all outbound except the LLM API host (`api.kimi.com:443`).
-- Container `--network none` enforces sandbox-side isolation.
+- Sandbox container attaches to a restricted Docker bridge (`sandbox-egress`) with iptables FORWARD rules allowing only the Convex container's IP+ports per `docs/adr/network-bridge-rules.md`. DNS isolated via baked `/etc/hosts`.
 - Backups via daily `pg_dump` of Convex's backing Postgres.

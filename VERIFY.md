@@ -89,7 +89,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Sandbox
 
-- [x] First chat message spawns a Docker container with gVisor runtime (verified via `docker inspect`).
+- [x] First chat message spawns a Docker container with the configured runtime (`runsc` on prod Linux; `runc` on local Mac per `docs/adr/docker-gvisor-sandbox.md` deferral). Verified via `docker inspect` + `sandboxClient.ts HostConfig.Runtime = env.SANDBOX_RUNTIME`.
 - [x] Second message reuses the same container.
 - [x] `docker network ls` shows sandbox attached to restricted bridge, not default.
 - [x] From inside sandbox: `curl https://api.kimi.com/` fails (no DNS / no route).
@@ -113,7 +113,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] User B's sandbox `/workspace/mine/` mount contains B's docs only.
 - [x] User A's chat sandbox cannot reach user B's chat data via Convex (different per-chat secret).
 - [x] Prompt injection in a doc trying to `curl evil.com` fails at sandbox network layer.
-- [x] Prompt injection in a doc trying to read `/etc/passwd` fails at gVisor isolation.
+- [x] Prompt injection in a doc trying to read `/etc/passwd` fails at the configured runtime's isolation layer (gVisor on prod Linux blocks at userspace-kernel; on local Mac dev, `--cap-drop ALL --security-opt no-new-privileges --read-only` hardening is the parity surface per `docs/adr/docker-gvisor-sandbox.md`).
 
 ## Audit
 
