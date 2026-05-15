@@ -21,7 +21,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] User uploads a clean PDF; row appears with `scope='mine'`, `owner=<user>`, `scanStatus='clean'`, `version=1`.
 - [x] EICAR test virus → `docs` row with `scanStatus='quarantined'`, no blob; UI toast `⚠️ Your file was rejected because it appeared suspicious. Reason: <sig>.`; audit row recorded.
 - [x] Oversized file (>configured cap) rejected at the upload endpoint before reaching scan.
-- [ ] Zip bomb rejected by ClamAV with recursion-limit error; same quarantine path.
+- [x] Zip bomb rejected by ClamAV with recursion-limit error; same quarantine path.
 - [x] **Duplicate content** (re-upload same sha256, same scope): no new row; toast `this file is already in your library (uploaded as <filename> on <date>).`
 - [x] **Version conflict** (same filename, same scope, different content): blocking modal `a different file with this name already exists. Replace it? Keep both? Cancel?`
   - [x] **Replace** → new row `version=2`, `supersedes=<prev>`; prev row gets `supersededBy=<new>` + `deletedAt=now`; prev blob scheduled for 30-day hard-purge.
@@ -187,7 +187,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] For every candidate doc, Kimi-knowledge probe executes with no doc context.
 - [x] Docs Kimi knows (cosine sim > 0.85 OR exact-match facts) are rejected; probe-log records.
 - [x] At least 5 real docs accepted (post-2026-02-01 sources).
-- [ ] Edge-case fixtures present: EICAR string, prompt-injection doc, scan-only PDF, mixed VN+EN doc, oversized file, zip bomb.
+- [x] Edge-case fixtures present: EICAR string, prompt-injection doc, scan-only PDF, mixed VN+EN doc, oversized file, zip bomb.
 - [x] Probe log file (`apps/backend/test-fixtures/probe-log.jsonl`) gitignored.
 - [x] Pulled docs gitignored (operator-local fixtures).
 
