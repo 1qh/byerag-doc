@@ -26,8 +26,8 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] **Version conflict** (same filename, same scope, different content): blocking modal `a different file with this name already exists. Replace it? Keep both? Cancel?`
   - [x] **Replace** → new row `version=2`, `supersedes=<prev>`; prev row gets `supersededBy=<new>` + `deletedAt=now`; prev blob scheduled for 30-day hard-purge.
   - [x] **Keep both** → new row with filename suffix `(2)`; both rows independent (`supersedes=null`).
-  - [ ] **Cancel** → no row, no blob; staged tmp file deleted.
-- [ ] User app surfaces same dedup + version-conflict UX scoped to `mine`.
+  - [x] **Cancel** → no row, no blob; staged tmp file deleted.
+- [x] User app surfaces same dedup + version-conflict UX scoped to `mine`.
 - [x] Cross-scope dedup: shared doc with content X does NOT block a user uploading content X to `mine` (and vice versa).
 - [x] Repeated quarantine uploads of the same sha256 from the same uploader within 1 hour → 429 `too many rejected uploads`.
 - [ ] **Admin scan override** (admin app only):
