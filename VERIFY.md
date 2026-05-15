@@ -12,7 +12,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Promote: admin changes another user's `role` to `'admin'`; after that user's next session refresh, admin routes are accessible.
 - [x] Demote: admin changes a user's `role` to `'user'`; admin routes return 403 after session refresh.
 - [x] Self-demotion prevented if it would leave zero admins; UI blocks.
-- [ ] Sign-out clears the cookie; next request 401.
+- [x] Sign-out clears the cookie; next request 401.
 - [x] CLI device-flow login completes; PAT issuance works; revocation breaks the token immediately.
 
 ## Upload
