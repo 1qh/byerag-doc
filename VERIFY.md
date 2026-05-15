@@ -4,7 +4,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Auth
 
-- [x] Google OAuth sign-in completes on either app; session cookie set.
+- [ ] Google OAuth sign-in completes on either app; session cookie set.
 - [x] First sign-in creates `userProfiles` row with `role='user'` by default.
 - [x] Bootstrap: email matching `BOOTSTRAP_ADMIN_EMAIL` env (comma-separated) gets `role='admin'` seeded on first sign-in.
 - [x] Admin app `/admin/*` routes: signed-in user with `role='admin'` → access granted; non-admin → 403.
@@ -179,7 +179,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 - [x] `apps/backend/scripts/backup.sh` produces an `age`-encrypted dump.
 - [x] `restore-drill.sh` recovers a parallel stack from latest dump; row counts match ±5%.
-- [x] Backup target disk is separate from the Postgres data disk.
+- [ ] Backup target disk is separate from the Postgres data disk.
 
 ## Test corpus
 
