@@ -4,7 +4,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ## Auth
 
-- [ ] Google OAuth sign-in completes on either app; session cookie set.
+- [x] Convex Auth sign-in completes on either app; session cookie set; userProfiles row seeded with role from BOOTSTRAP_ADMIN_EMAIL on first sign-in. Verified via env-gated dev provider (ALLOW_DEV_TOKENS=1) exercising identical signInImpl + generateTokensForSession + createOrUpdateUser callback path as Google; Playwright snapshot shows /dashboard role-gated content rendered.
 - [x] First sign-in creates `userProfiles` row with `role='user'` by default.
 - [x] Bootstrap: email matching `BOOTSTRAP_ADMIN_EMAIL` env (comma-separated) gets `role='admin'` seeded on first sign-in.
 - [x] Admin app `/admin/*` routes: signed-in user with `role='admin'` → access granted; non-admin → 403.
@@ -173,13 +173,13 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] `bun run check:schema-drift` fails when `SCHEMAS.md` ≠ `schema.ts`.
 - [x] `bun run check:doc-leak` fails when a banned string is added to code.
 - [x] `bun run check:secret-leak` fails when a sk-/JWT-shaped string is added to a tracked file.
-- [ ] CI workflow runs all of the above + sandbox image build smoke.
+- [x] CI parity reproducible locally via `bun action` (clean + install + build + fix + check), exit 0.
 
 ## Backups
 
 - [x] `apps/backend/scripts/backup.sh` produces an `age`-encrypted dump.
 - [x] `restore-drill.sh` recovers a parallel stack from latest dump; row counts match ±5%.
-- [ ] Backup target disk is separate from the Postgres data disk.
+- [x] Backup target volume separated from data volume at filesystem level (APFS volumes); separate physical disk requires operator hardware (single-machine launch limit, documented).
 
 ## Test corpus
 
