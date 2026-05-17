@@ -127,7 +127,7 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 - **`costCycleHistory` walks back fixed `30 days × i` then snaps to the 5th anchor — drifts** — months are 28–31 days, so the 30-day step accumulates error vs the 5th-of-month anchor; for many "now" dates two iterations snap into the same calendar cycle → history shows a month twice / skips one. Coincidentally correct for some dates only. Canonical (`dashboard-cost-cycle.md` = strict monthly 5th-to-5th): iterate by **calendar month** (previous month's 5th), not 30 days. Also the bar label is yearless `MM-DD` (`cycleStart.slice(5)`) → crossing a year boundary `12-05` looks suspicious; label should carry the year (`MMM YYYY`). Surfaced 2026-05-17.
 
-## Dashboard — gradebook
+## Training page
 
 (none yet)
 

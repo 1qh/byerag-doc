@@ -235,7 +235,9 @@ Indexes: `by_run`, `by_run_seq`, `by_expires`.
 Admin-tunable key/value strings. Known keys:
 
 - `corpus_policy` — corpus relevance-classifier policy text. Seeded with default on first compose boot. Per `docs/adr/policy-relevance-classifier.md`.
-- `agent_auto_assign_enabled` — `'true'` | `'false'`. Default `'false'`. Per `docs/adr/agent-auto-assign-cron.md`.
+- `agent_auto_assign_enabled` — `'true'` | `'false'`. Default `'false'`. When `'true'` the agent continuously keeps eligible cells assigned (no schedule). Per `docs/adr/agent-auto-assign-cron.md`.
+- `agent_last_check` — epoch-ms string, overwritten every enabled 5-minute tick. Powers the Training page agent heartbeat. Not seeded; first written on first enabled tick.
+- `assignment_due_days` — integer string, days until an assigned test is overdue. Default `'14'`. Admin-only lens; computed `dueAt = assignment.createdAt + days×86_400_000`, never stored. Per `docs/adr/training-page.md`.
 
 Schema:
 

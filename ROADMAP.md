@@ -100,9 +100,9 @@ Phase sequence by data dependency, not by stakeholder mental model. Per `book/PH
 - `/admin/dashboard` as default landing route.
 - Top strip tiles (active/total users, cost cycle, docs-in-corpus) via reactive sub.
 - Cost cycle 5th-to-5th: monthly chart + per-(user, model) pivot table + drill-ins.
-- Gradebook matrix with `✓ ✗ ⓐ ·` glyphs + row totals + column footers + drill-ins.
-- Department column on gradebook (no scope-gating in v0).
-- Agent auto-assign daily cron (03:00 UTC) gated by `settings.agent_auto_assign_enabled`.
+- Training page (`/admin/training`): KPI cards (overview, overdue, people-at-risk, weakest test), Tests table with per-topic actions, paginated/searchable Users roster. Overdue via `settings.assignment_due_days` (default 14).
+- Department column in the Training Users table (no scope-gating in v0).
+- Agent auto-assign: continuous 5-minute idempotent tick when `settings.agent_auto_assign_enabled='true'` (no schedule); admin heartbeat + activity feed on Training page.
 - One aggregate `auditLogs` row per cron run.
 
 ## P10 — Polish

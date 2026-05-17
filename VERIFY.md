@@ -284,9 +284,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] `userProfiles` table active w/ `role ∈ {'admin', 'user'}` and `department ∈ {'HR', 'Sales', 'IT', null}`.
 - [x] Admin sets a user's department via admin UI; audit row recorded.
 - [x] Department NULL for admin role accounts.
-- [x] Department NULL for unset role=user accounts (group "Unassigned" on gradebook).
+- [x] Department NULL for unset role=user accounts (shown "Unassigned" in Training Users table).
 - [x] `Assign to all` includes all role=user regardless of department.
-- [x] Department visible on gradebook row.
+- [x] Department visible as a column in the Training Users table.
 
 ## Dashboard
 
@@ -312,37 +312,34 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] Click pivot row → user's daily breakdown chart for cycle.
 - [x] In v0, every Model column shows `kimi-for-coding`.
 
-### Gradebook
+### Training page (`/admin/training`)
 
-- [x] Rows: every non-revoked role=user account. Admins excluded.
-- [x] Columns: every non-deleted `topics` row with pool ≥ 5. Pool < 5 topics hidden from gradebook.
-- [x] Cells render correct glyph per state.
-- [x] `✓` covers any pass (self or assigned).
-- [x] `✗` admin-source live assignment + no pass.
-- [x] `ⓐ` agent-source live assignment + no pass.
-- [x] `·` no live assignment + no pass.
-- [x] Concurrent admin + agent assignment renders `✗` (admin priority).
-- [x] Row total = `passed_count / assigned_count` per user.
-- [x] Column footer = `passed_assigned / assigned` per topic.
-- [x] Default sort: rows by Total asc, cols by `topics.createdAt` asc.
-- [x] Cell click → user-topic detail page.
-- [x] On-demand refresh button re-runs aggregate query.
+- [ ] KPI cards: Overview (total users · % passed-all-assigned · overall assigned pass-rate · total overdue), Overdue tests (count + top-3 offenders), People at risk (top-5 worst), Weakest test (lowest pass-rate topic).
+- [ ] `settings.assignment_due_days` default `'14'`; overdue = assigned-source, not passed, `now > createdAt + days`. Self-passes never overdue.
+- [ ] Changing `assignment_due_days` re-derives overdue counts with no migration.
+- [ ] Tests table: one row per non-deleted topic with pool ≥ 5 — name · pool · assigned · pass-rate · overdue.
+- [ ] Per-topic `⋯`: Assign to all / Assign to selected (N) / Un-assign all / Mark substantive.
+- [ ] Header: Agent auto-assign on/off toggle + Assign eligible now.
+- [ ] Agent capability callout + activity feed (recent agent assignments, plain language + relative time) + "last checked" heartbeat visible on Training page.
+- [ ] Users table: paginated (page 25), columns username/email · department (null→Unassigned) · passed/assigned · overdue; search by username; row click → user detail. Admins excluded.
+- [ ] No glyph matrix anywhere; dashboard hosts no assignment surface.
 
 ## Agent auto-assign
 
 - [x] `settings.agent_auto_assign_enabled` defaults `'false'` on first compose boot.
-- [x] Cron at 03:00 UTC; no-op when flag is `'false'`.
-- [x] Admin flips flag to `'true'` → next cron tick fires.
-- [x] Per cron run, walks `(role=user, topic where pool ≥ 5 AND not deleted)`.
+- [x] 5-minute ticker; no-op (no audit) when flag is `'false'`.
+- [x] Admin flips flag to `'true'` → next tick (≤5 min) fills eligible cells.
+- [x] `agent_last_check` timestamp updated every enabled tick (powers admin heartbeat).
+- [x] Per tick, walks `(role=user, topic where pool ≥ 5 AND not deleted)`.
 - [x] Skips `(user, topic)` w/ existing `testPasses(kind='assigned')`.
 - [x] Skips `(user, topic)` w/ non-deleted `testAssignments`.
 - [x] Inserts `testAssignments` w/ `createdBy='agent'` for eligible empty cells.
 - [x] No rate limit per user; first cron after enable can produce hundreds of rows.
 - [x] No admin notification.
 - [x] No user source-label on badges (admin-source and agent-source look identical).
-- [x] One aggregate `auditLogs` row per cron: `command='training.cron.run'`, `args={topicsProcessed, assignmentsCreated, durationMs}`, `mode='system'`, `owner='agent'`, `severity='low'`.
-- [x] Admin un-assignment removes both admin + agent rows for topic; next cron refills eligible cells.
-- [x] Cron failure: no mid-day retry; next day's cron picks up.
+- [x] `auditLogs` row only on a tick that creates ≥1 assignment: `command='training.cron.run'`, `args={topicsProcessed, assignmentsCreated, durationMs}`, `mode='system'`, `owner='agent'`, `severity='low'`. Zero-result ticks write none.
+- [x] Admin un-assignment removes both admin + agent rows for topic; next tick refills eligible cells.
+- [x] Tick failure: no special retry; the next 5-minute tick picks up.
 
 ## Network bridge
 

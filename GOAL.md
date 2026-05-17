@@ -99,12 +99,12 @@ External judge model passes byerag as shipped when ALL the following return expe
 - Approved doc triggers async gen of 10 MCQ candidates → `testQuestionSuggestions` rows status=pending.
 - Admin approve → canonical `testQuestions` row.
 - User passes 5/5 → `testPasses` row `kind='assigned'`.
-- After `settings.agent_auto_assign_enabled='true'`, 03:00 UTC cron inserts `testAssignments` `createdBy='agent'`.
+- After `settings.agent_auto_assign_enabled='true'`, the continuous 5-minute tick inserts eligible `testAssignments` `createdBy='agent'`; admin sees heartbeat + activity feed.
 
 **H. Dashboard at /admin/dashboard:**
 - Top strip renders `<active>/<total>` users, cost cycle current `$`, docs-in-corpus count.
 - Monthly cost chart + per-(user, model) pivot table.
-- Gradebook matrix renders `✓ ✗ ⓐ ·` glyphs.
+- Training page (`/admin/training`) renders KPI cards + Tests table + paginated/searchable Users roster; overdue via `assignment_due_days`.
 
 **I. Cost + audit recording:**
 - `costRecords` table populated per LLM call (owner, model=`kimi-for-coding`, dayKey, tokens, cents).

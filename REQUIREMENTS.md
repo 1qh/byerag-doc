@@ -121,25 +121,24 @@ Per `docs/adr/dashboard-admin-landing.md` + siblings.
   - Monthly bar chart, scrollable history, current cycle bar partial + live.
   - Pivot table: per-`(user, model)` rows w/ input/output tokens + cost. Sort by cost desc. Footer totals.
   - Click bar → re-render pivot for that cycle. Click pivot row → user daily breakdown drill-in.
-- **Gradebook matrix** (per `docs/adr/dashboard-gradebook.md`):
-  - Rows = role=user users; columns = non-deleted topics with pool ≥ 5; cells = glyphs.
-  - Glyphs: `✓` passed, `✗` admin-assigned not passed, `ⓐ` agent-assigned not passed, `·` not assigned.
-  - Row total = `passed/assigned` ratio. Column footer = topic pass rate `passed_assigned / assigned`.
-  - Default sort: rows by Total ascending; columns by topic createdAt ascending.
-  - Dept column visible.
-  - Cell click → user-topic drill-in. Row total click → user detail. Column header click → topic detail.
-  - Refresh cadence: on-demand button (heavy aggregate).
+- **Training page** `/admin/training` (per `docs/adr/training-page.md`) — assignment surface; dashboard is stats-only:
+  - KPI cards: Overview, Overdue tests, People at risk, Weakest test.
+  - Deadlines: `settings.assignment_due_days` (default 14); overdue = assigned-source, not passed, past due. Admin-only lens; users never see/blocked.
+  - Tests table: one row per non-deleted topic with pool ≥ 5 (name · pool · assigned · pass-rate · overdue) + per-topic ⋯ (Assign to all / selected / Un-assign / Mark substantive).
+  - Header: agent auto-assign on/off + Assign eligible now. Agent capability callout + activity feed (recent agent assignments) + "last checked" heartbeat — visible proof the agent is working.
+  - Users table: paginated, columns username/email · department · passed/assigned · overdue; search by username; row expands inline to that user's per-test status (plain language).
+  - No glyph matrix.
 
 ## Agent auto-assign
 
 Per `docs/adr/agent-auto-assign-cron.md`.
 
-- Daily Convex cron at 03:00 UTC.
-- Gated by `settings.agent_auto_assign_enabled` (default `false`). Admin flips once after deploy.
+- 5-minute Convex ticker; when enabled, each tick fills any newly-eligible cell (idempotent, no schedule, no burst).
+- Gated by `settings.agent_auto_assign_enabled` (default `false`). Admin flips the single on/off on the Training page.
 - Eligibility: pool ≥ 5 AND user not passed (kind='assigned') AND no live assignment.
 - Inserts `testAssignments` with `createdBy='agent'`.
 - No rate limit; every eligible cell fills.
-- No admin notification; admin sees `ⓐ` glyphs on gradebook.
+- No admin notification; admin sees updated assigned/overdue counts on the Training page.
 - No per-topic agent-lock toggle; admin un-assign nukes all rows but next cron refills if conditions hold.
 - User sees no source distinction in badges.
 - One aggregate `auditLogs` row per cron run.
