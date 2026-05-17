@@ -46,10 +46,10 @@ Default state is a **single collapsed status strip** (one row, no scroll cost) d
 
 - Strip leads with the **latest agent action** as the at-a-glance proof — `· last assigned N tests <rel time>`. Falls back to `· running · everyone eligible already assigned (checked <rel time>)` when there is nothing to do, or `· assignments are manual only` when off. No "starting up…" inert state — a non-tech admin reads that as broken.
 - Bot icon (lucide `Bot`), tinted by state — no emoji.
-- **Details ▾** expands in place: the capability list (assigns all eligible, catches new hires, assigns newly-live tests, refills accidental un-assigns) + an **activity table** — paginated (10/page), **searchable by test name**, columns When · Source (Agent/Manual) · Assigned · Tests. Backed by enriched `auditLogs` (`training.cron.run` + `training.assign.runNow` rows carry a `topics` name list, capped 30).
+- **Details ▾** expands to a per-assignment **activity table** — one row per `testAssignments` record: User · Test · Assigned-at (exact datetime, Vietnam time). Paginated (15/page), **searchable by test name or user**. Most-recent first. No capability blurb, no source column. Sourced directly from `testAssignments` (not aggregate audit rows) so it shows exactly who got which test and when.
 - Heartbeat data is `settings.agent_last_check` (overwritten every enabled tick; not an audit row, to avoid log spam).
 
-`api.dashboard.agentActivity({page,search})` (admin-gated) returns `{ events[], lastCheck, pageCount, total }`; `events[]` carry `topics: string[]`.
+`api.dashboard.agentActivity({page,search})` (admin-gated) returns `{ rows[], lastCheck, pageCount, total }`; each row = `{ userId, test, at, source }` (one `testAssignments` record).
 
 ### Users table
 
