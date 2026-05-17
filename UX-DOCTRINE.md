@@ -37,7 +37,17 @@ Citations render as inline chips `[doc1.pdf §3]`. Click → opens the doc panel
 
 Citation chips in chat open the source doc in a side sheet (`<Sheet side="right">`) over the chat shell — plain left-click opens; ESC closes; chat stays interactive behind the sheet so the user can type follow-ups while reading. Modifier-clicks (cmd / ctrl / shift / middle) fall through to native `<a href>` and open `/docs/<docId>` in a new tab. The `/docs/<docId>` route remains the shareable deep link. Per `docs/adr/citation-side-sheet.md`.
 
-The `/docs` page (both apps) is a two-pane browser: a left list pane (admin = Shared corpus; user = My docs + Shared corpus, each with its upload widget where writable) and a right pane that renders the selected document inline via the shared `DocViewer` (header + body rendered as markdown using the same `MessageResponse` renderer as chat — never raw source), with the selected row highlighted. Empty state: "Select a doc on the left to view." A document the user can see listed but cannot open is a non-tech-UX failure; a dead text list is never acceptable.
+The `/docs` page (both apps) is a two-pane browser: a left list pane (admin = Shared corpus; user = My docs + Shared corpus, each with its upload widget where writable) and a right pane that renders the selected document **inline in-page** via the shared `DocViewer`, with the selected row highlighted. Empty state: "Select a doc on the left to view." A document the user can see listed but cannot open, or that forces a click-out to a URL to read, is a non-tech-UX failure; a dead text list is never acceptable.
+
+`DocViewer` is mime-routed (one shared component, identical in user side-sheet, user two-pane, admin two-pane):
+
+- `application/pdf` → embedded `<iframe>` (explicit `h-[80vh]`; flex-only sizing collapses to 0px) showing the real PDF with the browser PDF toolbar — no click-out link.
+- `image/*` → `<img>` of the blob.
+- `text/markdown` → rendered via the chat's `MessageResponse` (never raw source).
+- docx / pptx / xlsx / epub / rtf → extracted text + "formatting not preserved" banner + "Download original" (the only legitimate click-out: these cannot render in-browser; faithful render via ingest-time HTML conversion is a deferred follow-up).
+- code / `text/plain` / html / json / xml → monospace `<pre>` (raw is correct here).
+
+`docs.read` returns a blob `url` (`storage.getUrl`). The shared CSP (`packages/react/src/next/proxy.ts`) MUST keep `frame-src`/`object-src`/`img-src` allowing the Convex storage origin (`convexOrigin` + `*.convex.cloud`/`*.convex.site`) or the PDF/image embed is blocked on BOTH apps.
 
 ## Upload widget
 
