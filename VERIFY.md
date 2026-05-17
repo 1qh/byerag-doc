@@ -205,8 +205,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Admin review queue
 
-- [x] Per-item actions: Approve / Edit / Reject / Regenerate (+ optional hint).
-- [x] `regenCount` capped at 5; further regens disabled with message.
+- [x] Per-item actions: Approve / Edit / Reject.
 - [x] Bulk-approve via checkboxes works across multiple selected items.
 - [x] Conflict-pair card: Accept swap / Keep old / Keep both / Reject both atomic.
 - [x] Cap-swap card: same options; Keep both stretches pool with banner.
@@ -217,7 +216,6 @@ End-state checklist. Every item must pass before the project counts as launched 
 ### Canonical admin actions
 
 - [x] Admin can edit approved question (prompt/choices/correctIndex); `revision` increments; audit `severity='low'`.
-- [x] Admin force-regenerate (+ hint) → new suggestion enters queue w/ `kind='revision'`; audit `severity='medium'`.
 - [x] Admin retire → `deletedAt` set; audit `severity='medium'`.
 - [x] No manual-from-scratch create UI exposed.
 
@@ -266,7 +264,6 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 - [x] Admin batch w/ at least one `'retire'` approval → default substantive; admin can flip cosmetic.
 - [x] Admin batch w/ only `'new'` approvals → default cosmetic; admin can flip substantive.
-- [x] Admin batch w/ only `'revision'` approvals → default substantive.
 - [x] Source-doc deletion cascade → automatic substantive (no admin override).
 - [x] Substantive commit writes `topics.lastSubstantiveUpdate=now()`.
 - [x] Re-arm cascade: `testPasses` rows where `kind='assigned' AND passedAt < lastSubstantiveUpdate` deleted; fresh assignments inserted; audit `command='training.assignment.rearm'`.

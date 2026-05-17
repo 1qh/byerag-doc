@@ -40,7 +40,7 @@ This ADR is the top-level overview; mechanism details live in the sibling ADRs l
 
 - No certificates / PDF proof of completion.
 - No leaderboards, no scoring beyond pass/fail.
-- No manual question authoring from scratch by admin; admin curates AI-generated content (edit, force-regenerate, retire).
+- No manual question authoring from scratch by admin; admin curates AI-generated content (edit, retire).
 - No topic rename / merge / split / lock / manual-create in v0; agent-clustered flat list is canonical.
 - No prerequisites between topics.
 - No admin-curation gate on user-side topic visibility (every approved topic with pool ≥ 5 is self-assessable by all users).

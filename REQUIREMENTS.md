@@ -85,7 +85,7 @@ Per `docs/adr/assessment-test-overview.md` + siblings. Canonical behavior summar
 - Agent generates 10 MCQ candidates per approved shared doc; 3 choices each, 1 correct, Vietnamese-only.
 - Agent flat-clusters topics; admin can delete (cascade). No rename/merge/split/lock/manual-create in v0. No prerequisites.
 - All AI question changes flow through admin review queue. Source-doc deletion cascades automatically without review.
-- Review actions: Approve / Edit / Reject / Regenerate (+ optional hint). Bulk-approve via checkboxes only.
+- Review actions: Approve / Edit / Reject. Bulk-approve via checkboxes only.
 - Conflict pairs (dup or contradiction) and cap-swap pairs render as joint cards; admin resolves both items together.
 - Soft cap 50 per topic; admin can stretch with warning.
 - Pool < 5 blocks user attempts AND admin assignment creation. Topics with 0 hidden from user app entirely.

@@ -9,7 +9,6 @@ A batch of review-queue resolutions for a single topic is committed as one logic
 - Contains at least one `'retire'` approval (any kind: cascade-cleanup retires, contradiction-driven retires, cap-swap retires) → batch is **substantive by default**.
 - Contains only `'new'` approvals and the admin explicitly toggled `Mark batch as substantive` → substantive.
 - Contains only `'new'` approvals and admin did NOT toggle → **cosmetic**.
-- Contains only `'revision'` approvals → substantive by default (wording changed by an underlying doc).
 - Contains only `'edit'` (admin manual edits via the canonical-pool admin actions in `/admin/topics/<id>`) → cosmetic by default; admin can toggle substantive.
 
 The admin commit modal shows the inferred classification and the substantive toggle. Default value reflects the inference. Admin can flip either way before clicking Commit.
@@ -37,7 +36,6 @@ Users receive the fresh badge via reactive sub.
 | Admin approves 5 new questions for a topic, no retires | cosmetic | yes, can flip substantive |
 | Admin approves a cap-swap card (1 new + 1 retire) | substantive | yes, can flip cosmetic |
 | Admin approves a contradiction-pair card | substantive | yes, can flip cosmetic |
-| Admin force-regenerates a question via canonical admin action | cosmetic | yes (when reviewing the resulting suggestion) |
 | Admin edits a question's typo via canonical admin action | cosmetic | yes |
 | Admin retires a question via canonical admin action (no new replacing) | substantive | yes |
 | Source doc deleted → cascade question retire | substantive (automatic, no batch) | no override; cascade fires re-arm unconditionally |

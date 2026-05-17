@@ -287,17 +287,15 @@ Vector index: `by_prompt_embedding` (`dimensions: 768`, filter fields: `topicId`
 Pending review-queue items + resolved-row audit trail.
 
 - `topicId: Id<'topics'>`
-- `kind: 'new' | 'revision' | 'retire'`
-- `prompt: string?` — set for new/revision
+- `kind: 'new' | 'retire'`
+- `prompt: string?` — set for new
 - `choices: string[]?`
 - `correctIndex: number?`
 - `sourceDocIds: Id<'docs'>[]`
-- `targetQuestionId: Id<'testQuestions'>?` — for revision/retire
+- `targetQuestionId: Id<'testQuestions'>?` — for retire
 - `pairKind: 'conflict' | 'cap-swap'?`
 - `pairedWith: Id<'testQuestionSuggestions'>?` — reciprocal link
 - `reason: string?` — agent explanation
-- `hint: string?` — last regenerate hint
-- `regenCount: number` — capped 5
 - `status: 'pending' | 'resolved'`
 - `resolvedAt: number?`
 - `resolvedBy: string?`

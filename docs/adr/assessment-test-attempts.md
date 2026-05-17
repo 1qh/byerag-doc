@@ -61,7 +61,6 @@ No automatic timeout. `in-progress` rows can sit indefinitely if user never retu
 Independent of the review queue:
 
 - **Edit** any approved question's prompt/choices/correctIndex via `/admin/topics/<id>`. Bumps `revision`. Logged at severity=low.
-- **Force-regenerate** any approved question via `/admin/topics/<id>` (+ optional hint). Emits a new suggestion that enters the review queue (kind='revision', `pairedWith` the existing question). Logged at severity=medium.
 - **Retire** any approved question. Flips `deletedAt`; pool shrinks. Logged at severity=medium.
 - **Manual create from scratch**: not supported in v0.
 

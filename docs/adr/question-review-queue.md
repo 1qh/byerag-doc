@@ -1,11 +1,10 @@
 # question-review-queue
 
-`/admin/test-questions/pending` is the single inbox for every AI-suggested question change. Admin actions are exhaustive: Approve / Edit / Reject / Regenerate for new questions and revisions; Approve / Reject for retire-suggestions. Bulk-approve via checkboxes is the only bulk action in v0. Conflict pairs and at-cap swaps render as grouped cards that resolve together.
+`/admin/test-questions/pending` is the single inbox for every AI-suggested question change. Admin actions are exhaustive: Approve / Edit / Reject for new questions; Approve / Reject for retire-suggestions. Bulk-approve via checkboxes is the only bulk action in v0. Conflict pairs and at-cap swaps render as grouped cards that resolve together.
 
 ## Item kinds
 
 - `kind: 'new'` — agent generated a fresh candidate from an approved doc.
-- `kind: 'revision'` — agent suggests updated wording for an existing approved question (typically triggered by a source doc being replaced).
 - `kind: 'retire'` — agent suggests retiring an existing approved question because it contradicts a newly-generated one, or because the source doc was updated and the question is now stale.
 
 Items of kind `'new'` and `'retire'` linked via `pairedWith: Id<'testQuestionSuggestions'>?` render as a single conflict pair card.
@@ -14,9 +13,8 @@ Items where the topic is at soft cap also render as a swap card pairing the new 
 
 ## Per-item actions
 
-- `'new'`: **Approve** / **Edit** / **Reject** / **Regenerate** (+ optional one-line hint that the agent uses in the re-roll prompt).
-- `'revision'`: **Approve** / **Edit** / **Reject** / **Regenerate** (+ optional hint).
-- `'retire'`: **Approve** / **Reject**. (No regenerate; nothing to re-roll.)
+- `'new'`: **Approve** / **Edit** / **Reject**.
+- `'retire'`: **Approve** / **Reject**.
 
 Approve persists the change to canonical `testQuestions` table; suggestion row archived with `resolvedAt`, `resolvedBy`, `resolvedAction='approve'`.
 
@@ -24,13 +22,11 @@ Edit opens an inline form pre-filled with the suggested content; admin tweaks; s
 
 Reject discards the suggestion; `resolvedAction='reject'` audited.
 
-Regenerate emits a new suggestion (with the hint, if provided) and discards the current one. Re-rolls use the same source doc(s).
-
 ## Bulk-approve
 
 Each suggestion card has a checkbox. Admin can select multiple cards across the queue and click "Approve selected". Confirms in a modal: "Approve N items?" Server applies each in turn; partial failure (e.g. one item already resolved by another admin) skipped with banner notice.
 
-Bulk-reject, bulk-regenerate, select-all-in-group: deferred to v1.
+Bulk-reject, select-all-in-group: deferred to v1.
 
 ## Conflict pair card
 
@@ -50,9 +46,9 @@ Shown when topic's approved pool is at or above soft cap and a new suggestion ar
 
 Each resolution writes one row to `auditLogs`:
 
-- `command`: one of `training.questionSuggestion.approve` / `.edit` / `.reject` / `.regenerate` / `.swapApprove`.
-- `args`: JSON `{suggestionId, topicId, questionId?, hint?}`.
-- `severity`: `'low'` for new and revision approvals; `'medium'` for retire-approvals (loses content) and force-regenerate (consumes LLM cost).
+- `command`: one of `training.questionSuggestion.approve` / `.edit` / `.reject` / `.swapApprove`.
+- `args`: JSON `{suggestionId, topicId, questionId?}`.
+- `severity`: `'low'` for new approvals; `'medium'` for retire-approvals (loses content).
 - `mode`: `'admin'`.
 
 ## Edge cases
@@ -70,8 +66,6 @@ Each resolution writes one row to `auditLogs`:
 
 ## Gotcha for Claude
 
-- The Regenerate hint field is rate-limited per suggestion (max 5 re-rolls per suggestion, then admin must Edit or Reject). Prevents accidental infinite-loop.
 - Edit preserves the suggestion's `sourceDocIds` and `kind`; only `prompt`, `choices`, `correctIndex` are admin-editable in the inline form.
-- Approve on a `'revision'` kind: existing approved question's `revision` counter increments; old version's text is NOT pinned in attempts table (attempts already pinned their snapshot at attempt-start time, see `assessment-test-attempts.md`).
 - Approve on a `'retire'` kind: existing approved question's `deletedAt` set; pool shrinks. Per soft-cap rule this happens atomically with the paired new-question approval in a swap card.
 - Source-doc deletion cascade is automatic and does NOT enter this queue. Admin already decided by deleting the doc. Only conflict-driven retires enter the queue.
