@@ -4,7 +4,9 @@ When an admin uploads a doc and that doc passes all gates (scan-clean, dedup-pas
 
 ## Trigger
 
-Convex mutation that flips `docs.policyStatus` to `approved` (or admin's manual approve from quarantine) calls `scheduler.runAfter(0, internal.training.generateForDoc, {docId})`. The mutation returns immediately; the doc is searchable in chat right away; question candidates lag by ~10-30 seconds.
+Convex mutation that flips `docs.policyStatus` to `approved` (or admin's manual approve from quarantine) calls `scheduler.runAfter(0, internal.training.generateForDoc, {docId})` — **only when `docs.scope === 'shared'`**. The mutation returns immediately; the doc is searchable in chat right away; question candidates lag by ~10-30 seconds.
+
+**Scope invariant (hard):** questions are generated EXCLUSIVELY from admin-uploaded shared-scope docs. User-uploaded `scope='mine'` docs are private to their owner and MUST NEVER seed the assessment pool — not on approval, not on scan-override, not via any path. Enforced at ≥2 points: the call-sites only schedule generation for `scope='shared'`, AND the generate action itself bails (`reason:'not-shared-scope'`) if handed a non-shared doc — mechanism-asserted so no caller can bypass it. Embedding still runs for `mine` docs (the owner's own semantic search); only question generation is shared-only.
 
 If the doc-approval was via the manual /admin/quarantine path, same trigger applies.
 
