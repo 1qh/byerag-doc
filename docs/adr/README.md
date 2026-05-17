@@ -33,10 +33,12 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 - [`two-apps-admin-and-user`](./two-apps-admin-and-user.md) — separate Next.js apps for admin and user roles
 - [`shared-react-package-for-chat-ui`](./shared-react-package-for-chat-ui.md) — `packages/react` carries chat plumbing for both apps
 - [`streamevents-reactive-pipeline`](./streamevents-reactive-pipeline.md) — `streamEvents` table + Convex reactive sub feeds the UI
+- [`citation-side-sheet`](./citation-side-sheet.md) — citation chips open source doc in a side sheet; `/docs/<docId>` stays as shareable deep link
 
 ## Docs corpus
 
 - [`docs-table-via-convex-storage`](./docs-table-via-convex-storage.md) — `docs` row + `_storage` blob; no external blob store
+- [`docs-read-via-workspace-file`](./docs-read-via-workspace-file.md) — `docs read` writes full text to sandbox cache file + returns small envelope; agent uses SDK `Read` on the path
 - [`clamav-via-convex-action`](./clamav-stateless-scan-service.md) — Convex action talks to clamd directly; no wrapper service
 - [`ollama-nomic-embed-v2-moe`](./ollama-nomic-embed-v2-moe.md) — local Ollama serving `nomic-embed-text-v2-moe`
 - [`vector-search-via-convex-vectorindex`](./vector-search-via-convex-vectorindex.md) — Convex `vectorIndex` is the vector store

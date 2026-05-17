@@ -13,10 +13,28 @@ List documents in scope. Returns id, filename, mime, size, uploadedAt, scope.
 
 ## docs read
 
-Fetch a document's extracted text (or first N bytes for binary fallback).
+Materialize a document's extracted text to a per-sandbox cache file and return an envelope pointing at the path. Agent reads the body via the Claude Agent SDK's native `Read` tool on the returned `path`. Per `docs/adr/docs-read-via-workspace-file.md`.
 
 - `--id` (string) required — `docs._id`
-- `--bytes` (number) — cap on returned bytes (default 200_000, max 2_000_000)
+- `--lines` (string) — optional line range `N-M`; when set, also includes a `body` field with just that slice for direct inline use (envelope stays ≤2000 bytes)
+
+Returns one JSON object on stdout:
+
+```json
+{
+  "doc_id": "k7…",
+  "filename": "Decree-105-2025.md",
+  "scope": "shared",
+  "version": 1,
+  "lang": "vi",
+  "total_lines": 4823,
+  "byte_size": 134512,
+  "path": "/home/agent/.docs-cache/k7….md",
+  "first_lines_preview": "<≤800 chars from line 1>"
+}
+```
+
+Full doc text is written to `path` (sandbox-writable `/home/agent/.docs-cache/`, cleared on sandbox kill).
 
 ACL: row is fetched, if `scope='mine'` and `owner != caller.email` → `FORBIDDEN`.
 

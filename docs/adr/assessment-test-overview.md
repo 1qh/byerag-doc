@@ -23,13 +23,13 @@ This ADR is the top-level overview; mechanism details live in the sibling ADRs l
 - **100% correct = pass.** Any wrong answer = fail.
 - **Unlimited retakes. No cooldown. No time limit. No deadlines.**
 - **Open-book.** Every question card shows source-doc citation; doc viewer remains available beside the test.
-- **Reveal on pass only.** Failed attempts show only the ratio (e.g. `3/5`); no per-question feedback; no leaked correct answers. Passed attempts show full breakdown.
+- **Result reveals pass/fail + score + source-document citations only.** Both passed and failed attempts show the outcome (Passed/Not passed), the score ratio (e.g. `3/5`), and clickable citations of the source documents the questions were drawn from (open in the doc side-sheet). No per-question content and no correct answers are ever revealed for either outcome — the answer key never leaves the server. Citations do not leak answers (the source docs are open-book).
 - **Tab close mid-attempt = discard.** No save & continue. Server marks orphan `in-progress` rows as `cancelled` when a new attempt for the same (user, topic) starts.
 - **Vietnamese-only questions** regardless of source-doc language. Translation happens at generation time.
 - **Question + choice order shuffled per attempt.** Anti-pattern memorization.
 - **One latest attempt row per (user, topic).** Older purged on new attempt insert. Pass-state ledger (`testPasses`) keeps separate per-kind history.
 - **Self-pass ≠ assignment-pass.** Distinct buckets in `testPasses`. Assignments skip already-passed-assigned users only; never auto-satisfied by prior self-passes.
-- **Admin assigns to all users.** Targets role=user only; admins are exempt. Real-time fire via Convex reactive subscription. Each assignment is a separate persistent badge; cleared only by passing.
+- **Admin assigns to a chosen set of users or to all of them.** Targets role=user only; admins are exempt. Selective ("assign to selected") and bulk ("assign to all") both supported from the dashboard gradebook. Real-time fire via Convex reactive subscription. Each assignment is a separate persistent badge; cleared only by passing.
 - **Admin un-assignment nukes all assignment rows for that topic silently.** Badges vanish; in-progress attempts cancelled; past pass records preserved.
 - **Pool < 5 approved questions** blocks both user attempts and admin assignment creation. Topics with 0 approved questions hidden from the user app entirely; topics with 1-4 approved questions visible to admin but disabled on user app.
 - **Substantive corpus updates re-arm assignment-passes** for affected topics. Admin flags substantive vs cosmetic at approval time. Self-passes never re-arm.

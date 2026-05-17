@@ -24,7 +24,7 @@ A test attempt is one user taking 5 MCQ questions on one topic. All-or-nothing: 
    - If `score < 5`: `status='failed'`. No `testPasses` write.
    - Returns the attempt row.
 
-4. **Reveal**: client requests `attempt-detail`. If status `'passed'`: server returns full pinned snapshot including `correctIndexShuffled` per question. If status `'failed'` or `'cancelled'`: server returns only `{score, total: 5}`; no per-question detail.
+4. **Reveal**: client requests `attempt-detail`. If status `'in-progress'`: server returns `questionSnapshots` with `promptText` + `choicesShuffled` only (no `correctIndexShuffled`) so the user can answer. If terminal (`'passed'`/`'failed'`/`'cancelled'`): server returns `{passed, score, total, sources:[{docId,filename}]}` — pass/fail, score ratio, and the distinct source-document citations. No `questionSnapshots` and no `correctIndexShuffled` are ever sent for terminal attempts; the answer key never leaves the server, for either outcome.
 
 5. **Retake**: user clicks `Start test` again. Cycle repeats. No cooldown. The previous `failed` attempt's row is purged on insert of the new attempt row (one-row-per-(user, topic) rule, see below).
 

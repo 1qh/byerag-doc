@@ -32,7 +32,9 @@ upsert costRecords(owner, model, dayKey={today UTC}):
   callCount += 1
 ```
 
-`ownerSpend` continues to track per-day reservation/cap separately (different concern: live cap math vs analytics).
+**Non-chat Kimi spend is also recorded.** Question generation (`trainingGen`), the policy classifier (`docsPolicy`), and the `docs conflict` tool call Kimi directly (not via the chat proxy). Each parses the response `usage` and calls `internal.costRecords.recordDirect`, which computes cents with the same rate logic (`computeActualCents`) and upserts. Owner attribution: background pipelines (generation, classification) record under owner `'system'`; `docs conflict` is user-driven so it records under the calling user's email. This makes dashboard cost reflect ALL Kimi usage, not only chat-proxy traffic. Recording is best-effort and never blocks the operation.
+
+`ownerSpend` continues to track per-day reservation/cap separately (different concern: live cap math vs analytics). Generation cost remains NOT budget-gated per `question-generation-pipeline.md` — recording it for visibility does not gate it.
 
 ## Read path
 

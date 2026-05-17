@@ -1,17 +1,21 @@
 # assessment-assignments
 
-Admin assigns a topic's assessment test to all role=user accounts in one click. Assignment fires immediately via Convex reactive WebSocket; per-assignment badge appears on each user's UI within seconds. Badge persists until that user passes the topic via an assigned-kind attempt. Admin can un-assign at any time; un-assignment nukes all assignment rows silently. Pool < 5 blocks creation; admin sees the gate at click time.
+Admin assigns a topic's assessment test to a chosen set of role=user accounts, or to all of them, from the dashboard gradebook. Assignment fires immediately via Convex reactive WebSocket; per-assignment badge appears on each user's UI within seconds. Badge persists until that user passes the topic via an assigned-kind attempt. Admin can un-assign at any time; un-assignment nukes all assignment rows silently. Pool < 5 blocks creation; admin sees the gate at click time. The agent auto-assign cron (per `agent-auto-assign-cron.md`) fills eligible cells independently when enabled.
 
 ## Trigger and scope
 
-Admin clicks `Assign` on a topic in `/admin/assignments` or `/admin/topics/<id>`. Server:
+The dashboard gradebook (`/dashboard`) is the assignment surface. Each user is a row with a select checkbox; each topic column header has a menu: **Assign to all**, **Assign to selected (N)**, **Un-assign all**, **Mark substantive**.
 
-1. Verifies caller's role is `admin`.
-2. Verifies topic exists, not deleted, approved pool size ≥ 5. If not, returns 400 with reason; no rows created.
-3. Walks the user list (role=user only; admins excluded).
-4. For each user, checks `testPasses.by_user_topic_kind` for an existing `(userId, topicId, kind='assigned')` row. If exists, skip — user already passed this topic via a prior assignment.
-5. For each non-skipped user, inserts a `testAssignments` row with `userId`, `topicId`, `createdAt=now()`, `createdBy=admin email`, `deletedAt=null`.
-6. Returns count of new assignments created + count of skipped users.
+- **Assign to all** → `trainingAssignments.assignAllForTopic({topicId})` — every role=user account.
+- **Assign to selected** → `trainingAssignments.assignUsersForTopic({topicId, userIds})` — only the checked users.
+
+Both server paths:
+
+1. Verify caller's role is `admin`.
+2. Verify topic exists, not deleted, approved pool size ≥ 5. Else throw; no rows created.
+3. For each target user: confirm role=user; check `testPasses.by_user_topic_kind` for an existing `(userId, topicId, kind='assigned')` row (skip if passed); check for a live `testAssignments` row (skip if already assigned).
+4. For each non-skipped user, insert a `testAssignments` row with `userId`, `topicId`, `createdAt=now()`, `createdBy=admin email`, `deletedAt=null`.
+5. Return `{assignmentsCreated, skipped}`.
 
 `testAssignments.by_user_topic` index ensures O(1) badge lookup per user per topic. Convex reactive subscription on `testAssignments.by_user` (filter `deletedAt=null AND no matching testPasses`) gives each user's pending badge list in real time.
 
