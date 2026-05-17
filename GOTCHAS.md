@@ -9,6 +9,16 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 - **Postgres 18+ breaks default volume mount path** — PGDATA moved to `/var/lib/postgresql/<MAJOR>/docker`. Stick to `postgres:17-alpine`. Surfaced 2026-05-14 P0 boot.
 - **POSTGRES_URL must NOT include `/dbname`** — Convex backend errors `cluster url already contains db name`. Use `postgres://user:pass@host:port`; Convex derives db name from `INSTANCE_NAME` (dashes→underscores). Surfaced 2026-05-14 P0 boot.
 - **`docker compose restart` ignores `.env` changes** — env substitution happens at container create time. Use `docker compose up -d --force-recreate <service>`. Surfaced 2026-05-14 P0 boot.
+- **macOS `localhost` resolves `::1` first; Convex binds `127.0.0.1:3210` (v4)** — Node 20 / browser fetch to `http://localhost:3210` hits `::1`, ECONNREFUSED. All `.env` URLs (`NEXT_PUBLIC_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`, `CONVEX_SITE_URL`) must be literal `127.0.0.1`. SSH port-forwards forward v4 only — same trap on remote dev machines. Surfaced 2026-05-16.
+- **SSH dev forwards need 4 ports** — `3001` admin, `3003` user, `3210` Convex API, `3211` Convex site. Missing 3210/3211 = browser WebSocket sync fails silently (login screen sits "Loading…"). Surfaced 2026-05-16.
+- **OCC hot-row contention on `chatRuntime` + `rateLimits` + `costRecords`** — per-stream-event `incrementEventCount` patch on the chat's single chatRuntime row + per-event `checkRateLimit` mutations against the same owner row produced "Documents read/written too many times" mid-stream, surfacing as client toast "an unexpected error occurred". Fix triad in `apps/backend/convex/messages.ts`: (1) drop per-event eventCount patch — use monotonic stream `seq` against `STREAM_EVENT_HARD_CAP` instead; (2) remove the two per-event stream rate-limit checks; (3) wrap `checkRateLimit` in `safeRateLimit` that catches OCC errors and returns `true` (fail-open). Hard-cap stays exact via seq; rate-limit fail-open is acceptable for stream firehose. Surfaced 2026-05-16.
+- **Full-table scan inside ratelimit-like hot path times out at 1s** — `docs.countRecentQuarantines` scanned all `docs` rows. Switch to indexed `by_sha256_scope_owner` `.take(50)` then filter in JS. Surfaced 2026-05-16.
+- **Self-host deploy is environment-fragile; the 4s analyze isolate timeout is NOT configurable** — `convex --help` exposes no flag. `start_push` fails `400 InvalidModules: Function execution timed out (maximum duration: 4s)` whenever the V8 module-analyze loses CPU to the cold node-executor bundle (28–62s) of the many `'use node'` modules. Reliable ONLY when (a) node bundle is warm and (b) the box has CPU headroom. Root cause this session was host saturation: Colima had **4 vCPU of a 10-core host**, starved by co-tenant containers (`map-kafka` ~1.5 core/7.4 GB, `k3d-truecare` ~1 core/4 GB) + host procs (a 365% Java proc, 24 GB FSEvents) → host load 80, 0% idle. Deploy went green in 40s the instant the box was freed. Surfaced 2026-05-17.
+- **NEVER cold-restart convex-backend or `docker compose down -v` casually** — that cold-wipes the warm node-executor bundle (forcing the 60s cold path), wipes all deployed functions (even `auth:signIn` → nobody can sign in), and clears `costRecords`/auth tables (→ stale browser sessions, below). The half-measure `docker compose restart convex-backend` is the WRONG recovery; it caused the deploy outage this session.
+- **The backend had no `dev` script → no warm convex watcher ever ran** — `apps/backend/package.json` was missing `dev`, so `turbo dev` only started Next; every push was a fresh cold `convex dev --once`. Fix: `apps/backend` `dev` = `bun run build-agent && bun run codegen && bunx convex dev` (persistent watch — one analyze, stays warm). Canonical loop per `local-dev-loop.md`; `--once` cold-starts every invocation.
+- **Do NOT loop-spam `convex dev --once`; do NOT deploy concurrently with app use** — repeated/parallel pushes saturate the single isolate pool and starve runtime UDFs: `auth:signIn` → `auth.js:store` hit the 1s UDF budget and sign-in broke. Deploy = single, sequential, box otherwise quiet, no users active.
+- **`.env` JWT-regen corruption** — `sync.ts` JWT regen can write a multi-line PEM unquoted/duplicated (orphan `MIIE…` body block with no `KEY="-----BEGIN…` header), making `.env` unparseable → `docker compose` env error + convex push fails. Fix: clear `JWT_PRIVATE_KEY=` and `JWKS=` lines, re-run `bun sync` (regenerates a matched pair). Surfaced 2026-05-17.
+- **Stale browser session after any wipe is THE cascade root cause** — DB wipe destroys `users`/auth tables + JWT regen invalidates the cookie. Every identity-gated query returns `null`/`[]` → docs won't preview, `/training` empty, "Start does nothing", sign-in timeouts — all the SAME bug. Fix (founder action): sign out + **clear site data for the origin** (orphaned token) + sign in fresh. Agent-drivable path: env-gated dev sign-in (below).
 
 ## Ollama embedding
 
@@ -27,7 +37,10 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 - **Sandbox runs as `User: agent` (uid 1000) — cannot write to `/usr/local/bin`** — any CLI wrapper / symlink the agent-run action places must land under a path the `agent` user owns. `/home/agent/.bun/bin/` is part of the container's default `PATH` (`/home/agent/.bun/bin:/usr/local/bin:/usr/bin:/bin`), is `agent`-owned, and is the canonical home for provider wrappers (`docs`, `training`, …) per `sandbox-image-and-cli-delivery.md`.
 - **`SANDBOX_PATH` env-override does not always reach the Claude SDK Bash subshell** — the Claude Agent SDK spawns child Bash processes whose `PATH` is inherited from the container default, not always from the parent agent process's env-set `PATH`. The defense: place CLI wrappers at a path already on the container default `PATH` (`/home/agent/.bun/bin/`); don't rely on the env override propagating.
 - **POSIX wrapper, not symlink, for CLI provider binaries** — a symlink at `/home/agent/.bun/bin/<provider>` pointing to `/home/agent/cli.mjs` lets the next `printf … > path` overwrite cli.mjs through the symlink. Use a 45-byte wrapper script (`#!/bin/sh\nexec node /home/agent/cli.mjs "$@"`) written via `printf` after `rm -f` of any prior file; chmod +x in the same `&&` chain.
+- **App `cliProviders: []` ships zero wrappers to sandbox PATH** — `sandboxLaunch.prepareSandboxLayout` writes wrapper scripts to `/home/agent/.bun/bin/<provider>` ONLY for providers listed in the app's `AppConfig.cliProviders`. Admin app was created with `cliProviders: []`; agent's first turn said "The `docs` CLI wasn't available on PATH" because nothing was written. Admin needs `['docs', 'training']`; user needs at least `['docs']`. Surfaced 2026-05-16. **Defense**: any new app must explicitly enumerate every provider its system prompt invokes.
 - **Docker exec `sh -lc` is a login shell — strips the agent process's PATH** — `sh -l` re-sources `/etc/profile` which sets `PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games`, overriding the `PATH` env passed via Docker exec's `Env` field. The agent process loses `/home/agent/.bun/bin` from PATH; the Claude SDK's Bash subshells then can't find the provider wrappers. Canonical: `sh -c` (non-login) for exec invocations — preserves the Env-set PATH end-to-end. Captured in `sandboxClient.ts:execInside`.
+- **`byerag-sandbox:latest` is built separately, NOT in `compose.yml`** — `docker system prune` (or any image prune) deletes it; extraction (`docsExtract`) + chat agent then fail silently with `docker POST /containers/create 404: No such image`. Symptom cascade: `_scheduled_functions` shows `docsExtract.extract` all `failed` → docs stuck `policyStatus='pending'` → no policy classify → no question generation → `/test-questions` empty. Fix: `docker build -t byerag-sandbox:latest apps/backend/sandbox/` (drop nft firewall first — see below — then reapply). Defense: bring-up routine must rebuild this image after any prune/`down -v`. Surfaced 2026-05-17.
+- **Host nft firewall (Kimi-only egress) blocks `ghcr.io`/`docker.io` image pulls + npm** — `docker compose up`/`docker build` time out on image resolve, and the Convex node-executor can't fetch deps. Documented provisioning pattern: `colima ssh -- sudo nft delete table inet byerag-fw` → pull/build → reapply the `byerag-fw` table (multi-line `nft -f -` heredoc; the compact one-liner form errors on `}`). Surfaced repeatedly 2026-05-16/17.
 
 ## Kimi proxy
 
@@ -44,7 +57,7 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## Agent SDK
 
-(none yet)
+- **`@anthropic-ai/claude-agent-sdk` 0.3.x dropped `unstable_v2_createSession` / `unstable_v2_resumeSession`** — `sandbox/run.ts` imports those names; bun throws `SyntaxError: Export named 'unstable_v2_createSession' not found` on agent boot → pgid file never written → orchestrator surfaces `agent failed to start (pgid not written)` after 30s. Sandbox is auto-killed so the trace is invisible. Defense: `apps/backend/sandbox/package.json` pins `@anthropic-ai/claude-agent-sdk` to `0.2.141` (last `unstable_v2_*` carrier). Refactor `run.ts` to the new `query()` API before un-pinning; SDK 0.3+ surface is `query`, `forkSession`, `resumeSession` (top-level, not `unstable_v2_*`), `listSessions`, etc. Bun's import-failure path = silent in agent.log because the orchestrator's outer `nohup … >/dev/null 2>&1 &` clobbers the inner `>$logFile` redirect — when diagnosing, reproduce with `docker run --rm --entrypoint sh byerag-sandbox:latest -c 'setsid bun run /home/agent/run.ts 2>&1'` + minimal env. Surfaced 2026-05-16 after fresh `docker compose down -v` + image rebuild pulled SDK 0.3.143.
 
 ## pm4ai + lintmax
 
@@ -52,7 +65,11 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## Next.js 16 + Turbopack
 
-(none yet)
+- **`app.config.ts` with JSX fails build** — Next 16 + Turbopack will not parse JSX in `.ts`. Any app-config file that returns `sidebarSlotAboveHistory: <Component/>` must be `.tsx`. Surfaced 2026-05-16 when adding `AdminSidebarNav` to admin app.
+- **`PaneProvider` must wrap children inside `DefaultProviders`** — `packages/react/src/components/message-text-part.tsx` calls `usePane()`; without provider it throws "usePane must be used inside <PaneProvider>" the moment a chat renders a message. Canonical wrap order in `packages/react/src/next/default-providers.tsx`: `TooltipProvider > PaneProvider > VerbosityProvider`. Surfaced 2026-05-16.
+- **Route group `(main)` shared layout includes chat shell** — pages that should stand alone (dashboard, /test-questions, /docs viewer) must live OUTSIDE `(main)` and ship their own `layout.tsx` (Auth gate + `AdminSidebarNav` aside, no chat shell). Surfaced 2026-05-16. **User app had this same defect** — every user route was under the chat shell; non-tech employees saw a chat composer under `/training` `/docs`. Both apps need the standalone-group pattern; the user app is the MORE non-tech audience and was missed first.
+- **shadcn here is base-ui, NOT Radix** — components use the `render` prop, not `asChild`. `<Button asChild>` leaks `aschild` to the DOM (React unknown-prop error) and does not compose. And base-ui Button `render`'d as a non-`<button>` warns (`nativeButton`). For a link styled as a button use `<Link className={cn(buttonVariants({variant}))}>`, not `<Button render={<Link/>}>`. `DropdownMenuTrigger`/`AlertDialog…` etc. all use `render={<X/>}`. Surfaced 2026-05-17.
+- **`NEXT_PUBLIC_*` only re-reads on Next dev restart** — apps run `bun --env-file=../backend/.env next dev`; env loaded at process start. After adding e.g. `NEXT_PUBLIC_ALLOW_DEV_TOKENS=1`, must restart the Next servers. The env-gated dev sign-in (Anonymous provider) needs BOTH `ALLOW_DEV_TOKENS=1` (server, auth.ts provider list) AND `NEXT_PUBLIC_ALLOW_DEV_TOKENS=1` (client, renders the dev sign-in). It is the spec-sanctioned no-Google session path (and the only way to drive an authed session via Playwright). Surfaced 2026-05-17.
 
 ## Convex schema migrations
 
@@ -68,7 +85,10 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## Stream pipeline (sandbox → /api/stream/event → reactive sub → client)
 
-(none yet)
+- **Never persist `stream_event` rows into `messages`** — Kimi partial-message mode emits per-keystroke `text_delta`s; a Vietnamese answer is 1000s of deltas. `complete` flattening each into a `messages` row blew the 2000 per-turn insert cap → "truncated: too many messages this turn" and the answer body dropped. Fix: `processBatchEvent` skips `type === 'stream_event'`; live render reads them from the `streamEvents` table (cleared after `complete`); persisted `messages` carry only canonical assistant/user/system/result/error rows. Surfaced 2026-05-16.
+- **`messages.list` must be DESC + client-reverse** — was `.order('asc')` with `initialNumItems: 50`; once a turn exceeded 50 rows the final assistant block paginated off-screen → navigate away/back showed no answer. Fix: `.order('desc')`, reverse client-side in `use-chat-convex.ts`, `initialNumItems: 100`. Surfaced 2026-05-16.
+- **Chat-composer uploads are `docs` rows in `mine` scope, not `/workspace` attachments** — files attached via the composer paperclip/drag run the full `docs.upload` pipeline (scan→policy→embed→materialize) and land as `docs` rows owned by the caller, materialized into the sandbox `/workspace/mine/<owner>/` mount. The composer appends a plain-language line naming them; it must NOT use "attached" / filesystem-path framing or the agent wastes turns hunting the `/workspace` root + Glob before finding them under `mine/`. Canonical tail wording points the agent at the doc tools in the `mine` scope. The dead `[FILE_ID:storageId:filename]` token shape has no resolver — never emit it; reference uploaded docs by filename (agent does `docs list --scope mine` → `docs read`). FileUpload is wired via `ChatFileUploadProvider` mounted in `default-providers.tsx`; an app with no provider shows "File upload not enabled" — every app that exposes the composer must mount it. Surfaced 2026-05-17.
+- **Recreate user-visible bugs via the ACTUAL click path, not code-trace** — repeatedly this session a "code looks fine" trace missed the real defect (e.g. `getMyAttemptDetail` returned score-only for `in-progress` → take-test screen structurally unreachable for everyone). The honest reproduction is dev-sign-in (env-gated, no Google) + Playwright driving the real flow. Code-trace ≠ "seeing what the user sees." Surfaced 2026-05-17.
 
 ## Cross-user isolation
 
@@ -80,7 +100,7 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## Assessment tests — generation
 
-(none yet)
+- **Topic clustering by raw LLM `topicName` string fragments badly** — `persistSuggestionsWithEmbedding` created/matched topics by exact `topicName` (free-form per-question Vietnamese category) → 120 questions scattered into 80–108 micro-topics; almost none reach pool ≥5 so nothing is testable/assignable. Per `topic-clustering-plan-b.md` the canonical routing is **embedding-centroid** with a distance threshold, not name-string. Fix: cluster each question's `promptEmbedding` to nearest existing topic centroid (merge if cosine ≥ `TOPIC_MERGE_SIM`, default lowered to 0.5 for short VN MCQ embeddings), maintain running centroid, spawn new topic only when far from all. Old null-centroid topics can't absorb new questions — needs fresh regen (pre-launch wipe-sanctioned) to actually consolidate; `retireEmptyTopics` (internal) only removes truly empty husks (it found 0 — fragments aren't empty). Surfaced 2026-05-17.
 
 ## Assessment tests — review queue
 
@@ -88,7 +108,8 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## Assessment tests — attempts
 
-(none yet)
+- **`getMyAttemptDetail` must branch on status or the take-test screen is unreachable** — it returned the score-only `{score,total}` shape for ALL non-passed attempts incl. `in-progress`; the page's `'total' in attempt` branch fired → "Score 0/5 — retake" instead of the questions. Nobody could ever take a test. Canonical: `in-progress` → return `questionSnapshots` WITHOUT `correctIndexShuffled` (answer key never leaves server); terminal (passed/failed/cancelled) → `{passed, score, total, sources:[{docId,filename}]}` only. Per the founder-revised `assessment-test-overview.md`: result reveals pass/fail + score + source citations only, NO per-question answer breakdown for either outcome (more anti-cheat-safe than the old pass-reveal). Surfaced 2026-05-17.
+- **Silent catch in a user action = invisible failure** — `/training` `onStart` caught errors with only `console.error` → non-tech user clicks Start, nothing happens, no feedback. Every user-facing handler must surface `toast.error`; on `not authenticated` route to sign-in. Audit other handlers for the same swallow.
 
 ## Assessment tests — assignments + re-arm
 
@@ -100,7 +121,7 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## Dashboard — top strip + cost cycle
 
-(none yet)
+- **`costCycleHistory` walks back fixed `30 days × i` then snaps to the 5th anchor — drifts** — months are 28–31 days, so the 30-day step accumulates error vs the 5th-of-month anchor; for many "now" dates two iterations snap into the same calendar cycle → history shows a month twice / skips one. Coincidentally correct for some dates only. Canonical (`dashboard-cost-cycle.md` = strict monthly 5th-to-5th): iterate by **calendar month** (previous month's 5th), not 30 days. Also the bar label is yearless `MM-DD` (`cycleStart.slice(5)`) → crossing a year boundary `12-05` looks suspicious; label should carry the year (`MMM YYYY`). Surfaced 2026-05-17.
 
 ## Dashboard — gradebook
 
@@ -108,7 +129,8 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## costRecords aggregation
 
-(none yet)
+- **Only the chat-proxy path wrote `costRecords` → dashboard showed $0 despite heavy spend** — question generation, policy classifier, and `docs conflict` call Kimi via direct server `fetch`, bypassing the proxy settle that is the sole `costRecords` writer. Fix: `costRecords.recordDirect` (internal mutation; parses Kimi `usage`, prices with the SAME `computeActualCents` rate logic, upserts) called from all three direct sites — owner `'system'` for background (gen/classify), calling user for `docs conflict`. Best-effort, never blocks. Generation stays NOT budget-gated (recording ≠ gating). Verified: one gen run → dashboard `system kimi-for-coding 7205/1741 $0.05`. Surfaced 2026-05-17.
+- **Rate table is fine; zero cents = zero captured tokens** — `streamHelpers` `MODEL_RATES`/`DEFAULT_RATES` are non-zero ($3/$15 per Mtok). `$0.00` means `inputTokens/outputTokens` never captured (no completed round-trip / usage not parsed), not a rate-table problem.
 
 ## Agent auto-assign cron
 

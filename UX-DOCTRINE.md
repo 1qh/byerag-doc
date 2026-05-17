@@ -35,11 +35,15 @@ Citations render as inline chips `[doc1.pdf §3]`. Click → opens the doc panel
 
 ## Doc panel
 
-Click a doc → preview pane (markdown render for `.md`, PDF.js viewer for PDFs, plain-text fallback for others). Keyboard nav: arrow keys to switch docs, slash to focus search.
+Citation chips in chat open the source doc in a side sheet (`<Sheet side="right">`) over the chat shell — plain left-click opens; ESC closes; chat stays interactive behind the sheet so the user can type follow-ups while reading. Modifier-clicks (cmd / ctrl / shift / middle) fall through to native `<a href>` and open `/docs/<docId>` in a new tab. The `/docs/<docId>` route remains the shareable deep link. Per `docs/adr/citation-side-sheet.md`.
 
 ## Upload widget
 
 Drag-and-drop or file picker. Multi-file accepted. Shows per-file scan status (pending / clean / quarantined). On clean: appears in the doc list immediately via Convex reactive subscription. On quarantined: red banner with reason.
+
+## Chat composer upload
+
+The chat composer carries a visible attach control (paperclip in the input toolbar, beside Send) plus drag-and-drop onto the composer. Multi-file accepted. Uploaded files run the identical pipeline as the Docs-page widget (`generateUploadUrl` → blob POST → `docs.upload` finalize → scan → policy → embed → sandbox materialize); scope is `mine` in the user app, `shared` in the admin app. On success the composer appends a plain-language line naming the files and pointing the agent at the doc tools in the relevant scope (no filesystem-path framing — the files are `docs` rows, reachable via `docs list` / `docs read`, not literal `/workspace` paths). This makes "upload N files and ask the agent to compare them" a single in-chat flow; the Docs page remains the durable library view.
 
 ## Admin-only surface
 
