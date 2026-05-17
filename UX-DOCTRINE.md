@@ -37,7 +37,7 @@ Citations render as inline chips `[doc1.pdf §3]`. Click → opens the doc panel
 
 Citation chips in chat open the source doc in a side sheet (`<Sheet side="right">`) over the chat shell — plain left-click opens; ESC closes; chat stays interactive behind the sheet so the user can type follow-ups while reading. Modifier-clicks (cmd / ctrl / shift / middle) fall through to native `<a href>` and open `/docs/<docId>` in a new tab. The `/docs/<docId>` route remains the shareable deep link. Per `docs/adr/citation-side-sheet.md`.
 
-Every doc listed on the `/docs` page (user + admin: My docs and Shared corpus) is itself a citation-anchor entry — clicking a filename opens that doc in the same side-sheet preview (with freshness/version badge), never a dead text list. A document the user can see listed but cannot open is a non-tech-UX failure.
+The `/docs` page (both apps) is a two-pane browser: a left list pane (admin = Shared corpus; user = My docs + Shared corpus, each with its upload widget where writable) and a right pane that renders the selected document inline via the shared `DocViewer` (filename + mime/version/scope/lang header + body), with the selected row highlighted. Empty state: "Select a doc on the left to view." A document the user can see listed but cannot open is a non-tech-UX failure; a dead text list is never acceptable.
 
 ## Upload widget
 
