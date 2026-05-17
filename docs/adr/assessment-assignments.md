@@ -4,7 +4,7 @@ Admin assigns a topic's assessment test to a chosen set of role=user accounts, o
 
 ## Trigger and scope
 
-The Training page (`/admin/training`) is the assignment surface. Assigning goes through the **"Assign a test"** composer (`training.assignComposer`): pick a topic (= test), choose audience (**Everyone** or **a department** HR/Sales/IT/Unassigned), optional per-batch overdue override (`dueAtMs`). The Tests-table per-row `⋯` is topic-maintenance only (Un-assign all, Mark substantive). Un-assign = `trainingAssignments.unassignAllForTopic`. Per `training-page.md`.
+The Training page (`/admin/training`) is the assignment surface. Assigning goes through the **"Assign a test"** composer (`training.assignComposer`): pick a topic (= test), choose audience (**Everyone** or **a department** Safety, Health and Environment/Unassigned), optional per-batch overdue override (`dueAtMs`). The Tests-table per-row `⋯` is topic-maintenance only (Un-assign all, Mark substantive). Un-assign = `trainingAssignments.unassignAllForTopic`. Per `training-page.md`.
 
 `training.assignComposer` server path:
 

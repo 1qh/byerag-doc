@@ -47,7 +47,7 @@ Backed by `api.dashboard.assignmentsTable({page, departments[], tests[], statuse
 Header **"Assign a test"** button opens a modal (`training.assignComposer`, admin-gated):
 
 - **Test** — pick a topic (pool ≥ 5).
-- **Audience** — Everyone · A department (HR/Sales/IT/Unassigned).
+- **Audience** — Everyone · A department (Safety, Health and Environment, or Unassigned).
 - **Overdue after (days)** — optional per-batch override → stored `testAssignments.dueAtMs`; blank = standard global window.
 - Skips users who already passed (assigned) or have a live assignment. Audit `command='training.assign.runNow'`, `mode='admin'`, `owner='agent'`, `severity='medium'`.
 

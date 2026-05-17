@@ -12,7 +12,7 @@ Persistent per-user metadata (separate from `userContexts` which is transient ta
 
 - `userId: string` — lowercase email
 - `role: 'admin' | 'user'` — access gate
-- `department: 'HR' | 'Sales' | 'IT' | null` — null when role=admin or unset
+- `department: 'Safety, Health and Environment' | null` — null when role=admin or unset
 - `updatedAt: number`
 - `updatedBy: string` — admin email who set/changed (or `'self'` on first sign-in seed)
 

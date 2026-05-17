@@ -1,13 +1,13 @@
 # departments
 
-User accounts (`role='user'`) carry one of three department tags: `HR | Sales | IT`. Admins carry no department. Single department per user. Dashboard filter affordance only — assignment scope still always-all-users in v0.
+There is a single department: **`Safety, Health and Environment`**. User accounts (`role='user'`) either belong to it or are unset (shown "Unassigned"). Admins carry no department. Single department per user. Used as a Training-page filter facet + composer audience target.
 
 ## Schema
 
 New table `userProfiles`:
 
 - `userId: string` — lowercase email
-- `department: 'HR' | 'Sales' | 'IT' | null` — null when role=admin
+- `department: 'Safety, Health and Environment' | null` — null when role=admin
 - `updatedAt: number`
 - `updatedBy: string` — admin email who set/changed
 
@@ -35,5 +35,5 @@ When a new user first signs in, `userProfiles.department = null`. Admin sets via
 ## Gotcha for Claude
 
 - The agent auto-assign never filters by department — it keeps every eligible (user, topic) cell filled regardless of dept.
-- The manual Assign composer can target a single department (HR/Sales/IT/Unassigned) — `userProfiles.department` filter, `null` → "Unassigned". Admin's role check is still the access gate; department is targeting metadata.
+- The manual Assign composer can target a single department (Safety, Health and Environment, or Unassigned) — `userProfiles.department` filter, `null` → "Unassigned". Admin's role check is still the access gate; department is targeting metadata.
 - The Training page Users table shows department as a column (null → "Unassigned"); pass-rate math unchanged.
