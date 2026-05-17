@@ -38,7 +38,7 @@ Per-user aggregate (re-added alongside the per-assignment table — both kept; s
 
 The per-assignment surface — one row per live `testAssignments` record, each row reads as a sentence. Columns: **User · Department · Test · Status · Deadline · Assigned** (dates in Vietnam time). Status plain words: `✓ Passed` · `⏰ Overdue N days` · `Not passed`. **Deadline** = effective due date (`dueAtMs` if set else `createdAt + global window`); overdue rows highlight the deadline. Sorted overdue → not-passed → passed, then most-recent.
 
-Every filterable column header (**Department · Test · Status · Deadline · Assigned**) is a clean ghost-styled dropdown (the header *is* the control — no boxed inputs, no separate filter row) opening a **multi-select checkbox list** of the distinct values present (server-computed facets), with a count badge + Clear. User column is plain. Multi-select within a column = OR; across columns = AND. Server-paginated, 25/page. People-at-risk deep-links Status∈{Overdue, Not passed}; Weakest-test deep-links Test=that test.
+Every filterable column header (**Department · Test · Status · Deadline · Assigned**) is a clean ghost-styled dropdown (the header *is* the control — no boxed inputs, no separate filter row) opening a **multi-select checkbox list** of the distinct values present (server-computed facets), with a count badge + Clear. User column is plain. Multi-select within a column = OR; across columns = AND. Server-paginated, 10/page. People-at-risk deep-links Status∈{Overdue, Not passed}; Weakest-test deep-links Test=that test.
 
 Backed by `api.dashboard.assignmentsTable({page, departments[], tests[], statuses[], deadlines[], assigneds[]})` (admin-gated) → `{ rows[], latest, facets, pageCount, total }`. `facets` = distinct sorted values for each column (drives the dropdowns). Each row `{ userId, department, test, status, overdueDays, source, deadline, assigned, at }` — `deadline`/`assigned` are preformatted Vietnam-time date strings. `latest` drives the agent toast (when `source==='agent'`). Self-passes never appear. Admins excluded.
 
@@ -51,7 +51,7 @@ Header **"Assign a test"** button opens a modal (`training.assignComposer`, admi
 - **Overdue after (days)** — optional per-batch override → stored `testAssignments.dueAtMs`; blank = standard global window.
 - Skips users who already passed (assigned) or have a live assignment. Audit `command='training.assign.runNow'`, `mode='admin'`, `owner='agent'`, `severity='medium'`.
 
-Header also carries **Agent auto-assign** on/off (`settings.agent_auto_assign_enabled`, per `agent-auto-assign-cron.md`) and **Assign eligible now** (`training.assignEligibleNow`). No schedule UI — agentic means the admin does not configure timing.
+The header has exactly two buttons: **Assign a test** (this composer) and **Agent auto-assign** (opens the agent dialog). The agent dialog carries: enable on/off, **Overdue after (days)**, **Assign at** (Vietnam-time hour select; "Continuously" = every tick, or a specific hour), **weekdays** multi-select (shown only when an hour is chosen; empty = every day), and an **Assign eligible now** button. Per `agent-auto-assign-cron.md`.
 
 ## Refresh cadence
 

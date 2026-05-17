@@ -101,11 +101,9 @@ Per `docs/adr/assessment-test-overview.md` + siblings. Canonical behavior summar
 
 Per `docs/adr/departments.md`.
 
-- Three departments: HR, Sales, IT. Static enum.
-- `userProfiles.department: 'HR' | 'Sales' | 'IT' | null`. Single department per user. Null for admins or unset.
-- Department is a dashboard-filter dimension; does NOT gate assignment scope. Locked rule: `Assign to all users` includes every role=user account regardless of department.
-- Admin sets each user's department via admin UI (impl deferred).
-- Future v1: department-scoped assignment selectors.
+- One department: **`Safety, Health and Environment`**. `userProfiles.department: 'Safety, Health and Environment' | null` (null = admin or unset → "Unassigned"). Single department per user.
+- Department is a Training-page filter facet AND a composer audience target (Assign composer can target Everyone or that department).
+- Admin sets each user's department via admin UI.
 
 ## Dashboard (admin app)
 
@@ -128,7 +126,7 @@ Per `docs/adr/dashboard-admin-landing.md` + siblings.
   - Assign composer ("Assign a test" button): topic + audience (Everyone / department / selected users) + optional per-batch due override.
   - Header: agent auto-assign on/off + Assign eligible now + Assign-a-test. No persistent agent strip — a toast fires on new agent-sourced assignments only.
   - User-summary table: per-user User · Department · Passed/assigned · Overdue; search; paginated 25.
-  - Assignments table (per-(user,test)): User · Department · Test · Status · Deadline · Assigned (VN dates); every filterable column header is a multi-select checkbox dropdown over server facets (no boxed inputs); server-paginated 25.
+  - Assignments table (per-(user,test)): User · Department · Test · Status · Deadline · Assigned (VN dates); every filterable column header is a multi-select checkbox dropdown over server facets (no boxed inputs); server-paginated 10.
   - No glyph matrix.
 
 ## Agent auto-assign

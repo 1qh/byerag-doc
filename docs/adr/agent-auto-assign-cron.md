@@ -1,10 +1,15 @@
 # agent-auto-assign-cron
 
-When the admin enables it, the agent **continuously** keeps every eligible `(role=user user, topic)` cell assigned. A Convex ticker runs every 5 minutes; each tick fills only newly-eligible gaps. No admin schedule, no cron expression, no time math — flipping one switch is the entire interface. Gated by the enable flag. No rate limit. No user-facing source distinction. Aggregate audit row only when a tick actually creates assignments.
+When the admin enables it, the agent assigns every eligible `(role=user user, topic)` cell automatically. A Convex ticker runs every 5 minutes. The admin sets *when* via the **Agent auto-assign** dialog: either **continuously** (every tick — `agent_auto_assign_hour=''`) or on a **schedule** (a specific Vietnam-time hour, optionally restricted to chosen weekdays). The sweep is idempotent (skips already-passed / already-assigned), so continuous mode never bursts. Gated by the enable flag. No rate limit. No user-facing source distinction. Audit row only when a sweep actually creates assignments.
 
 ## Trigger
 
-Convex `crons.interval('agent auto-assign scheduler', { minutes: 5 }, internal.training.autoAssign)`. Each tick: if the enable flag is off, no-op (no audit); otherwise run the eligibility sweep. The sweep is idempotent — it skips users already passed or already assigned — so steady state creates zero rows and there is no daily burst. New hires, newly-live topics, and accidental un-assigns are picked up within minutes.
+Convex `crons.interval('agent auto-assign scheduler', { minutes: 5 }, internal.training.autoAssign)`. Each tick: if `agent_auto_assign_enabled!=='true'` → no-op. Else read `agent_auto_assign_hour` / `agent_auto_assign_weekdays`:
+
+- `hour===''` → continuous: run the sweep every tick.
+- `hour` set → run only when the current Vietnam-time hour equals it, the VN weekday is in `agent_auto_assign_weekdays` (empty = every day), and `agent_auto_assign_last_run` is not already in the current VN hour bucket (one run per scheduled hour).
+
+On an actual run it sets `agent_auto_assign_last_run=now`. Vietnam time = UTC+7, no DST.
 
 ## Eligibility query
 
@@ -19,11 +24,11 @@ Insert `testAssignments` with `userId`, `topicId`, `createdAt=now()`, `createdBy
 
 ## Gate
 
-`settings` row `key='agent_auto_assign_enabled'`, `value='false'` (seeded on first compose boot). Admin flips to `true` on the Training page. There is no schedule setting — "agentic" means the admin does not configure timing; the agent just keeps things current while enabled.
+`settings` row `key='agent_auto_assign_enabled'`, `value='false'` (default). Admin flips it + sets the schedule in the **Agent auto-assign** dialog (one of the two header buttons on the Training page; the other is the admin **Assign a test** composer). The dialog also carries the overdue-after-days setting and an **Assign eligible now** button.
 
 ## No admin notification
 
-No push notification. Every enabled tick overwrites `settings.agent_last_check` (epoch ms) — this powers the Training page heartbeat ("Agent last checked <rel time>") so the admin sees the agent is alive even on zero-result ticks, without audit-log spam. Sweeps that create rows also appear in the Training page activity feed. Per `training-page.md`.
+No push notification. A new agent-sourced assignment surfaces as a transient toast on the Training page (per `training-page.md`); sweeps that create rows also write the `training.cron.run` audit row. No heartbeat surface.
 
 ## Admin-triggered immediate sweep
 

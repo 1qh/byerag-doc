@@ -235,8 +235,10 @@ Indexes: `by_run`, `by_run_seq`, `by_expires`.
 Admin-tunable key/value strings. Known keys:
 
 - `corpus_policy` — corpus relevance-classifier policy text. Seeded with default on first compose boot. Per `docs/adr/policy-relevance-classifier.md`.
-- `agent_auto_assign_enabled` — `'true'` | `'false'`. Default `'false'`. When `'true'` the agent continuously keeps eligible cells assigned (no schedule). Per `docs/adr/agent-auto-assign-cron.md`.
-- `agent_last_check` — epoch-ms string, overwritten every enabled 5-minute tick. Powers the Training page agent heartbeat. Not seeded; first written on first enabled tick.
+- `agent_auto_assign_enabled` — `'true'` | `'false'`. Default `'false'`. Master on/off for the agent sweep. Per `docs/adr/agent-auto-assign-cron.md`.
+- `agent_auto_assign_hour` — `''` (continuous, every tick) or `'0'`–`'23'` (the Vietnam-time hour to run). Default unset → continuous.
+- `agent_auto_assign_weekdays` — CSV of `0`–`6` (0=Sun, JS getUTCDay). Empty → every day. Only consulted when `agent_auto_assign_hour` is set.
+- `agent_auto_assign_last_run` — epoch-ms string, written when a sweep actually runs; used to dedupe (one scheduled run per VN hour).
 - `assignment_due_days` — integer string, days until an assigned test is overdue. Default `'14'`. Admin-only lens; computed `dueAt = assignment.createdAt + days×86_400_000`, never stored. Per `docs/adr/training-page.md`.
 
 Schema:

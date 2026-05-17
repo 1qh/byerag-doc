@@ -324,7 +324,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [ ] No persistent agent strip; toast fires only on a new agent-sourced assignment (silent on first load).
 - [ ] KPI cards all clickable: Overview→User-summary table; People-at-risk→Assignments(Unfinished); Weakest→Assignments(test search).
 - [ ] User-summary table: per-user User · Department · Passed/assigned · Overdue; search; paginated 25.
-- [ ] Assignments table: per live testAssignments — User · Department · Test · Status · Deadline (effective due, VN) · Assigned; every filterable column header = multi-select checkbox dropdown over server facets (Dept/Test/Status/Deadline/Assigned), count badge + Clear; server-paginated 25; sorted overdue→not-passed→passed. Admins excluded.
+- [ ] Assignments table: per live testAssignments — User · Department · Test · Status · Deadline (effective due, VN) · Assigned; every filterable column header = multi-select checkbox dropdown over server facets (Dept/Test/Status/Deadline/Assigned), count badge + Clear; server-paginated 10; sorted overdue→not-passed→passed. Admins excluded.
 - [ ] No glyph matrix anywhere; dashboard hosts no assignment surface.
 
 ## Agent auto-assign
