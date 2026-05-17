@@ -17,6 +17,12 @@ On upload, after scan-clean, a Convex action extracts text from the blob and sto
 
 Extraction runs inside the sandbox image (which carries all the binaries), invoked by a Convex action via `sandbox.commands.run` on a short-lived extraction container. Result text written back to `docs.extractedText`. Embedding then runs on the extracted text.
 
+## Large-doc storage
+
+Convex caps a single document value at 1 MiB. Extracted text routinely exceeds that (a 3 MB+ text layer is normal for long PDFs), so full text never lives inline on the `docs` row. After extraction the `'use node'` action writes the full text to a `_storage` text blob and records `docs.extractedTextStorageId`; `docs.extractedText` holds only a bounded prefix (`EXTRACT_INLINE_MAX_CHARS`) sized to cover every prefix-only reader (policy classify ≤4K, question gen ≤12K, `docs conflict` ≤50K, snippets/preview <1K).
+
+Full-content consumers read the blob: chunking/embedding fetches it in the embed action and chunks the whole text, so vector / `docs similar` recall covers the entire document regardless of size. `docs read` / `docs grep` / `docs diff` operate on the inline prefix until migrated to blob-reading actions (tracked in `GOTCHAS.md`); they never hard-error and full-doc semantic search is unaffected.
+
 ## Beats
 
 - **LLM extraction for everything**: unbounded cost; the long tail (scanned PDFs) is the only place LLM helps over deterministic tools.

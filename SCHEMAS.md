@@ -111,7 +111,8 @@ The corpus.
 - `storageId: Id<'_storage'>?` — Convex blob reference; nullable after hard-purge per `doc-versioning-and-deletion-cascade.md`
 - `scanStatus: 'pending' | 'clean' | 'quarantined'`
 - `summary: string?` — optional LLM-generated short summary
-- `extractedText: string?` — raw text post-extraction (per `text-extraction-by-mime.md`)
+- `extractedText: string?` — bounded inline prefix of the post-extraction text (cap `EXTRACT_INLINE_MAX_CHARS`); satisfies prefix-only readers (policy classify, question gen, conflict, snippets/preview) per `text-extraction-by-mime.md`
+- `extractedTextStorageId: Id<'_storage'>?` — full post-extraction text as a `_storage` text blob; canonical full content (Convex caps a single value at 1 MiB, so multi-MB docs cannot live inline). Chunking/embedding reads this so vector search covers the whole doc
 - `lang: string?` — ISO 639-1 code or `'mixed'` per `multilingual-corpus-handling.md`
 - `embedding: float64[]?` — 768-dim nomic-embed-text-v2-moe centroid of chunks
 - `version: number` — 1-based; per `doc-versioning-and-deletion-cascade.md`
