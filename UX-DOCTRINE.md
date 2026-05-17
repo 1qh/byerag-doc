@@ -37,6 +37,8 @@ Citations render as inline chips `[doc1.pdf §3]`. Click → opens the doc panel
 
 Citation chips in chat open the source doc in a side sheet (`<Sheet side="right">`) over the chat shell — plain left-click opens; ESC closes; chat stays interactive behind the sheet so the user can type follow-ups while reading. Modifier-clicks (cmd / ctrl / shift / middle) fall through to native `<a href>` and open `/docs/<docId>` in a new tab. The `/docs/<docId>` route remains the shareable deep link. Per `docs/adr/citation-side-sheet.md`.
 
+Every doc listed on the `/docs` page (user + admin: My docs and Shared corpus) is itself a citation-anchor entry — clicking a filename opens that doc in the same side-sheet preview (with freshness/version badge), never a dead text list. A document the user can see listed but cannot open is a non-tech-UX failure.
+
 ## Upload widget
 
 Drag-and-drop or file picker. Multi-file accepted. Shows per-file scan status (pending / clean / quarantined). On clean: appears in the doc list immediately via Convex reactive subscription. On quarantined: red banner with reason.
