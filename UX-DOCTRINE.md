@@ -53,6 +53,12 @@ Admin app has one extra section: `Audit`. A paginated table over `auditLogs` fil
 
 shadcn components as-is per `book/HARD-RULES.md`. Semantic colors only (`text-foreground`, `bg-primary`, `text-destructive`). `cn()` for conditional classes. Minimal DOM.
 
+## Sidebar is the navigation SSOT
+
+The sidebar is layout-level and single-sourced; pages only render content into `<main>`. One nav component per app (`UserSidebarNav` = Chat · Training · Docs; `AdminSidebarNav` = Dashboard · Docs · Policy · …) is the single source of truth for navigation — it is consumed by BOTH the chat shell (injected via `app.config` `sidebarSlotAboveHistory`) and the `(standalone)` layout. Add / rename / reorder a link once → every page reflects it; no per-page nav, no chat-shell vs standalone divergence.
+
+Account + theme are universal controls, never buried in one shell: the shared `SidebarUserNav` (`@a/react/components` — avatar/email, Light/Dark, Log out) is mounted at the bottom of every shell (chat AND standalone, both apps). A user on `/training` or `/docs` can sign out or switch theme without navigating back to chat. Burying login/logout or theme behind a single route is a non-tech-UX failure.
+
 ## Two-app convergence
 
 Differences between admin and user apps are routes + role-gated panels, not separate UI primitives. Both apps consume the same `packages/react` components.
