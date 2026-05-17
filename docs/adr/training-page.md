@@ -12,52 +12,42 @@ Assigned tests have a due date. Global admin setting `settings.assignment_due_da
 
 ## Layout
 
-Four KPI cards, then a Tests table, then a Users table.
+Three KPI cards, a one-line agent status strip, a Tests table, then the Assignments table.
 
 ### KPI cards
 
-- **Overview** — total role=user accounts · % users who passed *all* their assigned tests · overall assigned pass-rate (`passed_assigned / assigned` across all topics) · total overdue (user, topic) pairs.
-- **Overdue tests** — total overdue pairs + top 3 worst-offender users (most overdue first).
-- **People at risk** — top 5 users ranked by count of assigned-but-not-passed tests (overdue weighted first, then plain unpassed). Worst first.
+- **Overview** — total role=user accounts · % users who passed *all* their assigned tests · overall assigned pass-rate (`passed_assigned / assigned`).
+- **People at risk** — single count of users with ≥1 assigned test not yet passed. The whole card is a button → sets the Assignments-table Status filter to "Unfinished" and scrolls to it.
 - **Weakest test** — topic with the lowest assigned pass-rate (ties broken by largest assigned count).
+
+Principle: KPI cards are single scannable numbers. Drill-down is the Assignments table, never duplicated on a card.
+
+### Agent status strip
+
+One line under the header (no expand, no Details): lucide `Bot` icon tinted by state · "Agent on/off" · the latest assignment as proof (`· last assigned <test> to <user> <rel time>`), falling back to `· running · everyone eligible already assigned (checked <rel time>)` or `· assignments are manual only`. Heartbeat data is `settings.agent_last_check` (overwritten every enabled tick; not an audit row).
 
 ### Tests table
 
-One row per non-deleted topic with pool ≥ 5: name · pool size · assigned count · pass-rate · overdue count. The per-row `⋯` menu is topic-maintenance only — **Un-assign all** (`trainingAssignments.unassignAllForTopic`) and **Mark substantive (re-arm)** (`training.markTopicSubstantive`, per `re-arm-on-substantive-corpus-update.md`). Assigning is NOT in the row menu; it goes through the Assign composer.
+One row per non-deleted topic with pool ≥ 5: name · questions (pool) · assigned · pass-rate · overdue. **Search by test name**; client-side paginated (10/page; control only shows when >1 page — expected scale under 20). Per-row `⋯` is topic-maintenance only — **Un-assign all** (`trainingAssignments.unassignAllForTopic`) and **Mark substantive (re-arm)** (`training.markTopicSubstantive`). Assigning is NOT here; it goes through the Assign composer. A topic *is* a test (its approved pool is the test) — one selector.
 
-A topic *is* a test (its approved question pool is the test). "Which test" = "which topic" — one selector.
+### Assignments table
+
+The single per-assignment surface — one row per live `testAssignments` record, the shape a non-tech admin acts on (each row reads as a sentence). Columns: **User · Department · Test · Status · Assigned** (exact datetime, Vietnam time). Status is plain words: `✓ Passed` · `⏰ Overdue N days` · `Not passed`. Sorted overdue → not-passed → passed, then most-recent.
+
+Filters: **search** (user or test, substring) · **Department** dropdown (HR/Sales/IT/Unassigned/All) · **Status** dropdown (All / Unfinished / Overdue / Not passed in time / Passed). Server-paginated, 25/page. The People-at-risk card deep-links here with Status=Unfinished.
+
+Backed by `api.dashboard.assignmentsTable({page,search,department,status})` (admin-gated) → `{ rows[], latest, lastCheck, pageCount, total }`; each row `{ userId, department, test, status, overdueDays, at }`. `latest` (+`lastCheck`) feed the status strip. Effective due per row = `dueAtMs` if set else global window. Self-passes never appear (only `testAssignments`). Admins excluded (not role=user).
 
 ### Assign composer
 
 Header **"Assign a test"** button opens a modal (`training.assignComposer`, admin-gated):
 
 - **Test** — pick a topic (pool ≥ 5).
-- **Audience** — Everyone · A department (HR/Sales/IT/Unassigned) · Selected users (the Users-table checkboxes).
+- **Audience** — Everyone · A department (HR/Sales/IT/Unassigned).
 - **Overdue after (days)** — optional per-batch override → stored `testAssignments.dueAtMs`; blank = standard global window.
-- Skips users who already passed (assigned) or have a live assignment. Audit row `command='training.assign.runNow'`, `mode='admin'`, `owner='agent'`, `severity='medium'`, args carry topic name + audience + counts.
+- Skips users who already passed (assigned) or have a live assignment. Audit `command='training.assign.runNow'`, `mode='admin'`, `owner='agent'`, `severity='medium'`.
 
-Header also carries agent automation: **Agent auto-assign** on/off (`settings.agent_auto_assign_enabled`, per `agent-auto-assign-cron.md`) and **Assign eligible now** (`training.assignEligibleNow`, deterministic immediate sweep, agent-attributed). No schedule UI — agentic means the admin does not configure timing.
-
-## Agent visibility panel
-
-Directly below the header, an always-visible panel makes the agent's work provable, not mysterious:
-
-Default state is a **single collapsed status strip** (one row, no scroll cost) directly under the header so the KPI cards remain the first real content:
-
-- Strip leads with the **latest agent action** as the at-a-glance proof — `· last assigned N tests <rel time>`. Falls back to `· running · everyone eligible already assigned (checked <rel time>)` when there is nothing to do, or `· assignments are manual only` when off. No "starting up…" inert state — a non-tech admin reads that as broken.
-- Bot icon (lucide `Bot`), tinted by state — no emoji.
-- **Details ▾** expands to a per-assignment **activity table** — one row per `testAssignments` record: User · Test · Assigned-at (exact datetime, Vietnam time). Paginated (15/page), **searchable by test name or user**. Most-recent first. No capability blurb, no source column. Sourced directly from `testAssignments` (not aggregate audit rows) so it shows exactly who got which test and when.
-- Heartbeat data is `settings.agent_last_check` (overwritten every enabled tick; not an audit row, to avoid log spam).
-
-`api.dashboard.agentActivity({page,search})` (admin-gated) returns `{ rows[], lastCheck, pageCount, total }`; each row = `{ userId, test, at, source }` (one `testAssignments` record).
-
-### Users table
-
-Paginated roster of role=user accounts: username/email · department (null → "Unassigned") · passed/assigned ratio · overdue count. Per-row select checkbox feeds "Assign to selected". **Search by username/email** (substring, case-insensitive). Pagination server-side, page size 25.
-
-Clicking the username **expands the row inline** to a plain-language list of that user's assigned tests, one line each: `✓ <test> — passed`, `● <test> — not passed`, or `⏰ <test> — overdue (N days)`. One row open at a time. This replaces the matrix's per-cell status with a per-person readable view; no glyph grid, no navigation away.
-
-Admins are excluded from the roster (admin curates content; testing them is theater, per `assessment-test-overview.md`).
+Header also carries **Agent auto-assign** on/off (`settings.agent_auto_assign_enabled`, per `agent-auto-assign-cron.md`) and **Assign eligible now** (`training.assignEligibleNow`). No schedule UI — agentic means the admin does not configure timing.
 
 ## Refresh cadence
 
@@ -65,14 +55,14 @@ Card + table queries are on the standard reactive subscription (cheap aggregates
 
 ## Beats
 
-- **Per-(user,topic) glyph matrix** — dense, cryptic for a non-technical admin; replaced by the roster + per-topic Tests table. Cross-topic-at-a-glance need is served by the KPI cards (weakest test, people at risk).
+- **Per-(user,topic) glyph matrix** — dense, cryptic for a non-technical admin; replaced by the flat Assignments table (one plain-language row per (user, test): User · Department · Test · Status · Assigned). Same data, readable, filterable — not a grid of symbols.
 - **Per-assignment explicit due date** — admin friction every assign; the agent cron has no sensible date to pick. One global window is the trivially-maintainable knob; per-topic override can layer later if a real need appears.
 - **User-facing deadlines / lockout** — breaks the open-book, unlimited-retake trust posture. Deadlines are an admin lens only.
 
 ## Real cost
 
 - KPI + tables: a few indexed aggregate scans per page open; trivial at internal-team scale.
-- Users table paginated server-side so a large roster does not ship every row.
+- Assignments table paginated server-side so a large (users × tests) set does not ship every row.
 
 ## Gotcha for Claude
 

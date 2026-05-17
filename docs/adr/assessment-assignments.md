@@ -4,18 +4,16 @@ Admin assigns a topic's assessment test to a chosen set of role=user accounts, o
 
 ## Trigger and scope
 
-The Training page (`/admin/training`) is the assignment surface. Assigning goes through the **"Assign a test"** composer (`training.assignComposer`): pick a topic (= test), choose audience (Everyone / a department / Selected users from the Users-table checkboxes), optional per-batch overdue override. The Tests-table per-row `⋯` is topic-maintenance only (Un-assign all, Mark substantive). Per `training-page.md`.
+The Training page (`/admin/training`) is the assignment surface. Assigning goes through the **"Assign a test"** composer (`training.assignComposer`): pick a topic (= test), choose audience (**Everyone** or **a department** HR/Sales/IT/Unassigned), optional per-batch overdue override (`dueAtMs`). The Tests-table per-row `⋯` is topic-maintenance only (Un-assign all, Mark substantive). Un-assign = `trainingAssignments.unassignAllForTopic`. Per `training-page.md`.
 
-- **Assign to all** → `trainingAssignments.assignAllForTopic({topicId})` — every role=user account.
-- **Assign to selected** → `trainingAssignments.assignUsersForTopic({topicId, userIds})` — only the checked users.
-
-Both server paths:
+`training.assignComposer` server path:
 
 1. Verify caller's role is `admin`.
 2. Verify topic exists, not deleted, approved pool size ≥ 5. Else throw; no rows created.
-3. For each target user: confirm role=user; check `testPasses.by_user_topic_kind` for an existing `(userId, topicId, kind='assigned')` row (skip if passed); check for a live `testAssignments` row (skip if already assigned).
-4. For each non-skipped user, insert a `testAssignments` row with `userId`, `topicId`, `createdAt=now()`, `createdBy=admin email`, `deletedAt=null`.
-5. Return `{assignmentsCreated, skipped}`.
+3. Resolve targets: all role=user, or a single department (`userProfiles.department`, `null`→"Unassigned").
+4. Per target: skip if a `testPasses(kind='assigned')` row exists or a live `testAssignments` row exists.
+5. Insert `testAssignments` (`userId`, `topicId`, `createdAt=now()`, `createdBy=admin email`, `deletedAt=null`, optional `dueAtMs`).
+6. Audit `command='training.assign.runNow'`, `mode='admin'`, `severity='medium'`. Return `{assignmentsCreated, skipped}`.
 
 `testAssignments.by_user_topic` index ensures O(1) badge lookup per user per topic. Convex reactive subscription on `testAssignments.by_user` (filter `deletedAt=null AND no matching testPasses`) gives each user's pending badge list in real time.
 

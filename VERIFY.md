@@ -284,9 +284,9 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] `userProfiles` table active w/ `role ∈ {'admin', 'user'}` and `department ∈ {'HR', 'Sales', 'IT', null}`.
 - [x] Admin sets a user's department via admin UI; audit row recorded.
 - [x] Department NULL for admin role accounts.
-- [x] Department NULL for unset role=user accounts (shown "Unassigned" in Training Users table).
+- [x] Department NULL for unset role=user accounts (shown "Unassigned" in the Assignments table).
 - [x] `Assign to all` includes all role=user regardless of department.
-- [x] Department visible as a column in the Training Users table.
+- [x] Department visible as a column + filter in the Assignments table.
 
 ## Dashboard
 
@@ -314,15 +314,15 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Training page (`/admin/training`)
 
-- [ ] KPI cards: Overview (total users · % passed-all-assigned · overall assigned pass-rate · total overdue), Overdue tests (count + top-3 offenders), People at risk (top-5 worst), Weakest test (lowest pass-rate topic).
+- [ ] KPI cards (3): Overview (total users · % passed-all-assigned · overall pass-rate), People at risk (single count; click → Assignments table filtered Unfinished), Weakest test (lowest pass-rate topic). No Overdue card.
 - [ ] Global `settings.assignment_due_days` default `'14'`; per-batch `testAssignments.dueAtMs` override wins when set; overdue = assigned-source, not passed, `now > effectiveDue`. Self-passes never overdue.
 - [ ] Changing `assignment_due_days` re-derives overdue counts with no migration.
 - [ ] Tests table: one row per non-deleted topic with pool ≥ 5 — name · pool · assigned · pass-rate · overdue.
 - [ ] Per-topic `⋯`: Un-assign all / Mark substantive only (no assign in row menu).
 - [ ] "Assign a test" composer: topic + audience (Everyone / department / selected) + optional due override; skips passed/already-assigned; audit `training.assign.runNow`.
 - [ ] Header: Agent auto-assign on/off + Assign eligible now + "Assign a test".
-- [ ] Agent status strip (latest action + heartbeat); Details → paginated activity table, searchable by test name.
-- [ ] Users table: paginated (page 25), columns username/email · department (null→Unassigned) · passed/assigned · overdue; search by username; row expands inline to per-user test status. Admins excluded.
+- [ ] One-line agent status strip (latest assignment + heartbeat); no Details/expand.
+- [ ] Assignments table: one row per live testAssignments — User · Department · Test · Status (Passed/Overdue Nd/Not passed) · Assigned (exact VN time); filters search(user/test)+Department+Status; server-paginated 25; sorted overdue→not-passed→passed. Admins excluded.
 - [ ] No glyph matrix anywhere; dashboard hosts no assignment surface.
 
 ## Agent auto-assign
