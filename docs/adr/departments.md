@@ -34,7 +34,6 @@ When a new user first signs in, `userProfiles.department = null`. Admin sets via
 
 ## Gotcha for Claude
 
-- Department doesn't gate assignments. `Assign to all` includes all role=user regardless of dept. Agent cron does same.
-- Admin's role check is the access gate; department is metadata only.
+- The agent auto-assign never filters by department — it keeps every eligible (user, topic) cell filled regardless of dept.
+- The manual Assign composer can target a single department (HR/Sales/IT/Unassigned) — `userProfiles.department` filter, `null` → "Unassigned". Admin's role check is still the access gate; department is targeting metadata.
 - The Training page Users table shows department as a column (null → "Unassigned"); pass-rate math unchanged.
-- Future v1: when department-scoped assignments land, this table is ready — just extend `testAssignments` flow to filter on `userProfiles.department`.

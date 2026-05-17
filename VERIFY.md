@@ -315,13 +315,14 @@ End-state checklist. Every item must pass before the project counts as launched 
 ### Training page (`/admin/training`)
 
 - [ ] KPI cards: Overview (total users · % passed-all-assigned · overall assigned pass-rate · total overdue), Overdue tests (count + top-3 offenders), People at risk (top-5 worst), Weakest test (lowest pass-rate topic).
-- [ ] `settings.assignment_due_days` default `'14'`; overdue = assigned-source, not passed, `now > createdAt + days`. Self-passes never overdue.
+- [ ] Global `settings.assignment_due_days` default `'14'`; per-batch `testAssignments.dueAtMs` override wins when set; overdue = assigned-source, not passed, `now > effectiveDue`. Self-passes never overdue.
 - [ ] Changing `assignment_due_days` re-derives overdue counts with no migration.
 - [ ] Tests table: one row per non-deleted topic with pool ≥ 5 — name · pool · assigned · pass-rate · overdue.
-- [ ] Per-topic `⋯`: Assign to all / Assign to selected (N) / Un-assign all / Mark substantive.
-- [ ] Header: Agent auto-assign on/off toggle + Assign eligible now.
-- [ ] Agent capability callout + activity feed (recent agent assignments, plain language + relative time) + "last checked" heartbeat visible on Training page.
-- [ ] Users table: paginated (page 25), columns username/email · department (null→Unassigned) · passed/assigned · overdue; search by username; row click → user detail. Admins excluded.
+- [ ] Per-topic `⋯`: Un-assign all / Mark substantive only (no assign in row menu).
+- [ ] "Assign a test" composer: topic + audience (Everyone / department / selected) + optional due override; skips passed/already-assigned; audit `training.assign.runNow`.
+- [ ] Header: Agent auto-assign on/off + Assign eligible now + "Assign a test".
+- [ ] Agent status strip (latest action + heartbeat); Details → paginated activity table, searchable by test name.
+- [ ] Users table: paginated (page 25), columns username/email · department (null→Unassigned) · passed/assigned · overdue; search by username; row expands inline to per-user test status. Admins excluded.
 - [ ] No glyph matrix anywhere; dashboard hosts no assignment surface.
 
 ## Agent auto-assign

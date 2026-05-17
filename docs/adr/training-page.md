@@ -4,9 +4,9 @@
 
 ## Deadlines
 
-Assigned tests have a due date. One global admin setting `settings.assignment_due_days` (default `14`). Due date is computed, never stored: `dueAt = testAssignments.createdAt + assignment_due_days × 86_400_000`. Changing the setting re-derives every overdue state instantly.
+Assigned tests have a due date. Global admin setting `settings.assignment_due_days` (default `14`) is the standard window: `dueAt = createdAt + assignment_due_days × 86_400_000`, computed, not stored — changing it re-derives every overdue state instantly. The manual Assign composer can set a **per-batch override** stored as `testAssignments.dueAtMs`; effective due = the row's `dueAtMs` if present, else the global window. The agent never sets an override (stays global).
 
-- **Overdue** = a `testAssignments` row, source `assigned` (admin or agent), `deletedAt=null`, the user has NOT passed it (no `testPasses` with `kind='assigned'`), and `now > dueAt`.
+- **Overdue** = a `testAssignments` row, source `assigned` (admin or agent), `deletedAt=null`, the user has NOT passed it (no `testPasses` with `kind='assigned'`), and `now > effectiveDue`.
 - Self-assessments (`testPasses.kind='self'`, self-started attempts) have no due date and never go overdue.
 - Deadlines are admin-visibility only. Users are never shown a due date and are never blocked by it — open-book, unlimited-retake, no-cooldown posture is unchanged.
 
@@ -23,14 +23,20 @@ Four KPI cards, then a Tests table, then a Users table.
 
 ### Tests table
 
-One row per non-deleted topic with pool ≥ 5: name · pool size · assigned count · pass-rate · overdue count. Each row has a `⋯` actions menu:
+One row per non-deleted topic with pool ≥ 5: name · pool size · assigned count · pass-rate · overdue count. The per-row `⋯` menu is topic-maintenance only — **Un-assign all** (`trainingAssignments.unassignAllForTopic`) and **Mark substantive (re-arm)** (`training.markTopicSubstantive`, per `re-arm-on-substantive-corpus-update.md`). Assigning is NOT in the row menu; it goes through the Assign composer.
 
-- **Assign to all** → `trainingAssignments.assignAllForTopic`.
-- **Assign to selected (N)** → `trainingAssignments.assignUsersForTopic` (selection from Users-table checkboxes).
-- **Un-assign all** → `trainingAssignments.unassignAllForTopic`.
-- **Mark substantive (re-arm)** → `training.markTopicSubstantive` (per `re-arm-on-substantive-corpus-update.md`).
+A topic *is* a test (its approved question pool is the test). "Which test" = "which topic" — one selector.
 
-Header carries agent automation: **Agent auto-assign** on/off (`settings.agent_auto_assign_enabled`, per `agent-auto-assign-cron.md`) and **Assign eligible now** (`training.assignEligibleNow`, deterministic immediate sweep, agent-attributed). No schedule UI — agentic means the admin does not configure timing.
+### Assign composer
+
+Header **"Assign a test"** button opens a modal (`training.assignComposer`, admin-gated):
+
+- **Test** — pick a topic (pool ≥ 5).
+- **Audience** — Everyone · A department (HR/Sales/IT/Unassigned) · Selected users (the Users-table checkboxes).
+- **Overdue after (days)** — optional per-batch override → stored `testAssignments.dueAtMs`; blank = standard global window.
+- Skips users who already passed (assigned) or have a live assignment. Audit row `command='training.assign.runNow'`, `mode='admin'`, `owner='agent'`, `severity='medium'`, args carry topic name + audience + counts.
+
+Header also carries agent automation: **Agent auto-assign** on/off (`settings.agent_auto_assign_enabled`, per `agent-auto-assign-cron.md`) and **Assign eligible now** (`training.assignEligibleNow`, deterministic immediate sweep, agent-attributed). No schedule UI — agentic means the admin does not configure timing.
 
 ## Agent visibility panel
 
@@ -40,10 +46,10 @@ Default state is a **single collapsed status strip** (one row, no scroll cost) d
 
 - Strip leads with the **latest agent action** as the at-a-glance proof — `· last assigned N tests <rel time>`. Falls back to `· running · everyone eligible already assigned (checked <rel time>)` when there is nothing to do, or `· assignments are manual only` when off. No "starting up…" inert state — a non-tech admin reads that as broken.
 - Bot icon (lucide `Bot`), tinted by state — no emoji.
-- **Details ▾** expands in place: the capability list (assigns all eligible, catches new hires, assigns newly-live tests, refills accidental un-assigns) + the activity feed (last ~10 events from `auditLogs` `training.cron.run` + `training.assign.runNow`, plain language + relative time, no source/manual labelling — agent attribution is uniform).
+- **Details ▾** expands in place: the capability list (assigns all eligible, catches new hires, assigns newly-live tests, refills accidental un-assigns) + an **activity table** — paginated (10/page), **searchable by test name**, columns When · Source (Agent/Manual) · Assigned · Tests. Backed by enriched `auditLogs` (`training.cron.run` + `training.assign.runNow` rows carry a `topics` name list, capped 30).
 - Heartbeat data is `settings.agent_last_check` (overwritten every enabled tick; not an audit row, to avoid log spam).
 
-`api.dashboard.agentActivity` (admin-gated) returns `{ lastCheck, events[] }`.
+`api.dashboard.agentActivity({page,search})` (admin-gated) returns `{ events[], lastCheck, pageCount, total }`; `events[]` carry `topics: string[]`.
 
 ### Users table
 

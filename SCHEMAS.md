@@ -334,6 +334,7 @@ Admin-issued OR agent-cron-issued; soft-deleted on un-assign.
 - `createdBy: string` — admin email OR literal `'agent'` (per `docs/adr/agent-auto-assign-cron.md`)
 - `deletedAt: number?`
 - `deletedBy: string?`
+- `dueAtMs: number?` — per-batch overdue override set by the manual Assign composer; absent → standard global `assignment_due_days` window. Agent never sets it. Per `docs/adr/training-page.md`.
 
 Indexes: `by_user_topic`, `by_topic_deletedAt`, `by_user_deletedAt`.
 

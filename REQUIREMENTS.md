@@ -123,9 +123,10 @@ Per `docs/adr/dashboard-admin-landing.md` + siblings.
   - Click bar → re-render pivot for that cycle. Click pivot row → user daily breakdown drill-in.
 - **Training page** `/admin/training` (per `docs/adr/training-page.md`) — assignment surface; dashboard is stats-only:
   - KPI cards: Overview, Overdue tests, People at risk, Weakest test.
-  - Deadlines: `settings.assignment_due_days` (default 14); overdue = assigned-source, not passed, past due. Admin-only lens; users never see/blocked.
-  - Tests table: one row per non-deleted topic with pool ≥ 5 (name · pool · assigned · pass-rate · overdue) + per-topic ⋯ (Assign to all / selected / Un-assign / Mark substantive).
-  - Header: agent auto-assign on/off + Assign eligible now. Agent capability callout + activity feed (recent agent assignments) + "last checked" heartbeat — visible proof the agent is working.
+  - Deadlines: global `settings.assignment_due_days` (default 14); manual composer can set a per-batch `testAssignments.dueAtMs` override. Overdue = assigned-source, not passed, past effective due. Admin-only lens; users never see/blocked.
+  - Tests table: one row per non-deleted topic with pool ≥ 5 (name · pool · assigned · pass-rate · overdue); per-topic ⋯ is maintenance only (Un-assign / Mark substantive).
+  - Assign composer ("Assign a test" button): topic + audience (Everyone / department / selected users) + optional per-batch due override.
+  - Header: agent auto-assign on/off + Assign eligible now. Agent status strip (latest action + heartbeat) → Details expands capability list + paginated, test-name-searchable activity table — visible proof the agent works.
   - Users table: paginated, columns username/email · department · passed/assigned · overdue; search by username; row expands inline to that user's per-test status (plain language).
   - No glyph matrix.
 

@@ -4,7 +4,7 @@ Admin assigns a topic's assessment test to a chosen set of role=user accounts, o
 
 ## Trigger and scope
 
-The Training page (`/admin/training`) is the assignment surface. The Tests table has one row per topic with a `⋯` menu: **Assign to all**, **Assign to selected (N)**, **Un-assign all**, **Mark substantive**. "Selected" users come from the Users-table checkboxes on the same page. Per `training-page.md`.
+The Training page (`/admin/training`) is the assignment surface. Assigning goes through the **"Assign a test"** composer (`training.assignComposer`): pick a topic (= test), choose audience (Everyone / a department / Selected users from the Users-table checkboxes), optional per-batch overdue override. The Tests-table per-row `⋯` is topic-maintenance only (Un-assign all, Mark substantive). Per `training-page.md`.
 
 - **Assign to all** → `trainingAssignments.assignAllForTopic({topicId})` — every role=user account.
 - **Assign to selected** → `trainingAssignments.assignUsersForTopic({topicId, userIds})` — only the checked users.
