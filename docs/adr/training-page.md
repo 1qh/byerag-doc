@@ -12,31 +12,35 @@ Assigned tests have a due date. Global admin setting `settings.assignment_due_da
 
 ## Layout
 
-Three KPI cards, a one-line agent status strip, a Tests table, then the Assignments table.
+Three KPI cards, a Tests table, a User-summary table, then the Assignments table. No persistent agent strip — agent activity surfaces as a transient toast.
 
 ### KPI cards
 
-- **Overview** — total role=user accounts · % users who passed *all* their assigned tests · overall assigned pass-rate (`passed_assigned / assigned`).
-- **People at risk** — single count of users with ≥1 assigned test not yet passed. The whole card is a button → sets the Assignments-table Status filter to "Unfinished" and scrolls to it.
-- **Weakest test** — topic with the lowest assigned pass-rate (ties broken by largest assigned count).
+All three cards are clickable drill-downs (cards are single scannable numbers; the *who/what* lives in the tables below):
 
-Principle: KPI cards are single scannable numbers. Drill-down is the Assignments table, never duplicated on a card.
+- **Overview** — total role=user accounts · % users who passed *all* assigned · overall assigned pass-rate. Click → scrolls to the User-summary table (no filter).
+- **People at risk** — single count of users with ≥1 assigned test not yet passed. Click → Assignments table, Status filter = "Unfinished", scrolls to it.
+- **Weakest test** — topic with the lowest assigned pass-rate (ties → largest assigned). Click → Assignments table filtered (search = that test name), scrolls to it.
 
-### Agent status strip
+### Agent notification (toast only)
 
-One line under the header (no expand, no Details): lucide `Bot` icon tinted by state · "Agent on/off" · the latest assignment as proof (`· last assigned <test> to <user> <rel time>`), falling back to `· running · everyone eligible already assigned (checked <rel time>)` or `· assignments are manual only`. Heartbeat data is `settings.agent_last_check` (overwritten every enabled tick; not an audit row).
+No persistent agent strip. When a new **agent-sourced** assignment appears (the query's `latest` advances and `source==='agent'`), a transient toast fires: "Agent assigned <test> to <user>". First load sets the baseline silently (no toast). The on/off toggle for `agent_auto_assign_enabled` lives in the header controls; `settings.agent_last_check` still updates every enabled tick but is no longer surfaced inline.
 
 ### Tests table
 
 One row per non-deleted topic with pool ≥ 5: name · questions (pool) · assigned · pass-rate · overdue. **Search by test name**; client-side paginated (10/page; control only shows when >1 page — expected scale under 20). Per-row `⋯` is topic-maintenance only — **Un-assign all** (`trainingAssignments.unassignAllForTopic`) and **Mark substantive (re-arm)** (`training.markTopicSubstantive`). Assigning is NOT here; it goes through the Assign composer. A topic *is* a test (its approved pool is the test) — one selector.
 
+### User-summary table
+
+Per-user aggregate (re-added alongside the per-assignment table — both kept; summary answers "is this person done?", Assignments answers "exactly which test/when"). Columns: **User · Department · Passed / assigned · Overdue**. Search by user, server-paginated 25, sorted worst-first (overdue, then unfinished). `api.dashboard.userSummary({page,search})`. The Overview card scrolls here.
+
 ### Assignments table
 
-The single per-assignment surface — one row per live `testAssignments` record, the shape a non-tech admin acts on (each row reads as a sentence). Columns: **User · Department · Test · Status · Assigned** (exact datetime, Vietnam time). Status is plain words: `✓ Passed` · `⏰ Overdue N days` · `Not passed`. Sorted overdue → not-passed → passed, then most-recent.
+The per-assignment surface — one row per live `testAssignments` record, each row reads as a sentence. Columns: **User · Department · Test · Status · Deadline · Assigned** (dates in Vietnam time). Status plain words: `✓ Passed` · `⏰ Overdue N days` · `Not passed`. **Deadline** = effective due date (`dueAtMs` if set else `createdAt + global window`); overdue rows highlight the deadline. Sorted overdue → not-passed → passed, then most-recent.
 
-Filters: **search** (user or test, substring) · **Department** dropdown (HR/Sales/IT/Unassigned/All) · **Status** dropdown (All / Unfinished / Overdue / Not passed in time / Passed). Server-paginated, 25/page. The People-at-risk card deep-links here with Status=Unfinished.
+Every filterable column header (**Department · Test · Status · Deadline · Assigned**) is a clean ghost-styled dropdown (the header *is* the control — no boxed inputs, no separate filter row) opening a **multi-select checkbox list** of the distinct values present (server-computed facets), with a count badge + Clear. User column is plain. Multi-select within a column = OR; across columns = AND. Server-paginated, 25/page. People-at-risk deep-links Status∈{Overdue, Not passed}; Weakest-test deep-links Test=that test.
 
-Backed by `api.dashboard.assignmentsTable({page,search,department,status})` (admin-gated) → `{ rows[], latest, lastCheck, pageCount, total }`; each row `{ userId, department, test, status, overdueDays, at }`. `latest` (+`lastCheck`) feed the status strip. Effective due per row = `dueAtMs` if set else global window. Self-passes never appear (only `testAssignments`). Admins excluded (not role=user).
+Backed by `api.dashboard.assignmentsTable({page, departments[], tests[], statuses[], deadlines[], assigneds[]})` (admin-gated) → `{ rows[], latest, facets, pageCount, total }`. `facets` = distinct sorted values for each column (drives the dropdowns). Each row `{ userId, department, test, status, overdueDays, source, deadline, assigned, at }` — `deadline`/`assigned` are preformatted Vietnam-time date strings. `latest` drives the agent toast (when `source==='agent'`). Self-passes never appear. Admins excluded.
 
 ### Assign composer
 

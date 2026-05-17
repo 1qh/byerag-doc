@@ -122,12 +122,13 @@ Per `docs/adr/dashboard-admin-landing.md` + siblings.
   - Pivot table: per-`(user, model)` rows w/ input/output tokens + cost. Sort by cost desc. Footer totals.
   - Click bar → re-render pivot for that cycle. Click pivot row → user daily breakdown drill-in.
 - **Training page** `/admin/training` (per `docs/adr/training-page.md`) — assignment surface; dashboard is stats-only:
-  - KPI cards (3, single numbers): Overview, People at risk (click → Assignments table filtered to Unfinished), Weakest test.
+  - KPI cards (3, single numbers, all clickable): Overview (→ User-summary table), People at risk (→ Assignments filtered Unfinished), Weakest test (→ Assignments filtered to that test).
   - Deadlines: global `settings.assignment_due_days` (default 14); manual composer can set a per-batch `testAssignments.dueAtMs` override. Overdue = assigned-source, not passed, past effective due. Admin-only lens; users never see/blocked.
   - Tests table: one row per non-deleted topic with pool ≥ 5 (name · pool · assigned · pass-rate · overdue); per-topic ⋯ is maintenance only (Un-assign / Mark substantive).
   - Assign composer ("Assign a test" button): topic + audience (Everyone / department / selected users) + optional per-batch due override.
-  - Header: agent auto-assign on/off + Assign eligible now. One-line agent status strip = latest assignment + heartbeat (no Details/expand).
-  - Assignments table (single per-(user,test) surface): columns User · Department · Test · Status (Passed / Overdue Nd / Not passed) · Assigned (exact VN time); filters search (user/test) + Department + Status; server-paginated 25.
+  - Header: agent auto-assign on/off + Assign eligible now + Assign-a-test. No persistent agent strip — a toast fires on new agent-sourced assignments only.
+  - User-summary table: per-user User · Department · Passed/assigned · Overdue; search; paginated 25.
+  - Assignments table (per-(user,test)): User · Department · Test · Status · Deadline · Assigned (VN dates); every filterable column header is a multi-select checkbox dropdown over server facets (no boxed inputs); server-paginated 25.
   - No glyph matrix.
 
 ## Agent auto-assign
