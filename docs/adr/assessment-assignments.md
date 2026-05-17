@@ -1,10 +1,10 @@
 # assessment-assignments
 
-Admin assigns a topic's assessment test to a chosen set of role=user accounts, or to all of them, from the dashboard gradebook. Assignment fires immediately via Convex reactive WebSocket; per-assignment badge appears on each user's UI within seconds. Badge persists until that user passes the topic via an assigned-kind attempt. Admin can un-assign at any time; un-assignment nukes all assignment rows silently. Pool < 5 blocks creation; admin sees the gate at click time. The agent auto-assign cron (per `agent-auto-assign-cron.md`) fills eligible cells independently when enabled.
+Admin assigns a topic's assessment test to a chosen set of role=user accounts, or to all of them, from the Training page (`training-page.md`). Assignment fires immediately via Convex reactive WebSocket; per-assignment badge appears on each user's UI within seconds. Badge persists until that user passes the topic via an assigned-kind attempt. Admin can un-assign at any time; un-assignment nukes all assignment rows silently. Pool < 5 blocks creation; admin sees the gate at click time. The agent auto-assign cron (per `agent-auto-assign-cron.md`) fills eligible cells independently when enabled.
 
 ## Trigger and scope
 
-The dashboard gradebook (`/dashboard`) is the assignment surface. Each user is a row with a select checkbox; each topic column header has a menu: **Assign to all**, **Assign to selected (N)**, **Un-assign all**, **Mark substantive**.
+The Training page (`/admin/training`) is the assignment surface. The Tests table has one row per topic with a `⋯` menu: **Assign to all**, **Assign to selected (N)**, **Un-assign all**, **Mark substantive**. "Selected" users come from the Users-table checkboxes on the same page. Per `training-page.md`.
 
 - **Assign to all** → `trainingAssignments.assignAllForTopic({topicId})` — every role=user account.
 - **Assign to selected** → `trainingAssignments.assignUsersForTopic({topicId, userIds})` — only the checked users.
@@ -61,7 +61,7 @@ Offline users: assignment row already exists; on next sign-in, the subscription 
 
 ## Admin exemption
 
-Admins (`role='admin'`) are excluded from `Assign to all users` automatically. Admin curates the content; testing them on questions they approved is theater. If an admin wants to self-test, they sign in to the user app with a user-role account OR self-assess from admin app's `/training` page (admin app's training surface, if any, deferred to UI/UX discussion).
+Admins (`role='admin'`) are excluded from `Assign to all users` automatically. Admin curates the content; testing them on questions they approved is theater. If an admin wants to self-test, they sign in to the user app with a user-role account. The admin app's `/admin/training` page is the assignment/oversight surface (per `training-page.md`), not a self-test surface.
 
 ## Pool gating
 

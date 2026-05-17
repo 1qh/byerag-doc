@@ -87,13 +87,13 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 - [`dashboard-admin-landing`](./dashboard-admin-landing.md) — `/admin/dashboard` as default landing route
 - [`dashboard-top-strip`](./dashboard-top-strip.md) — three live tiles: active/total users, cost cycle, docs in corpus
 - [`dashboard-cost-cycle`](./dashboard-cost-cycle.md) — 5th-to-5th cycle, monthly chart, per-(user, model) pivot
-- [`dashboard-gradebook`](./dashboard-gradebook.md) — per-(user, topic) matrix with glyphs + drill-ins
+- [`training-page`](./training-page.md) — admin Training surface: KPI cards, deadlines/overdue, Tests table, searchable roster
 - [`costrecords-table`](./costrecords-table.md) — per-(owner, model, dayKey) aggregation backing cost analytics
 - [`departments`](./departments.md) — HR/Sales/IT tag on role=user; dashboard-filter affordance only
 
 ## Agent auto-assign
 
-- [`agent-auto-assign-cron`](./agent-auto-assign-cron.md) — daily cron + manual enable flag; signal (i) only; no rate limit; aggregate audit per run
+- [`agent-auto-assign-cron`](./agent-auto-assign-cron.md) — continuous agentic assignment when enabled (5-min idempotent tick, no schedule); heartbeat + activity feed
 
 ## Production deployment
 

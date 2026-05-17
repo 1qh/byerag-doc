@@ -36,5 +36,5 @@ When a new user first signs in, `userProfiles.department = null`. Admin sets via
 
 - Department doesn't gate assignments. `Assign to all` includes all role=user regardless of dept. Agent cron does same.
 - Admin's role check is the access gate; department is metadata only.
-- Gradebook can group by dept for visual grouping; pass-rate math unchanged.
+- The Training page Users table shows department as a column (null → "Unassigned"); pass-rate math unchanged.
 - Future v1: when department-scoped assignments land, this table is ready — just extend `testAssignments` flow to filter on `userProfiles.department`.

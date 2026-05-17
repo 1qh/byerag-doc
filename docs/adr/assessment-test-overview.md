@@ -21,7 +21,7 @@ This ADR is the top-level overview; mechanism details live in the sibling ADRs l
 - **MCQ only, 3 choices, exactly 1 correct.** No short-answer, no free-form, no true/false, no multi-correct.
 - **5 questions per attempt.** Random sample from the topic's admin-approved pool. Different from immediate prior attempt is best-effort only — no anti-repeat tracking.
 - **100% correct = pass.** Any wrong answer = fail.
-- **Unlimited retakes. No cooldown. No time limit. No deadlines.**
+- **Unlimited retakes. No cooldown. No time limit.** Assigned tests carry an admin-only due date (global `settings.assignment_due_days`, default 14) for overdue tracking on the Training page; users are never shown or blocked by it (per `training-page.md`).
 - **Open-book.** Every question card shows source-doc citation; doc viewer remains available beside the test.
 - **Result reveals pass/fail + score + source-document citations only.** Both passed and failed attempts show the outcome (Passed/Not passed), the score ratio (e.g. `3/5`), and clickable citations of the source documents the questions were drawn from (open in the doc side-sheet). No per-question content and no correct answers are ever revealed for either outcome — the answer key never leaves the server. Citations do not leak answers (the source docs are open-book).
 - **Tab close mid-attempt = discard.** No save & continue. Server marks orphan `in-progress` rows as `cancelled` when a new attempt for the same (user, topic) starts.
@@ -29,7 +29,7 @@ This ADR is the top-level overview; mechanism details live in the sibling ADRs l
 - **Question + choice order shuffled per attempt.** Anti-pattern memorization.
 - **One latest attempt row per (user, topic).** Older purged on new attempt insert. Pass-state ledger (`testPasses`) keeps separate per-kind history.
 - **Self-pass ≠ assignment-pass.** Distinct buckets in `testPasses`. Assignments skip already-passed-assigned users only; never auto-satisfied by prior self-passes.
-- **Admin assigns to a chosen set of users or to all of them.** Targets role=user only; admins are exempt. Selective ("assign to selected") and bulk ("assign to all") both supported from the dashboard gradebook. Real-time fire via Convex reactive subscription. Each assignment is a separate persistent badge; cleared only by passing.
+- **Admin assigns to a chosen set of users or to all of them.** Targets role=user only; admins are exempt. Selective ("assign to selected") and bulk ("assign to all") both supported from the Training page (`training-page.md`). Real-time fire via Convex reactive subscription. Each assignment is a separate persistent badge; cleared only by passing.
 - **Admin un-assignment nukes all assignment rows for that topic silently.** Badges vanish; in-progress attempts cancelled; past pass records preserved.
 - **Pool < 5 approved questions** blocks both user attempts and admin assignment creation. Topics with 0 approved questions hidden from the user app entirely; topics with 1-4 approved questions visible to admin but disabled on user app.
 - **Substantive corpus updates re-arm assignment-passes** for affected topics. Admin flags substantive vs cosmetic at approval time. Self-passes never re-arm.
@@ -44,7 +44,7 @@ This ADR is the top-level overview; mechanism details live in the sibling ADRs l
 - No topic rename / merge / split / lock / manual-create in v0; agent-clustered flat list is canonical.
 - No prerequisites between topics.
 - No admin-curation gate on user-side topic visibility (every approved topic with pool ≥ 5 is self-assessable by all users).
-- No assignment deadlines.
+- Assigned tests have an admin-only due window (global days setting) for overdue visibility; no per-assignment dates, no user-facing deadline, no lockout.
 - No assignment scheduling; fires immediately.
 - No anti-cheat surveillance (open-book trust posture).
 - No timed mode.
