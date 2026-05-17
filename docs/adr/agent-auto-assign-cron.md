@@ -33,6 +33,15 @@ Every eligible `(user, topic)` pair fills on every cron run. First cron after en
 
 Cron run produces no notification. Admin sees results via gradebook `ⓐ` glyphs on next dashboard load.
 
+## Admin-triggered immediate sweep
+
+The daily 03:00 UTC cron is the standing automation; the enable flag gates ONLY that cron. Separately, the dashboard gradebook carries an **"Assign eligible now"** button that runs the **same deterministic eligibility sweep on demand**, so an admin does not wait until 03:00 UTC.
+
+- Same logic as the cron: eligible topics (pool ≥ 5, not deleted) × role=user accounts → insert `testAssignments` for empty cells, skipping existing passes/live assignments. No LLM/agent inference is involved anywhere in auto-assign — "agent" is the product framing; rows are `createdBy='agent'` and surface as the `ⓐ` glyph so the user sees it as the agent's work.
+- **Flag-independent.** Pressing the button IS the admin's explicit choice; it runs regardless of `agent_auto_assign_enabled`. The flag still gates only the cron. Enabling the flag does NOT itself trigger an immediate sweep — the button is the immediate path, the toggle is the recurring path.
+- Admin-gated (caller must be role=admin). Distinct audit row: `command='training.assign.runNow'`, `mode='admin'`, `owner='agent'` (agent-attributed), `args` carries `triggeredBy=<admin email>` + counts. The cron keeps its own `training.cron.run` row — the two are never conflated.
+- Idempotent: re-pressing only fills still-empty eligible cells (same skip rules as the cron).
+
 ## No admin override
 
 - Admin's "un-assign topic" cascade nukes all rows for topic (admin + agent). Next cron refills if eligibility unchanged.
