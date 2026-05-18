@@ -13,6 +13,10 @@
 - SDK upgrades require image rebuild + rollout.
 - Tool calls bounce: agent inside sandbox → Bash → CLI binary → Convex `/api/cli/exec` → tool action → JSON back → Bash stdout → agent. Each round trip is ~50-200ms warm.
 
+## Corpus-only tool surface
+
+The SDK session is created with `disallowedTools: ['WebSearch', 'WebFetch']` (`apps/backend/sandbox/run.ts` opts). Hard rule: the agent answers ONLY from the document corpus (admin shared docs + the asking user's own `mine` uploads, ACL-enforced) via the `docs` CLI. It must never reach the open web, external sources, or its own training-data/general knowledge; absent answer → "Not in the corpus" + recommend upload/admin. The prompt forbids it (`apps/user/server/prompt.ts` HARD RULE line) AND the tools are disabled at the SDK so they cannot be called even if the model tries — prompt wording alone is not a guarantee. `WebSearch`/`WebFetch` are Anthropic-server-side tools, NOT blocked by the sandbox network isolation, so the SDK-level disable is the actual enforcement.
+
 ## Gotcha for Claude
 
 - The embedded `agentScript.ts` is the source-of-truth for the agent script. It's stored as a TS string in the Convex codebase, written to the sandbox at boot, then `setsid bun run`-ed. Edits to the script require editing the embedded string, not a separate file.

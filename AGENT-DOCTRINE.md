@@ -22,6 +22,8 @@ Per `CLI-SURFACE.md`. Skill blob served from `/api/cli/skill` is the rendered SK
 
 The agent invokes tools via the `Bash` tool calling the `byerag` CLI binary baked into the sandbox image. The CLI is a thin client over Convex `/api/cli/exec`, authenticated via the same per-chat secret. Tools are Convex actions in `tools/<provider>/*` files, registered by codegen into `tools/generated/registry.ts`.
 
+**Corpus-only (hard rule).** The agent answers ONLY from the document corpus — admin-curated `shared` docs + the asking user's own `mine` uploads (ACL-enforced) — reached via the `docs` CLI. It must NEVER use the open web, external sources, or its own training-data/general knowledge. `WebSearch`/`WebFetch` are disabled at the SDK (`disallowedTools` in `apps/backend/sandbox/run.ts`) — not just discouraged in the prompt — because they are Anthropic-server-side tools the sandbox network isolation does not block. Corpus silent → reply "Not in the corpus" + recommend upload / admin escalation; never fill the gap from memory or the internet. Per `docs/adr/agent-sdk-inside-sandbox.md`.
+
 ## System prompt
 
 Per-app system prompt built at runtime via `app.buildSystemPrompt({email, runQuery})`. The admin app's prompt frames the agent as an admin assistant (full org-doc context). The user app's prompt frames the agent as a personal assistant (own docs + shared).
