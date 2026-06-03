@@ -314,18 +314,18 @@ End-state checklist. Every item must pass before the project counts as launched 
 
 ### Training page (`/admin/training`)
 
-- [ ] KPI cards (3): Overview (total users · % passed-all-assigned · overall pass-rate), People at risk (single count; click → Assignments table filtered Unfinished), Weakest test (lowest pass-rate topic). No Overdue card.
-- [ ] Global `settings.assignment_due_days` default `'14'`; per-batch `testAssignments.dueAtMs` override wins when set; overdue = assigned-source, not passed, `now > effectiveDue`. Self-passes never overdue.
-- [ ] Changing `assignment_due_days` re-derives overdue counts with no migration.
-- [ ] Tests table: one row per non-deleted topic with pool ≥ 5 — name · pool · assigned · pass-rate · overdue.
-- [ ] Per-topic `⋯`: Un-assign all / Mark substantive only (no assign in row menu).
-- [ ] "Assign a test" composer: topic + audience (Everyone / department / selected) + optional due override; skips passed/already-assigned; audit `training.assign.runNow`.
-- [ ] Header: Agent auto-assign on/off + Assign eligible now + "Assign a test".
-- [ ] No persistent agent strip; toast fires only on a new agent-sourced assignment (silent on first load).
-- [ ] KPI cards all clickable: Overview→User-summary table; People-at-risk→Assignments(Unfinished); Weakest→Assignments(test search).
-- [ ] User-summary table: per-user User · Department · Passed/assigned · Overdue; search; paginated 25.
-- [ ] Assignments table: per live testAssignments — User · Department · Test · Status · Deadline (effective due, VN) · Assigned; every filterable column header = multi-select checkbox dropdown over server facets (Dept/Test/Status/Deadline/Assigned), count badge + Clear; server-paginated 10; sorted overdue→not-passed→passed. Admins excluded.
-- [ ] No glyph matrix anywhere; dashboard hosts no assignment surface.
+- [x] KPI cards (3): Overview (total users · % passed-all-assigned · overall pass-rate), People at risk (single count; click → Assignments table filtered Unfinished), Weakest test (lowest pass-rate topic). No Overdue card.
+- [x] Global `settings.assignment_due_days` default `'14'`; per-batch `testAssignments.dueAtMs` override wins when set; overdue = assigned-source, not passed, `now > effectiveDue`. Self-passes never overdue.
+- [x] Changing `assignment_due_days` re-derives overdue counts with no migration.
+- [x] Tests table: one row per non-deleted topic with pool ≥ 5 — name · pool · assigned · pass-rate · overdue.
+- [x] Per-topic `⋯`: Un-assign all / Mark substantive only (no assign in row menu).
+- [x] "Assign a test" composer: topic + audience (Everyone / department / selected) + optional due override; skips passed/already-assigned; audit `training.assign.runNow`.
+- [x] Header: Agent auto-assign on/off + Assign eligible now + "Assign a test".
+- [x] No persistent agent strip; toast fires only on a new agent-sourced assignment (silent on first load).
+- [x] KPI cards all clickable: Overview→User-summary table; People-at-risk→Assignments(Unfinished); Weakest→Assignments(test search).
+- [x] User-summary table: per-user User · Department · Passed/assigned · Overdue; search; paginated 25.
+- [x] Assignments table: per live testAssignments — User · Department · Test · Status · Deadline (effective due, VN) · Assigned; every filterable column header = multi-select checkbox dropdown over server facets (Dept/Test/Status/Deadline/Assigned), count badge + Clear; server-paginated 10; sorted overdue→not-passed→passed. Admins excluded.
+- [x] No glyph matrix anywhere; dashboard hosts no assignment surface.
 
 ## Agent auto-assign
 
