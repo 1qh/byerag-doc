@@ -110,6 +110,8 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 ## Admin queue dedup
 
+- **Any `[...sliceA, ...sliceB]` union-of-two-queries returning the same `_id` from both sides dupes** — caught in `listForQuarantine` (policyStatus='rejected' ∩ scanStatus='quarantined') AND `weeklyHighlights` (shared-scope query overlapped with owner query because owner query did not gate by scope). Canonical: every union of two ctx.db queries that can share a row → dedupe via `Map<_id, row>`. Spot the pattern with `grep -rEn '\[\.\.\.[a-zA-Z_]+,\s*\.\.\.' apps/backend/convex`. Audit during PR for any new such union. Scope-disjoint slices (one filtered `scope='shared'`, the other `scope='mine'`) are safe — they can never overlap because `scope` is single-valued.
+
 - **`listForQuarantine` merged `policyStatus='rejected'` + `scanStatus='quarantined'` with `[...a, ...b]` — a doc with BOTH states appeared twice** → React `key={r._id}` collision: `Encountered two children with the same key`. Risks duplicated or omitted rows on update. Canonical: dedupe via `Map<_id, row>` (last write wins, preserves quarantined view) before mapping to the projection. Pattern applies to any union-of-two-states list query — never trust the two slices to be disjoint.
 
 ## CLI auth (device flow + PAT)
