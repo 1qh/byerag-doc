@@ -67,6 +67,16 @@ Hard cap: 3 canonical probes per user-question (prevents infinite recursion). Sk
 
 Per-chat namespacing inside the sandbox via `CLAUDE_CONFIG_DIR` + `CLAUDE_TMPDIR` env vars set to chat-specific paths. Cross-chat sandbox state (long-term memory) lives in a separate dir not namespaced by chat.
 
+## Out-of-scope questions
+
+The agent answers only from the document corpus (admin-curated `shared` + the asking user's own `mine` uploads). Questions about runtime state outside the corpus — *"what tests do I still need to take?"*, *"what's my training history?"*, *"who's in my department?"* — are NOT answered by the chat agent. The training data lives in `testAssignments` / `testAttempts` / `testPasses` tables and is surfaced through dedicated UI: the user app's `/training` page, the admin app's `/training` surfaces. Starter prompts on the user app deliberately do NOT include training-data questions for this reason.
+
+If a user types one anyway, the agent searches the corpus, finds nothing, and answers *"Not in the corpus"* — the same corpus-only refusal that protects against hallucination. The right fix when this happens is not to expose more tools to the agent (training data crossing the chat boundary widens attack surface and dilutes the corpus-only guarantee), but to point the user at the sidebar surface that owns that question.
+
+## Extended-thinking presentation
+
+The agent's reasoning + tool-call sequence renders in the chat thread as one collapsible "thinking" block per turn. Default-collapsed once the answer arrives; pill text `Thought for Ns · <up-to-3 tool names>`. Inside the expanded block: italic reasoning prose, lighter bordered tool blocks, and any interim narrative `text` the agent emits between tool calls. The final answer and citation chips render outside the block, always visible. This is the visible part of the supportiveness bar — the user can audit every step of how the answer was derived without the work crowding the answer.
+
 ## Liveness
 
 After kicking the agent, the action schedules `livenessCheck` 90s later. If the chat is still `streaming` and zero events arrived in that window, an error event is inserted so the UI surfaces "agent silent" rather than spinning forever.

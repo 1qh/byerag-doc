@@ -71,6 +71,27 @@ The sidebar is layout-level and single-sourced; pages only render content into `
 
 Account + theme are universal controls, never buried in one shell: the shared `SidebarUserNav` (`@a/react/components` — avatar/email, Light/Dark, Log out) is mounted at the bottom of every shell (chat AND standalone, both apps). A user on `/training` or `/docs` can sign out or switch theme without navigating back to chat. Burying login/logout or theme behind a single route is a non-tech-UX failure.
 
+## Admin training surfaces
+
+`/training` is the **overview**: four KPI cards (Overview / People at risk / Weakest test / Needs coaching), one-glance Tests table (top topics, click name → detail), one-glance User summary table (recent users, click row → attempt-history modal), assign-a-test composer + agent auto-assign controls. `View all →` links on each section heading jump to the deep route.
+
+Sub-routes:
+
+- **`/training/users`** — deep User-summary surface. Sortable columns User · Department · Role · Passed/assigned · Failed · Overdue · Pass rate · Last attempt · Most-failed topic. Department multi-select. Needs-coaching toggle (failed ≥ 3 in last 30 days). Search. 100/page server pagination. CSV export. Click a user → opens the shared `AttemptHistoryModal`.
+- **`/training/tests`** — deep Tests list. Sortable columns Name · Questions · Assigned · Pass rate · Overdue · Source-doc count · Created · Last activity. Search. CSV export. Click a name → `/training/tests/<slug>`.
+- **`/training/tests/<slug>`** — per-test detail. Header (name, question count, created date, source-doc count) + KPI strip (Pass rate / Assigned / Overdue / Failed attempts) + source-document chips (click → DocSheet) + collapsible read-only question bank + three status tables: Passed · Failing-or-in-progress · Haven't-started. Every username opens `AttemptHistoryModal`.
+- **`/training/assignments`** — hidden internal page. Multi-filter assignments table (Dept / Test / Status / Deadline / Assigned-at column-header multi-selects). Not linked from `/training`; accessible by typing the URL. Available for power-admin use without polluting the overview.
+
+URL slugs strip Vietnamese diacritics + lowercase + hyphenate (`Mục đích quy định` → `muc-dich-quy-dinh`). The slug is computed on the fly from the topic name — no schema field.
+
+The **modal vs URL** split: `AttemptHistoryModal` is the triage surface (fast in/out, comparison context preserved, no navigation). Dedicated routes are the deep-dive surfaces (shareable, refreshable, room to grow charts/notes/actions). Every "click a user" interaction across the four training surfaces opens the same modal; every "click a test" opens the URL.
+
+## Chat agent thinking process
+
+Each assistant turn renders as one `ThinkingBlock` above the final answer. While streaming the block is auto-expanded with a `Thinking…` label + spinner, showing italic reasoning prose interleaved with lighter bordered tool blocks (`→ docs similar "…"` + truncated output snippet). On stream-complete the block auto-collapses to a single muted pill: `Thought for Ns · docs list, read, similar` — N is seconds the block was visible while loading. Click the pill to re-expand. The final answer (the last `text` part after the last reasoning/tool index) and the `data-sources` block render OUTSIDE the pill, always visible.
+
+Two consequences of the design: (a) the chat backend emits each reasoning step / tool call as its own message row, so `chunksToMessages` merges consecutive `role='assistant'` chunks into one synthetic `UIMessage` before rendering; (b) interim narrative `text` chunks the agent emits between tool calls (e.g. *"Let me search the corpus…"*) buffer into the thinking block, not the answer surface.
+
 ## Two-app convergence
 
 Differences between admin and user apps are routes + role-gated panels, not separate UI primitives. Both apps consume the same `packages/react` components.

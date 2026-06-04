@@ -110,6 +110,32 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 (none yet)
 
+## Chat agent rendering
+
+- **claude.ai-style extended thinking — the agent emits one chunk per reasoning step / tool call as a separate Convex `messages` row** with one `UIPart`. Per-message grouping inside `PurePreviewMessage` (`packages/react/src/components/message.tsx`) therefore yields one `ThinkingBlock` per chunk — wall of cards. Fix: `chunksToMessages` in `packages/react/src/lib/ui-messages.ts` runs `mergeAssistantRuns` that concatenates consecutive `role='assistant'` chunks into one synthetic `UIMessage` BEFORE rendering. Then `PurePreviewMessage` treats `reasoning|status|data-tool-x|text` as "activity"; the final answer is the LAST `text` part whose index is greater than `lastActivityIndex(parts)`. All earlier activity (including interim `text` chunks the agent emits between tool calls as narrative) buffers into one `ThinkingBlock`. Final text + `data-sources` render outside. Streaming → pill auto-expanded with "Thinking…" + spinner; on `isLoading` false → pill collapses to `Thought for Ns · tool1, tool2, …` with a click-to-expand chevron. Inline tool blocks inside the pill use light `border border-muted-foreground/15 bg-background/60` chrome (no `Tool` card header) so they nest naturally inside the soft container.
+- **Per-block elapsed time** is approximated from `startedAt = first render` (lazy `useState(() => Date.now())`) to `isLoading` transition false. On reload of a finished message, no transition fires → pill omits "for Ns" and shows `Thought · tool1, …`. This is the right behavior — fake times would mislead.
+
+## Question generation auto-fire
+
+- **`trainingGen.generate` was silent on Kimi rate-limit** — admin uploads a doc, doc reaches `policyStatus='approved' + scope='shared'`, `setPolicy` schedules `internal.trainingGen.generate`, action hits Kimi, gets 429, returns `{generated:0, reason:'kimi-error:...'}` and exits. Doc sits there embedded + approved with zero pending suggestions forever. `/test-questions` shows empty queue; admin assumes the system is broken. Fix: inside `generate` the call to `callKimi` is wrapped in a 3-attempt in-loop retry with `2000*(i+1)` ms backoff; if all 3 fail OR `parsed.length === 0`, the action self-reschedules via `ctx.scheduler.runAfter(5*60_000, internal.trainingGen.generate, {attempt: att+1, docId})` up to `MAX_RETRY=5`. Attempt counter is in args so it can't infinite-loop. Status surfaces as `reason: 'kimi-error:... (rescheduled)' | '(giving up)'`. Per `docs/adr/question-generation-pipeline.md`.
+
+## URL slugs for non-ASCII topic names
+
+- **Vietnamese topic names need URL slugs**. Topics like `Mục đích quy định` URL-encode to ugly `%E1%BB%A5c%20...`. Canonical `slugify`: `s.normalize('NFD').replaceAll(/[̀-ͯ]/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D').toLowerCase().replaceAll(/[^a-z0-9]+/gu, '-').replace(/^-+|-+$/gu, '')`. Computed on the fly, no schema field — `dashboard.testDetail` does `topicRows.find(t => slugify(t.name) === slug)`. Same fn duplicated in `apps/admin/src/app/(standalone)/training/page.tsx` for client-side `Link` href construction. Single source would be nicer; for now keep both copies byte-identical.
+
+## Admin training routes
+
+- **`/training`** = overview surface: KPI cards (Overview / People at risk / Weakest test / Needs coaching) + inline Tests glance + inline User summary glance. `View all →` links jump to dedicated routes. The deep tables that previously lived inline (Assignments multi-filter table) have moved out.
+- **`/training/users`** = deep User-summary surface: sortable columns (User · Department · Role · Passed/assigned · Failed · Overdue · Pass rate · Last attempt · Most-failed topic), Department multi-select, Needs-coaching toggle, search, server-paginated 100/page, CSV export, click any user → attempt-history modal.
+- **`/training/tests`** = deep Tests list: sortable columns (Name · Questions · Assigned · Pass rate · Overdue · Source docs · Created · Last activity), search, CSV export, click name → `/training/tests/<slug>`.
+- **`/training/tests/<slug>`** = per-test detail: KPI strip (Pass rate / Assigned / Overdue / Failed attempts) + source-doc chips (DocSheet on click) + collapsible question bank read-only + 3 status tables (Passed / Failing-or-in-progress / Haven't-started), all usernames open the attempt-history modal.
+- **`/training/assignments`** (hidden) = the multi-column filterable Assignments table. Not linked from anywhere. Accessible by typing the URL. Kept because the multi-select filter UX is real work; revisit when admin asks for it back.
+- Shared `AttemptHistoryModal` at `apps/admin/src/app/(standalone)/training/_components/attempt-history-modal.tsx` is the canonical user-click surface across `/training`, `/training/users`, `/training/tests/<slug>`. **Pattern**: modal = triage (fast in/out, comparison context preserved); dedicated URL = deep-dive (shareable, refreshable, room for chart/notes/actions).
+
+## Empty-state UX rule
+
+- **Always render the page heading + an explanation + a path forward** even when the underlying query returns zero rows. Bare floating text like `No pending suggestions.` mid-screen reads as broken page. The `/test-questions` empty state regression — heading was hidden when `rows.length === 0`, leaving a single line floating on the page — fixed by always rendering `<h2>Question bank</h2>` + dashed-border card with the explanation of what triggers generation + nav buttons (`Go to Docs`, `View Training`).
+
 ## Admin queue dedup
 
 - **Any `[...sliceA, ...sliceB]` union-of-two-queries returning the same `_id` from both sides dupes** — caught in `listForQuarantine` (policyStatus='rejected' ∩ scanStatus='quarantined') AND `weeklyHighlights` (shared-scope query overlapped with owner query because owner query did not gate by scope). Canonical: every union of two ctx.db queries that can share a row → dedupe via `Map<_id, row>`. Spot the pattern with `grep -rEn '\[\.\.\.[a-zA-Z_]+,\s*\.\.\.' apps/backend/convex`. Audit during PR for any new such union. Scope-disjoint slices (one filtered `scope='shared'`, the other `scope='mine'`) are safe — they can never overlap because `scope` is single-valued.
