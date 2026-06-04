@@ -67,11 +67,23 @@ Hard cap: 3 canonical probes per user-question (prevents infinite recursion). Sk
 
 Per-chat namespacing inside the sandbox via `CLAUDE_CONFIG_DIR` + `CLAUDE_TMPDIR` env vars set to chat-specific paths. Cross-chat sandbox state (long-term memory) lives in a separate dir not namespaced by chat.
 
-## Out-of-scope questions
+## Personal training questions
 
-The agent answers only from the document corpus (admin-curated `shared` + the asking user's own `mine` uploads). Questions about runtime state outside the corpus — *"what tests do I still need to take?"*, *"what's my training history?"*, *"who's in my department?"* — are NOT answered by the chat agent. The training data lives in `testAssignments` / `testAttempts` / `testPasses` tables and is surfaced through dedicated UI: the user app's `/training` page, the admin app's `/training` surfaces. Starter prompts on the user app deliberately do NOT include training-data questions for this reason.
+The agent has a second CLI provider beside `docs`: a caller-scoped, read-only `training` provider. Personal-state questions — *"what tests do I still need to take?"*, *"what's overdue?"*, *"how did I do on the safety test?"*, *"what's my progress?"* — route through it, not through corpus search. The corpus-only HARD RULE applies to KNOWLEDGE questions; personal-state questions read from the same Convex tables (`testAssignments` / `testAttempts` / `testPasses` / `topics`) the `/training` page renders.
 
-If a user types one anyway, the agent searches the corpus, finds nothing, and answers *"Not in the corpus"* — the same corpus-only refusal that protects against hallucination. The right fix when this happens is not to expose more tools to the agent (training data crossing the chat boundary widens attack surface and dilutes the corpus-only guarantee), but to point the user at the sidebar surface that owns that question.
+`training status` returns one row per pool-≥-5 topic with `urgency` (`overdue` | `due-soon` | `open` | `passed-assigned` | `passed-self`), `effectiveDueAtMs`, `overdueDays` / `dueInDays`, and `startUrl: '/training'`. Top-level `counts` aggregates the partitions. Other commands: `training attempts --limit N` (recent attempts), `training topics` (pool sizes), `training attempt-detail --id <attemptId>` (full pinned snapshot for caller's passed attempts only — failed/cancelled return score/total). ACL: caller's own data only, enforced at the action layer.
+
+Mandatory answer shape (system-prompt-baked, enforced for the question family — never produces a *"Not in the corpus"* refusal):
+
+1. One `training status` call, no `docs` calls.
+2. Group by urgency: **Overdue → Due soon → Open → Passed**. Skip empty groups.
+3. Render each test on its own line as `[<topic name>](/training)` followed by relative-day suffix (`overdue Nd` / `due in Nd` / nothing for passed).
+4. Open with a count-shaped sentence — `You're all caught up`, `You have 1 test left`, or `You have <N> tests left — <overdue> overdue, <due-soon> due in the next 3 days` (omit zero clauses).
+5. Close with one concrete next-step pointing at the highest-urgency item.
+
+Pool-leak guard: when the user follows up with *"what's on the X test?"* / *"what are the questions?"*, agent refuses pool content with `Test content stays private until you start — open [<topic name>](/training) to begin.` It does NOT call `docs grep` / `docs similar` to leak content. For *"how did I do on X?"*, agent reads `training attempts`, then `training attempt-detail` ONLY for `status='passed'` rows (failed/cancelled surfaces score+total only).
+
+User-app starter prompts include *"What tests do I still need to take?"* as a discoverable first-class question.
 
 ## Extended-thinking presentation
 

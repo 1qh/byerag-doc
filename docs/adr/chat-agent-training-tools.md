@@ -4,27 +4,31 @@ The chat agent (both admin app and user app) has read-only access to the calling
 
 ## CLI surface
 
-- `training status` — returns the caller's current per-topic state. Output:
+- `training status` — caller's per-pool-≥-5 topic state with urgency + deadline. Output:
   ```json
   {
+    "nowMs": "<epoch ms>",
+    "counts": { "assigned": 4, "overdue": 1, "dueSoon": 2, "open": 1, "passed": 0 },
     "topics": [
       {
-        "topicId": "...",
+        "_id": "<topic id>",
         "name": "Bảo mật",
         "poolSize": 12,
-        "myStatus": "passed-assigned" | "passed-self" | "in-progress" | "failed-last" | "not-attempted",
-        "myLastPassedAt": "<epoch ms>",
-        "myAssignmentPending": true | false
-      },
-      ...
+        "assigned": true,
+        "assignedAtMs": "<epoch ms>",
+        "urgency": "overdue" | "due-soon" | "open" | "passed-assigned" | "passed-self",
+        "effectiveDueAtMs": "<epoch ms; omitted when no assignment>",
+        "overdueDays": "<int; present iff urgency=overdue>",
+        "dueInDays": "<int; present iff urgency in {due-soon, open}>",
+        "startUrl": "/training"
+      }
     ]
   }
   ```
-- `training attempts` — returns the caller's recent attempt list (latest row per topic; one row per topic max per the one-row rule).
-- `training topics` — same as `status` but trimmed (just `topicId`, `name`, `poolSize`); useful for users asking "what topics are there?"
-- `training attempt-detail --id <attemptId>` — returns the full pinned snapshot of a single attempt, INCLUDING correct answers, ONLY if `attempt.status='passed' AND attempt.userId=caller`. For `failed` or `cancelled` attempts, returns `{score, total}` only — no questions, no answers.
-
-All commands are kind-agnostic: an assigned-kind pass and a self-kind pass surface the same way in `status` (with the kind shown in `myStatus` field).
+  Urgency derivation lives in `apps/backend/convex/lib/trainingUrgency.ts` (`deriveUrgency`) — the SSOT shared with admin dashboard surfaces. `due-soon` threshold: ≤ 3 days. Default due-days fallback: 14 (`assignment_due_days` setting overrides).
+- `training attempts` — returns the caller's recent attempt list (latest first; cap 200).
+- `training topics` — topic list (name + pool size); no caller-state. For "what topics are there?".
+- `training attempt-detail --id <attemptId>` — full pinned snapshot of a single attempt, INCLUDING correct answers, ONLY if `attempt.status='passed' AND attempt.userId=caller`. For `failed` or `cancelled` attempts, returns `{score, total}` only — no questions, no answers.
 
 ## ACL
 
