@@ -12,6 +12,7 @@ Persistent per-user metadata (separate from `userContexts` which is transient ta
 
 - `userId: string` — lowercase email
 - `role: 'admin' | 'user'` — access gate
+- `kind: 'real' | 'test'` — `'real'` for accounts created via Google OAuth or first dev sign-in (set by `createOrUpdateUser` callback); `'test'` for fixtures seeded via the test harness (`testing.seedUserProfile` defaults to `'test'`; `testing.markProfileKind` patches an existing row). Admin aggregation surfaces (training KPI cards, User summary, Tests / Test detail, Assignments, cost cycle / pivot, top strip user count) include only `kind='real'` profiles via `convex/lib/userKind.ts`. Chat agent tools (`training status` / `attempts` / `topics` / `attempt-detail`) are caller-scoped and ignore `kind` — a test-fixture user signs in and gets a real training answer, just doesn't pollute admin metrics.
 - `department: 'Safety, Health and Environment' | null` — null when role=admin or unset
 - `updatedAt: number`
 - `updatedBy: string` — admin email who set/changed (or `'self'` on first sign-in seed)
