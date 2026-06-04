@@ -99,6 +99,10 @@ User-app starter prompts include *"What tests do I still need to take?"* as a di
 
 The agent's reasoning + tool-call sequence renders in the chat thread as one collapsible "thinking" block per turn. Default-collapsed once the answer arrives; pill text `Thought for Ns · <up-to-3 tool names>`. Inside the expanded block: italic reasoning prose, lighter bordered tool blocks, and any interim narrative `text` the agent emits between tool calls. The final answer and citation chips render outside the block, always visible. This is the visible part of the supportiveness bar — the user can audit every step of how the answer was derived without the work crowding the answer.
 
+## Final-answer text is answer-only
+
+The plain-text user-facing reply contains the synthesised ANSWER ONLY. Banned anywhere in the final answer text: meta-narration (*"Now let me write…"*, *"I need to…"*, *"Let me identify…"*, *"Here's how I'll structure…"*), step-by-step task plans (*"1. Identify the docs · 2. Explain each · 3. Show how they interact"*), `Key points from <doc>` precursor bullets used as a runway for the real comparison, raw JSON tool output, narrating which tool was called. All deliberation and planning lives inside reasoning blocks the SDK isolates into the thinking pill — they never reach the answer surface. A compare query is answered AS the comparison (named docs, structured differences, canonical-authority callout, recommendation), not as a plan that produces a comparison. Enforced via the user-app system prompt's `ABSOLUTE rule on the final answer text` clause.
+
 ## Liveness
 
 After kicking the agent, the action schedules `livenessCheck` 90s later. If the chat is still `streaming` and zero events arrived in that window, an error event is inserted so the UI surfaces "agent silent" rather than spinning forever.
