@@ -18,8 +18,10 @@ The chat agent (both admin app and user app) has read-only access to the calling
         "assignedAtMs": "<epoch ms>",
         "urgency": "overdue" | "due-soon" | "open" | "passed-assigned" | "passed-self",
         "effectiveDueAtMs": "<epoch ms; omitted when no assignment>",
+        "humanDueDate": "<\"May 30\"-style VN-tz Month Day; omitted when no assignment>",
         "overdueDays": "<int; present iff urgency=overdue>",
         "dueInDays": "<int; present iff urgency in {due-soon, open}>",
+        "estimatedMinutes": "<int; ceil(5 questions × 0.6 min)>",
         "startUrl": "/training"
       }
     ]

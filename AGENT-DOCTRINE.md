@@ -71,17 +71,27 @@ Per-chat namespacing inside the sandbox via `CLAUDE_CONFIG_DIR` + `CLAUDE_TMPDIR
 
 The agent has a second CLI provider beside `docs`: a caller-scoped, read-only `training` provider. Personal-state questions — *"what tests do I still need to take?"*, *"what's overdue?"*, *"how did I do on the safety test?"*, *"what's my progress?"* — route through it, not through corpus search. The corpus-only HARD RULE applies to KNOWLEDGE questions; personal-state questions read from the same Convex tables (`testAssignments` / `testAttempts` / `testPasses` / `topics`) the `/training` page renders.
 
-`training status` returns one row per pool-≥-5 topic with `urgency` (`overdue` | `due-soon` | `open` | `passed-assigned` | `passed-self`), `effectiveDueAtMs`, `overdueDays` / `dueInDays`, and `startUrl: '/training'`. Top-level `counts` aggregates the partitions. Other commands: `training attempts --limit N` (recent attempts), `training topics` (pool sizes), `training attempt-detail --id <attemptId>` (full pinned snapshot for caller's passed attempts only — failed/cancelled return score/total). ACL: caller's own data only, enforced at the action layer.
+`training status` returns one row per pool-≥-5 topic with `urgency` (`overdue` | `due-soon` | `open` | `passed-assigned` | `passed-self`), `effectiveDueAtMs`, `humanDueDate` (e.g. `May 30`, VN-tz), `overdueDays` / `dueInDays`, `estimatedMinutes`, and `startUrl: '/training'`. Top-level `counts` aggregates the partitions. Other commands: `training attempts --limit N` (recent attempts), `training topics` (pool sizes), `training attempt-detail --id <attemptId>` (full pinned snapshot for caller's passed attempts only — failed/cancelled return score/total). ACL: caller's own data only, enforced at the action layer.
 
-Mandatory answer shape (system-prompt-baked, enforced for the question family — never produces a *"Not in the corpus"* refusal):
+Mandatory answer shape (system-prompt-baked, enforced for the question family — never produces a *"Not in the corpus"* refusal). Optimised for the non-tech employee glancing at the answer — warm, scannable, plain English, ready to act in one tap:
 
 1. One `training status` call, no `docs` calls.
-2. Group by urgency: **Overdue → Due soon → Open → Passed**. Skip empty groups.
-3. Render each test on its own line as `[<topic name>](/training)` followed by relative-day suffix (`overdue Nd` / `due in Nd` / nothing for passed).
-4. Open with a count-shaped sentence — `You're all caught up`, `You have 1 test left`, or `You have <N> tests left — <overdue> overdue, <due-soon> due in the next 3 days` (omit zero clauses).
-5. Close with one concrete next-step pointing at the highest-urgency item.
+2. Group by urgency: **Overdue → Due soon → Open → Passed**. Skip empty groups. Each group label is rendered as bold markdown (`**Overdue**`).
+3. Render each test on its own line. Always plain English ("5 days", "2 weeks" — never "5d"). Append `· ~<estimatedMinutes> min` so the user can decide whether to start now. Per urgency:
+   - overdue → bold the entire row: `**[<topic name>](/training) — overdue N days (was due <humanDueDate>) · ~M min**`. Bold marks visual urgency.
+   - due-soon / open → `[<topic name>](/training) — due in N days (by <humanDueDate>) · ~M min`.
+   - passed-* → `✓ <topic name>` (no link, no suffix — celebrate, do not over-decorate).
+4. Opener matches the partition and tone:
+   - zero left, none passed: `You don't have any tests assigned right now.`
+   - zero left, some passed: `Nice work — you're all caught up this cycle.` Then list **Passed**.
+   - one left, not overdue: `You have 1 test left — due in N days.`
+   - one left, overdue: `One overdue test — let's clear it.`
+   - many, ≥1 overdue: `<O> overdue and <K> more on the way — let's get you caught up.`
+   - many, none overdue: `You have <total-left> tests left — <M> due in the next 3 days.`
+5. Closer: one concrete next-step pointing at the highest-urgency item with relative days AND minutes ("only ~3 minutes to clear"). Omit Step 5 for all-passed.
+6. Re-engagement offer (single sentence after Step 5; skip when all-passed): `Want me to summarise the source documents these tests come from? I can give you a plain-language overview.` This is the safe corpus follow-up — agent then runs `docs similar` + `docs read` against the topic name and summarises.
 
-Pool-leak guard: when the user follows up with *"what's on the X test?"* / *"what are the questions?"*, agent refuses pool content with `Test content stays private until you start — open [<topic name>](/training) to begin.` It does NOT call `docs grep` / `docs similar` to leak content. For *"how did I do on X?"*, agent reads `training attempts`, then `training attempt-detail` ONLY for `status='passed'` rows (failed/cancelled surfaces score+total only).
+Pool-leak guard: when the user follows up with *"what's on the X test?"* / *"what are the questions?"*, agent refuses pool content with `Test content stays private until you start — open [<topic name>](/training) to begin. Want me to summarise the source documents instead?` It does NOT call `docs grep` / `docs similar` against test-question content. If the user accepts the source-doc offer, agent runs `docs similar --query "<topic name>" --scope shared` then `docs read` the top hit and summarises (corpus material, not pool content). For *"how did I do on X?"*, agent reads `training attempts`, then `training attempt-detail` ONLY for `status='passed'` rows (failed/cancelled surfaces score+total only).
 
 User-app starter prompts include *"What tests do I still need to take?"* as a discoverable first-class question.
 
