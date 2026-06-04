@@ -119,14 +119,16 @@ Per `docs/adr/dashboard-admin-landing.md` + siblings.
   - Monthly bar chart, scrollable history, current cycle bar partial + live.
   - Pivot table: per-`(user, model)` rows w/ input/output tokens + cost. Sort by cost desc. Footer totals.
   - Click bar → re-render pivot for that cycle. Click pivot row → user daily breakdown drill-in.
-- **Training page** `/admin/training` (per `docs/adr/training-page.md`) — assignment surface; dashboard is stats-only:
-  - KPI cards (3, single numbers, all clickable): Overview (→ User-summary table), People at risk (→ Assignments filtered Unfinished), Weakest test (→ Assignments filtered to that test).
-  - Deadlines: global `settings.assignment_due_days` (default 14); manual composer can set a per-batch `testAssignments.dueAtMs` override. Overdue = assigned-source, not passed, past effective due. Admin-only lens; users never see/blocked.
-  - Tests table: one row per non-deleted topic with pool ≥ 5 (name · pool · assigned · pass-rate · overdue); per-topic ⋯ is maintenance only (Un-assign / Mark substantive).
+- **Training surfaces** (per `docs/adr/training-page.md`) — four routes; `/admin/training` overview + three deep-dive routes + one hidden power-admin route. Triage opens a shared modal; deep-dive opens a URL.
+  - **`/admin/training` overview** — KPI cards (4, single numbers, all clickable): Overview (→ `/training/users`), People at risk (→ `/training/users?coaching=1`), Weakest test (→ `/training/tests/<slug>`), Needs coaching (failed ≥ 3 in 30d → `/training/users?coaching=1`). Inline Tests glance (top topics, click name → detail). Inline User summary glance (recent users, click row → `AttemptHistoryModal`). Assign composer + agent auto-assign controls. `View all →` link on each section heading jumps to the deep route.
+  - **`/training/users`** — deep User-summary surface. Sortable columns: User · Department · Role · Passed/assigned · Failed · Overdue · Pass rate · Last attempt · Most-failed topic. Search · Department multi-select · Needs-coaching toggle pill (failed ≥ 3 in last 30 days) · CSV export · server-paginated 100. Click user → `AttemptHistoryModal`.
+  - **`/training/tests`** — deep Tests list. Sortable columns: Name · Questions · Assigned · Pass rate · Overdue · Source docs · Created · Last activity. Search · CSV export. Click name → `/training/tests/<slug>`.
+  - **`/training/tests/<slug>`** — per-test detail. Header (name, question count, created date, source-doc count) · KPI strip (Pass rate / Assigned / Overdue / Failed attempts) · source-document chips (click → DocSheet) · collapsible read-only question bank · three status tables: Passed · Failing-or-in-progress · Haven't-started. Every username opens `AttemptHistoryModal`. URL slug = topic name with Vietnamese diacritics stripped (NFD + `đ→d`) + lowercased + hyphenated; computed on the fly, never persisted.
+  - **`/training/assignments`** (hidden) — power-admin multi-filter assignments table: User · Department · Test · Status · Deadline · Assigned (VN dates); every filterable column header is a multi-select checkbox dropdown over server facets; server-paginated 10. Not linked from `/training`; accessible by typing the URL.
+  - **`AttemptHistoryModal`** (shared) — Topic · Status (colored badge) · Score · When. Red `Repeatedly failed:` banner when topics with multiple failures present. Triage surface for fast in/out across all four routes.
+  - Deadlines: global `settings.assignment_due_days` (default 14); manual composer can set a per-batch `testAssignments.dueAtMs` override. Overdue = assigned-source, not passed, past effective due. Admin-only lens; users never see / blocked.
   - Assign composer ("Assign a test" button): topic + audience (Everyone / department / selected users) + optional per-batch due override.
   - Header: agent auto-assign on/off + Assign eligible now + Assign-a-test. No persistent agent strip — a toast fires on new agent-sourced assignments only.
-  - User-summary table: per-user User · Department · Passed/assigned · Overdue; search; paginated 25.
-  - Assignments table (per-(user,test)): User · Department · Test · Status · Deadline · Assigned (VN dates); every filterable column header is a multi-select checkbox dropdown over server facets (no boxed inputs); server-paginated 10.
   - No glyph matrix.
 
 ## Agent auto-assign
