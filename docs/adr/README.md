@@ -110,5 +110,5 @@ One file per decision. Format: pick + why-beat-alternatives + real-cost + non-ob
 
 ## Process
 
-- [`session-start-book-root-only`](./session-start-book-root-only.md) — read `~/tc/book/` root files only at session start; subfolders are other projects
+- [`session-start-book-root-only`](./session-start-book-root-only.md) — read `~/book/` root files only at session start; subfolders are other projects
 - [`ledger-resume-protocol`](./ledger-resume-protocol.md) — `ledger.jsonl` + `resume` trigger word

@@ -1,11 +1,11 @@
 # session-start-book-root-only
 
-At session start, the agent reads `~/tc/book/` root files only: `PHILOSOPHY`, `HARD-RULES`, `NON-GOALS`, `SUBSTRATE`, `CLAUDE`. Subfolders under `~/tc/book/` (`kotlin-swift/`, etc.) are project-specific to other project families and are NEVER read at byerag session start.
+At session start, the agent reads `~/book/` root files only: `PHILOSOPHY`, `HARD-RULES`, `NON-GOALS`, `SUBSTRATE`, `CLAUDE`. Subfolders under `~/book/` (`kotlin-swift/`, etc.) are project-specific to other project families and are NEVER read at byerag session start.
 
 ## Beats
 
-- **Read everything in `~/tc/book/`**: includes unrelated project ADRs (Kotlin/Swift stack, iOS deploy, etc.). Pure noise; dilutes signal of rules that govern byerag.
-- **Read nothing from `~/tc/book/`**: loses the generic engineering bible.
+- **Read everything in `~/book/`**: includes unrelated project ADRs (Kotlin/Swift stack, iOS deploy, etc.). Pure noise; dilutes signal of rules that govern byerag.
+- **Read nothing from `~/book/`**: loses the generic engineering bible.
 - **Per-session opt-in (agent picks which book files to read)**: drifts; agent forgets a rule and re-discovers it.
 
 ## Real cost

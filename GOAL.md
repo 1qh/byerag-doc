@@ -5,7 +5,7 @@ Mission: ship byerag end-to-end. Two apps (admin + user) on self-host Convex sta
 ## Read first (session start + every compact)
 
 Full reads, no `limit`/`offset`:
-1. `~/tc/book/` ROOT only: `PHILOSOPHY.md` · `HARD-RULES.md` · `NON-GOALS.md` · `SUBSTRATE.md` · `CLAUDE.md`. NEVER subfolders.
+1. `~/book/` ROOT only: `PHILOSOPHY.md` · `HARD-RULES.md` · `NON-GOALS.md` · `SUBSTRATE.md` · `CLAUDE.md`. NEVER subfolders.
 2. `~/codoc/byerag-docs/` ROOT + every ADR under `docs/adr/`.
 3. Agent memory `~/.claude/projects/-Users-o-codoc/memory/` MEMORY.md + every pointer file.
 4. `~/codoc/byerag/` filesystem inventory.

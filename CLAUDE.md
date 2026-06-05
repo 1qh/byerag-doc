@@ -39,9 +39,9 @@ The single message after session-start protocol is INFORMATIONAL ONLY in autonom
 
 Run before any work. In exact order:
 
-1. Read these docs in `~/tc/book/` **root files only** IN FULL (no `limit`/`offset` — entire file loads):
+1. Read these docs in `~/book/` **root files only** IN FULL (no `limit`/`offset` — entire file loads):
    - `PHILOSOPHY` · `HARD-RULES` · `NON-GOALS` · `SUBSTRATE` · `CLAUDE`
-   These are the load-bearing mindset + rule set. Subfolders under `~/tc/book/` are project-specific to other project families — NEVER read at byerag session start.
+   These are the load-bearing mindset + rule set. Subfolders under `~/book/` are project-specific to other project families — NEVER read at byerag session start.
 
 2. Read every doc at this repo's root + every ADR under `docs/adr/` IN FULL. No partial reads. Each Read call omits `limit`.
 
@@ -112,7 +112,7 @@ Banned in byerag code repo / commits / source / README / lint output: "internal 
 
 ## No hallucination
 
-If a fact is not present verbatim in this repo, `~/tc/book/` root, the byerag code repo source, or `~/poc/claude2b/` reference source — you do not know it. Read more or ask. Inventing names, paths, ADR titles is forbidden.
+If a fact is not present verbatim in this repo, `~/book/` root, the byerag code repo source, or `~/poc/claude2b/` reference source — you do not know it. Read more or ask. Inventing names, paths, ADR titles is forbidden.
 
 ## Commit messages
 

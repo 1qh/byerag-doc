@@ -31,4 +31,4 @@ mindmap
       ledger.jsonl — append-only outcome log
 ```
 
-Read order at session start lives in `CLAUDE.md`. Generic engineering rules inherited from `~/tc/book/` root.
+Read order at session start lives in `CLAUDE.md`. Generic engineering rules inherited from `~/book/` root.
