@@ -57,7 +57,7 @@ All three must pass for scenario verdict `pass`.
 
 Per `VERIFY.md` supportiveness section: all 7+ scenarios must show `verdict: pass` with captured evidence JSON before the supportiveness bar is considered satisfied.
 
-`byerag-docs/ledger.jsonl` notes field for the supportiveness-bar tick references the captured JSON paths.
+`byerag-doc/ledger.jsonl` notes field for the supportiveness-bar tick references the captured JSON paths.
 
 ## Re-run policy
 

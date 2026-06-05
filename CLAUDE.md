@@ -104,11 +104,11 @@ Per `book/PHILOSOPHY.md` "Unlimited rework pre-launch — throw away code freely
 
 ## Confidentiality scope
 
-byerag-docs is private. Product-specific concepts (internal docs platform, admin doc upload, user doc upload, byerag-specific tools, role-on-user-profile pattern) live ONLY here.
+byerag-doc is private. Product-specific concepts (internal docs platform, admin doc upload, user doc upload, byerag-specific tools, role-on-user-profile pattern) live ONLY here.
 
 byerag code repo stays generic-engineering-only. No product domain leak in commits, source, README, lint output, comments, help text. Per `book/SUBSTRATE.md` confidentiality discipline.
 
-Banned in byerag code repo / commits / source / README / lint output: "internal docs platform", "doc Q&A", "knowledge base assistant", "admin app vs user app" framing, any product narrative. Code is shaped generically; product story lives only in byerag-docs.
+Banned in byerag code repo / commits / source / README / lint output: "internal docs platform", "doc Q&A", "knowledge base assistant", "admin app vs user app" framing, any product narrative. Code is shaped generically; product story lives only in byerag-doc.
 
 ## No hallucination
 

@@ -1,10 +1,10 @@
-# byerag-docs
+# byerag-doc
 
 Plans + decisions + protocol for the byerag product. Code lives in a sibling repo.
 
 ```mermaid
 mindmap
-  root((byerag-docs))
+  root((byerag-doc))
     Protocol
       CLAUDE — session-start + autonomous mode + ledger format
     Thesis

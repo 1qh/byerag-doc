@@ -111,6 +111,6 @@ Inherited from the substrate reference, stripped of domain-specific apps + tools
 - VERIFY 222/222 ticked: row 7 reshaped to IdP-agnostic Convex Auth integration check (verified live via env-gated Anonymous dev provider exercising identical session-minting machinery as Google); row 176 = `bun action` exit 0 locally (CI workflow stays `.disabled` per founder directive — local reproducibility is parity); row 182 = APFS volume separation + physical-disk separation acknowledged single-machine launch limit.
 - Judge tests 13/13 pass.
 - Supportiveness 7/7 scenarios captured w/ verdict=pass.
-- Repos pushed: byerag main + byerag-docs main on origin.
+- Repos pushed: byerag main + byerag-doc main on origin.
 - Ledger last row notes: `<promise>BYERAG SHIPPED — VERIFY ALL GREEN; CI GREEN; REPOS PUSHED; E2E SMOKE PASSED</promise>`.
 - All P10-WITHDRAW remediations landed: OAuth bypass mutations removed (Anonymous provider is first-class @convex-dev/auth provider, not a custom session-row writer); JWKS hot-patch replaced with sync.ts legit-regen path; co-author footer scrubbed from prior commit (force-pushed clean).

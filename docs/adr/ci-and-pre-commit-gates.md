@@ -6,7 +6,7 @@ pm4ai syncs `.github/workflows/ci.yml` (universal). byerag adds local pre-commit
 
 - `bun run fix` — lintmax runs all 5 linters; silent on success, fails noisy on violation.
 - `bun run test` — bun test runs unit + integration tests under `apps/*/`, `packages/*/`.
-- `bun run check:schema-drift` — diffs `byerag-docs/SCHEMAS.md` against `apps/backend/convex/schema.ts`; fails on mismatch per `book/HARD-RULES.md` "Spec-of-code drift bound by tooling".
+- `bun run check:schema-drift` — diffs `byerag-doc/SCHEMAS.md` against `apps/backend/convex/schema.ts`; fails on mismatch per `book/HARD-RULES.md` "Spec-of-code drift bound by tooling".
 - `bun run check:doc-leak` — greps for banned strings in code-repo source (`/^(exim|eximagent|TMDB|claude2b|Apollo|SalesQL|Modal|Serper|SendGrid|Vertex|Typesense)/`); fails on hit.
 - `bun run check:secret-leak` — greps for shapes of secrets (`sk-ant-`, `sk-kimi-`, `eyJ`-JWT, 40-char hex, etc.) in any tracked file; fails on hit.
 
@@ -19,7 +19,7 @@ pm4ai syncs `.github/workflows/ci.yml` (universal). byerag adds local pre-commit
 ## Schema drift check shape
 
 ```ts
-const specPath = 'byerag-docs/SCHEMAS.md'
+const specPath = 'byerag-doc/SCHEMAS.md'
 const codePath = 'apps/backend/convex/schema.ts'
 const specTables = parseSpecTables(spec)   // names + field lists
 const codeTables = parseCodeTables(code)   // names + field lists from defineTable()

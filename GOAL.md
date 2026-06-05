@@ -6,10 +6,10 @@ Mission: ship byerag end-to-end. Two apps (admin + user) on self-host Convex sta
 
 Full reads, no `limit`/`offset`:
 1. `~/book/` ROOT only: `PHILOSOPHY.md` · `HARD-RULES.md` · `NON-GOALS.md` · `SUBSTRATE.md` · `CLAUDE.md`. NEVER subfolders.
-2. `~/codoc/byerag-docs/` ROOT + every ADR under `docs/adr/`.
+2. `~/codoc/byerag-doc/` ROOT + every ADR under `docs/adr/`.
 3. Agent memory `~/.claude/projects/-Users-o-codoc/memory/` MEMORY.md + every pointer file.
 4. `~/codoc/byerag/` filesystem inventory.
-5. `~/codoc/byerag-docs/ledger.jsonl` last row's `next` field = current action.
+5. `~/codoc/byerag-doc/ledger.jsonl` last row's `next` field = current action.
 
 ## Execute
 
@@ -64,7 +64,7 @@ External judge model passes byerag as shipped when ALL the following return expe
 
 **A. Repos public on GitHub:**
 - `gh repo view 1qh/byerag --json visibility` returns `PUBLIC`.
-- `gh repo view 1qh/byerag-docs --json visibility` returns `PUBLIC`.
+- `gh repo view 1qh/byerag-doc --json visibility` returns `PUBLIC`.
 - Both default branch `main`.
 
 **B. Local Docker stack on operator's Mac (Colima):**
@@ -116,5 +116,5 @@ External judge model passes byerag as shipped when ALL the following return expe
 - Edge-case fixtures present: EICAR, prompt-injection, scan-only PDF, mixed VN+EN doc.
 
 **K. Final promise:**
-- `byerag-docs/ledger.jsonl` last row's `notes` field contains verbatim:
+- `byerag-doc/ledger.jsonl` last row's `notes` field contains verbatim:
 - `<promise>BYERAG SHIPPED — VERIFY ALL GREEN; CI GREEN; REPOS PUSHED; E2E SMOKE PASSED</promise>`

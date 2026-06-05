@@ -51,7 +51,7 @@ Operator registers DNS records (or CNAME to Dokploy host); Traefik picks up rout
 ## Deploy lifecycle
 
 - **No agent-side manual deploys.** Never run `bunx convex deploy`, `vercel deploy`, `bun run deploy`. Git push triggers Dokploy auto-deploy.
-- **Founder owns `git push origin main`** for repos with auto-deploy wired. Byerag push policy: founder authorized agent push to byerag + byerag-docs (per current session).
+- **Founder owns `git push origin main`** for repos with auto-deploy wired. Byerag push policy: founder authorized agent push to byerag + byerag-doc (per current session).
 - **Dokploy API calls are read-only from agent.** `compose.one`, `project.all`, `application.one` for inspection. NEVER `compose.deploy`, `compose.redeploy`, `compose.start`, `compose.stop`, `compose.delete` — those are operator actions in Dokploy UI.
 
 ## Known Dokploy quirks

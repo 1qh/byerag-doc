@@ -10,10 +10,10 @@ At session start, the agent reads `~/book/` root files only: `PHILOSOPHY`, `HARD
 
 ## Real cost
 
-- Project-specific generic rules that emerge during byerag work must land in `byerag-docs/` (or be lifted to `book` root if they apply portably). Discipline cost.
+- Project-specific generic rules that emerge during byerag work must land in `byerag-doc/` (or be lifted to `book` root if they apply portably). Discipline cost.
 
 ## Gotcha for Claude
 
 - The book has a folder for each project family (`kotlin-swift/`, etc.). Reading them at byerag session start is a violation.
-- If a byerag-specific rule shaped during work is portable across projects, propose it to the operator for inclusion in `book` root. Otherwise it stays in `byerag-docs/`.
+- If a byerag-specific rule shaped during work is portable across projects, propose it to the operator for inclusion in `book` root. Otherwise it stays in `byerag-doc/`.
 - The session-start file count message reports `book root: 5 files` (not "book: 50 files") — clarity that the agent read the right slice.
