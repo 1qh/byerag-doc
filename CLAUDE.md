@@ -39,9 +39,9 @@ The single message after session-start protocol is INFORMATIONAL ONLY in autonom
 
 Run before any work. In exact order:
 
-1. Read these docs in `~/book/` **root files only** IN FULL (no `limit`/`offset` — entire file loads):
-   - `PHILOSOPHY` · `HARD-RULES` · `NON-GOALS` · `SUBSTRATE` · `CLAUDE`
-   These are the load-bearing mindset + rule set. Subfolders under `~/book/` are project-specific to other project families — NEVER read at byerag session start.
+1. Read the `book` engineering bible — `~/book` (remote `github.com/1qh/book`), flat + pure-generic — root files only, IN FULL (no `limit`/`offset`):
+   - `PHILOSOPHY` · `HARD-RULES` · `NON-GOALS` · `SUBSTRATE` · `CLAUDE` · `WRITING-STYLE`
+   The load-bearing mindset + rule set. `~/book` has no subfolders; project stack docs + ADRs live in each project repo, never in book.
 
 2. Read every doc at this repo's root + every ADR under `docs/adr/` IN FULL. No partial reads. Each Read call omits `limit`.
 
