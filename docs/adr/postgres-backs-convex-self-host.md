@@ -59,7 +59,7 @@ Connection string for Convex backend: `postgres://convex:${DB_PASSWORD}@postgres
 
 ## Gotcha for Claude
 
-- **Postgres 18+ breaks the default volume mount path** (PGDATA moved to `/var/lib/postgresql/<MAJOR>/docker`). Stick to `postgres:17-alpine` until Convex upstream supports 18.
+- **Postgres 18+ breaks the default volume mount path** (PGDATA lives at `/var/lib/postgresql/<MAJOR>/docker`). Stick to `postgres:17-alpine` until Convex upstream supports 18.
 - **POSTGRES_URL must NOT include `/dbname`** — Convex backend errors with `cluster url already contains db name`. Connection string is `postgres://user:pass@host:port` only; Convex computes db name from `INSTANCE_NAME` (replacing `-` with `_`).
 - **`docker compose restart` does NOT re-read `.env`** — environment substitution happens at container create time. Use `docker compose up -d --force-recreate <service>` after env changes.
 - **byerag's DB name = `byerag_self_hosted`** (computed from `INSTANCE_NAME=byerag-self-hosted`). Match POSTGRES_DB in compose.

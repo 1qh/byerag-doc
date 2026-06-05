@@ -38,7 +38,7 @@ Same (`scope`, `owner`, `filename`) â†’ bump version. Different scope or owner â
 
 ## Gotcha for Claude
 
-- Citation rot: a chat answer cited `docId X`; the doc gets a new version. The citation still resolves (old version available); UI shows a chip with version + supersession info. Agent can choose to re-cite the new version on follow-up.
+- Citation rot: a chat answer cited `docId X`; the doc gets a new version. The citation still resolves (the prior version stays available); UI shows a chip with version + supersession info. Agent can choose to re-cite the new version on follow-up.
 - Schema migration: adding `version`, `supersedes`, `supersededBy`, `deletedAt` is a P0 commit. Pre-launch wipe + regenerate per `book/HARD-RULES.md`.
 - `supersedes` chain length is bounded only by re-upload frequency; for forensics, walk the chain via `by_supersedes` index.
 - Vector search: filter on `deletedAt == null` to exclude tombstoned docs from `docs similar` results.

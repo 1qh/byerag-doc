@@ -24,7 +24,7 @@ All three cards are clickable drill-downs (cards are single scannable numbers; t
 
 ### Agent notification (toast only)
 
-No persistent agent strip. When a new **agent-sourced** assignment appears (the query's `latest` advances and `source==='agent'`), a transient toast fires: "Agent assigned <test> to <user>". First load sets the baseline silently (no toast). The on/off toggle for `agent_auto_assign_enabled` lives in the header controls; `settings.agent_last_check` still updates every enabled tick but is no longer surfaced inline.
+No persistent agent strip. When a new **agent-sourced** assignment appears (the query's `latest` advances and `source==='agent'`), a transient toast fires: "Agent assigned <test> to <user>". First load sets the baseline silently (no toast). The on/off toggle for `agent_auto_assign_enabled` lives in the header controls; `settings.agent_last_check` updates every enabled tick but is not surfaced inline.
 
 ### Tests table
 
@@ -59,7 +59,7 @@ Card + table queries are on the standard reactive subscription (cheap aggregates
 
 ## Beats
 
-- **Per-(user,topic) glyph matrix** — dense, cryptic for a non-technical admin; replaced by the flat Assignments table (one plain-language row per (user, test): User · Department · Test · Status · Assigned). Same data, readable, filterable — not a grid of symbols.
+- **No per-(user,topic) glyph matrix** — a dense symbol grid is cryptic for a non-technical admin. The canonical surface is the flat Assignments table (one plain-language row per (user, test): User · Department · Test · Status · Assigned). Same data, readable, filterable — not a grid of symbols.
 - **Per-assignment explicit due date** — admin friction every assign; the agent cron has no sensible date to pick. One global window is the trivially-maintainable knob; per-topic override can layer later if a real need appears.
 - **User-facing deadlines / lockout** — breaks the open-book, unlimited-retake trust posture. Deadlines are an admin lens only.
 

@@ -6,10 +6,10 @@ Mission: ship byerag end-to-end. Two apps (admin + user) on self-host Convex sta
 
 Full reads, no `limit`/`offset`:
 1. `~/book/` ROOT only: `PHILOSOPHY.md` · `HARD-RULES.md` · `NON-GOALS.md` · `SUBSTRATE.md` · `CLAUDE.md`. NEVER subfolders.
-2. `~/codoc/byerag-doc/` ROOT + every ADR under `docs/adr/`.
+2. `~/byerag/byerag-doc/` ROOT + every ADR under `docs/adr/`.
 3. Agent memory `~/.claude/projects/-Users-o-codoc/memory/` MEMORY.md + every pointer file.
-4. `~/codoc/byerag/` filesystem inventory.
-5. `~/codoc/byerag-doc/ledger.jsonl` last row's `next` field = current action.
+4. `~/byerag/byerag/` filesystem inventory.
+5. `~/byerag/byerag-doc/ledger.jsonl` last row's `next` field = current action.
 
 ## Execute
 
@@ -44,7 +44,7 @@ Web-search upstream issues before declaring unfixable. Every bug found = your bu
 
 ## Test corpus
 
-Per `docs/adr/test-corpus-source-and-kimi-knowledge-probe.md`. Pull post-2026-02-01 Vietnamese gov + tech docs. Probe each via Kimi before saving. Reject docs Kimi knows.
+Per `docs/adr/test-corpus-source-and-kimi-knowledge-probe.md`. Pull Vietnamese gov + tech docs published after `2026-02-01`. Probe each via Kimi before saving. Reject docs Kimi knows.
 
 ## Production deploy
 
@@ -112,7 +112,7 @@ External judge model passes byerag as shipped when ALL the following return expe
 
 **J. Test corpus + Kimi knowledge probe:**
 - `apps/backend/scripts/pull-test-corpus.ts` ran.
-- `apps/backend/test-fixtures/probe-log.jsonl` exists with ≥5 accepted real docs (post-2026-02-01 sources) where Kimi probe returned "don't know" or hallucinated wrong.
+- `apps/backend/test-fixtures/probe-log.jsonl` exists with ≥5 accepted real docs (sources published after `2026-02-01`) where Kimi probe returned "don't know" or hallucinated wrong.
 - Edge-case fixtures present: EICAR, prompt-injection, scan-only PDF, mixed VN+EN doc.
 
 **K. Final promise:**

@@ -7,7 +7,7 @@ Real-world post-cutoff docs for VERIFY E2E. Pull from public sources (Vietnamese
 - `chinhphu.vn` — gov portal, new decrees / circulars / public domain.
 - `baophapluat.vn` — legal news + policy explainers.
 - `thoibaonganhang.vn`, `vietnamfinance.vn` — finance / banking policy.
-- `arxiv.org` — papers submitted post-2026-02-01.
+- `arxiv.org` — papers submitted after `2026-02-01`.
 - Open-source release notes (Next.js, React, Convex, etc.) from 2026-Q2.
 - Public regulatory updates (EU AI Act, post-cutoff).
 
@@ -27,7 +27,7 @@ For each candidate doc:
 
 ## Candidate filters
 
-- Published after 2026-02-01 (post-Kimi-cutoff buffer).
+- Published after `2026-02-01` (post-Kimi-cutoff buffer).
 - Distinctive facts present (decree numbers, persons, dated events).
 - Avoid generic policy patterns LLMs interpolate (avoid pure GDPR-style boilerplate).
 

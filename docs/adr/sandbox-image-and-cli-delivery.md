@@ -8,12 +8,7 @@ CLI delivery happens at agent-launch time, not in the image. On every `agent.run
 - the embedded CLI script (`CLI_SCRIPT` const, codegen output of `packages/cli/bin/x-codegen.ts`) to `/home/agent/cli.mjs`
 - per-app `SKILL.md` files under `/workspace/.claude/skills/<name>/SKILL.md`
 
-For each provider declared in the app's `cliProviders` list, a POSIX wrapper script lands at `/home/agent/.bun/bin/<provider-name>` with content:
-
-```sh
-#!/bin/sh
-exec node /home/agent/cli.mjs "$@"
-```
+For each provider declared in the app's `cliProviders` list, a POSIX wrapper script lands at `/home/agent/.bun/bin/<provider-name>` whose content is the two lines `#!/bin/sh` then `exec node /home/agent/cli.mjs "$@"` (the in-container CLI entrypoint path).
 
 `/home/agent/.bun/bin/` is part of the container's default `PATH` (`/home/agent/.bun/bin:/usr/local/bin:/usr/bin:/bin`), so the agent's Bash subshell resolves `<provider> <verb>` by name. Provider names are generic (`docs`, `training`); no project-repository branding surfaces in the agent-facing CLI.
 

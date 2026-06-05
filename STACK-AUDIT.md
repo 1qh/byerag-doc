@@ -113,4 +113,4 @@ Inherited from the substrate reference, stripped of domain-specific apps + tools
 - Supportiveness 7/7 scenarios captured w/ verdict=pass.
 - Repos pushed: byerag main + byerag-doc main on origin.
 - Ledger last row notes: `<promise>BYERAG SHIPPED — VERIFY ALL GREEN; CI GREEN; REPOS PUSHED; E2E SMOKE PASSED</promise>`.
-- All P10-WITHDRAW remediations landed: OAuth bypass mutations removed (Anonymous provider is first-class @convex-dev/auth provider, not a custom session-row writer); JWKS hot-patch replaced with sync.ts legit-regen path; co-author footer scrubbed from prior commit (force-pushed clean).
+- P10-WITHDRAW invariants hold: no OAuth bypass mutations (Anonymous provider is a first-class @convex-dev/auth provider, not a custom session-row writer); JWKS regen goes through the sync.ts legit-regen path, not a hot-patch; commits carry no co-author footer.

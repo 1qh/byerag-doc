@@ -21,7 +21,7 @@ Extraction runs inside the sandbox image (which carries all the binaries), invok
 
 Convex caps a single document value at 1 MiB. Extracted text routinely exceeds that (a 3 MB+ text layer is normal for long PDFs), so full text never lives inline on the `docs` row. After extraction the `'use node'` action writes the full text to a `_storage` text blob and records `docs.extractedTextStorageId`; `docs.extractedText` holds only a bounded prefix (`EXTRACT_INLINE_MAX_CHARS`) sized to cover every prefix-only reader (policy classify ≤4K, question gen ≤12K, `docs conflict` ≤50K, snippets/preview <1K).
 
-Full-content consumers read the blob: chunking/embedding fetches it in the embed action and chunks the whole text, so vector / `docs similar` recall covers the entire document regardless of size. `docs read` / `docs grep` / `docs diff` operate on the inline prefix until migrated to blob-reading actions (tracked in `GOTCHAS.md`); they never hard-error and full-doc semantic search is unaffected.
+Full-content consumers read the blob: chunking/embedding fetches it in the embed action and chunks the whole text, so vector / `docs similar` recall covers the entire document regardless of size. `docs read` / `docs grep` / `docs diff` operate on the inline prefix pending blob-reading actions (tracked in `GOTCHAS.md`); they never hard-error and full-doc semantic search is unaffected.
 
 ## Beats
 

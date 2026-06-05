@@ -186,7 +186,7 @@ End-state checklist. Every item must pass before the project counts as launched 
 - [x] `apps/backend/scripts/pull-test-corpus.ts` runs successfully on first invocation.
 - [x] For every candidate doc, Kimi-knowledge probe executes with no doc context.
 - [x] Docs Kimi knows (cosine sim > 0.85 OR exact-match facts) are rejected; probe-log records.
-- [x] At least 5 real docs accepted (post-2026-02-01 sources).
+- [x] At least 5 real docs accepted (sources published after `2026-02-01`).
 - [x] Edge-case fixtures present: EICAR string, prompt-injection doc, scan-only PDF, mixed VN+EN doc, oversized file, zip bomb.
 - [x] Probe log file (`apps/backend/test-fixtures/probe-log.jsonl`) gitignored.
 - [x] Pulled docs gitignored (operator-local fixtures).
