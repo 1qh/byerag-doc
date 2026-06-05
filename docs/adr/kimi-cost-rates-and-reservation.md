@@ -2,13 +2,15 @@
 
 Kimi exposes one routed model (`kimi-for-coding`). Public pricing surface at `kimi.com/code` (verify before each settlement-policy change). The proxy reserves cents pre-call based on worst-case math; settles post-call with actual `usage` from response.
 
-## Rate table (cents per million tokens)
+## Rate table (USD per million tokens)
 
 | Model key | input | output | cache write | cache read |
 |---|---|---|---|---|
-| `kimi-for-coding` | TBD-verify | TBD-verify | TBD-verify | TBD-verify |
+| `kimi-for-coding` | 0.684 | 3.40 | 0.684 | 0.16 |
 
-Rates live in `apps/backend/convex/constants.ts` as `MODEL_RATES`. Update when Kimi publishes a change; commit message references the source page.
+Source: Moonshot platform pricing (`platform.kimi.ai/docs/pricing/chat`, verified 2026-06). Cache write on Kimi has no premium over input (unlike Anthropic's 1.25× write); cache read is ~85% cheaper than first-pass input.
+
+Rates live in `apps/backend/convex/messages/streamHelpers.ts` as `MODEL_RATES` (each entry: `inputUSDPerMtok`, `outputUSDPerMtok`, optional `cacheCreateUSDPerMtok` defaulting to `input × 1.25`, optional `cacheReadUSDPerMtok` defaulting to `input × 0.1` for Anthropic-style models). `ratesFor(model)` throws on unknown / missing model — no silent fallback. The proxy maps that throw to a 400 response. Update when Kimi publishes a change; commit message references the source page.
 
 ## Reservation math (matches substrate reference)
 
