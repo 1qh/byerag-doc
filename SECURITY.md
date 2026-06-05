@@ -85,6 +85,8 @@ Archive recursion limit on ClamAV configured (zip-of-zips DoS defense).
 
 Kimi API key value lives only in operator-local `apps/backend/.env` (gitignored) per `book/HARD-RULES.md` "Single secrets root". `sync.ts` pushes it to Convex env on boot. Sandbox never sees the real key — the proxy-per-chat-bearer pattern (`docs/adr/proxy-per-chat-bearer-cost-controls.md`) swaps the bearer for the real key server-side. Rotation: operator-driven, no agent block; rotate by replacing env value + re-running `sync.ts`. Endpoint `https://api.kimi.com/coding/` (Anthropic-protocol-compatible); verified capabilities documented in `docs/adr/kimi-as-llm.md`.
 
+Never stage / commit / push `.env`, `.env.local`, or ANY `.env*` variant. `.gitignore` covers only `.env` / `.env.local` / `apps/*/.env*` — the `.env.backup.*` / `.env.corrupt.bak` / `.env.*` variants are NOT ignored, and `git add -A` / `git add .` WOULD stage them (secret leak). Discipline: never bare `git add -A`; stage explicit files or pathspec-exclude — `git add -- <paths> ':!**/.env' ':!**/.env.*'`; verify `git show --stat` carries zero `.env*` before push.
+
 ### CLI tokens
 
 - Token hash (bcrypt-style) only persisted; plaintext shown once at issue.

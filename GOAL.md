@@ -36,7 +36,7 @@ Ask: "ready?", "should I?", "ok?", "plan looks good?", "what next?".
 
 ## Anti-laziness
 
-Web-search upstream issues before declaring unfixable. Every bug found = your bug. `bun run fix` BEFORE commit. Never `void mutate()`; use `.catch()`. Always `.tsx` for JSX. `bun i` after workspace rename. Never disable unsafe-* lints — fix the type instead. `.github/workflows/ci.yml.disabled` stays `.disabled` until P10; "CI green" gate = `bun action` exits 0 locally (reproduce CI, do NOT re-enable the workflow file).
+Web-search upstream issues before declaring unfixable. Every bug found = your bug. `bun run fix` after EACH edit (the per-change loop). `bun action` (full check) is slow and blocks the feedback loop — run it ONLY when the founder explicitly asks ("run bun action"); the founder steers that cadence. `bun run fix` BEFORE commit. Never `void mutate()`; use `.catch()`. Always `.tsx` for JSX. `bun i` after workspace rename. Never disable unsafe-* lints — fix the type instead. `.github/workflows/ci.yml.disabled` stays `.disabled` until P10; "CI green" gate = `bun action` exits 0 locally (reproduce CI, do NOT re-enable the workflow file).
 
 ## Readonly files (do not edit)
 
