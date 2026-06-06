@@ -23,7 +23,7 @@ Every `- [ ]` in `VERIFY.md` → `- [x]` ONLY with evidence in ledger.notes (ter
 
 ## Commit + push discipline
 
-After every logical unit: `bun run fix` (silent on success) → `git commit --no-verify -m '<conventional>'` → `git push origin main`. CI is `.disabled` until P10. Append ledger row per checkpoint.
+After every logical unit: `bun run fix` (silent on success) → `git commit --no-verify -m '<conventional>'` → `git push origin main`. CI is active; "CI green" gate = `bun action` exits 0 locally AND the pushed workflow passes. Append ledger row per checkpoint.
 
 ## Banned shapes
 
@@ -36,11 +36,11 @@ Ask: "ready?", "should I?", "ok?", "plan looks good?", "what next?".
 
 ## Anti-laziness
 
-Web-search upstream issues before declaring unfixable. Every bug found = your bug. `bun run fix` after EACH edit (the per-change loop). `bun action` (full check) is slow and blocks the feedback loop — run it ONLY when the founder explicitly asks ("run bun action"); the founder steers that cadence. `bun run fix` BEFORE commit. Never `void mutate()`; use `.catch()`. Always `.tsx` for JSX. `bun i` after workspace rename. Never disable unsafe-* lints — fix the type instead. `.github/workflows/ci.yml.disabled` stays `.disabled` until P10; "CI green" gate = `bun action` exits 0 locally (reproduce CI, do NOT re-enable the workflow file).
+Web-search upstream issues before declaring unfixable. Every bug found = your bug. `bun run fix` after EACH edit (the per-change loop). `bun action` (full check) is slow and blocks the feedback loop — run it ONLY when the founder explicitly asks ("run bun action"); the founder steers that cadence. `bun run fix` BEFORE commit. Never `void mutate()`; use `.catch()`. Always `.tsx` for JSX. `bun i` after workspace rename. Never disable unsafe-* lints — fix the type instead. Never disable a gate (CI, a lint rule) to defer a violation-baseline — fix the baseline. "CI green" gate = `bun action` exits 0 locally AND the active `.github/workflows/ci.yml` passes.
 
 ## Readonly files (do not edit)
 
-`CLAUDE.md` (pm4ai-managed) · `.github/workflows/ci.yml.disabled` · `clean.sh` · `up.sh` · `bunfig.toml` · `.gitignore` · `readonly/ui/`.
+`CLAUDE.md` (pm4ai-managed) · `.github/workflows/ci.yml` · `clean.sh` · `up.sh` · `bunfig.toml` · `.gitignore` · `readonly/ui/`.
 
 ## Test corpus
 
