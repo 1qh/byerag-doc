@@ -208,6 +208,10 @@ When a new gotcha lands: append one paragraph under the most relevant section (w
 
 (none yet)
 
+## Prod-built one-command bring-up
+
+`bun run prod` at the repo root chains the entire prod stack: `docker compose up -d --wait` (postgres + convex-backend + clamav) → Ollama healthcheck on `:11434` → `convex deploy` from `apps/backend` → `turbo build` (admin + user + packages) → `next start` for admin `:3001` + user `:3003` in parallel. PIDs of the two Next servers go into `.cache/prod/pids`; logs into `.cache/prod/*.log`. Ctrl-C reaps the Next servers cleanly via a TERM trap; Docker stack stays up (`docker compose down` to stop the rest). Each step exits non-zero with the relevant log tail on failure. `.cache/` is gitignored upstream — no leakage. The script is `prod.sh` at the repo root, wired as `"prod"` in root `package.json`.
+
 ## Operator-host port collisions
 
 Operator's Colima runs many concurrent compose projects: `map_*` (timescaledb / temporal / apicurio / pgbouncer / nats / kafka / minio / valkey / glitchtip / grafana / typesense), `va_*` (web on 3002, postgres), `vbfe-*` (minio on 9000/9001, nginx on 5176, backend on 5174, postgres), `noboil_*` (convex-backend on 4100/4101, dashboard on 4102, minio on 4104/4105, spacetimedb on 4200/4103, postgres-17), `k3d-truecare-pilot-local-*` (k3d cluster). byerag ports chosen to avoid all of these: admin=3001, user=3003 (not 3002 — va-web), Convex API=3210, Convex site=3211, Ollama=11434 (compose-internal). Audit `lsof -iTCP -sTCP:LISTEN` + `docker ps --format '{{.Names}}\t{{.Ports}}'` before adding any new host-bound service.
