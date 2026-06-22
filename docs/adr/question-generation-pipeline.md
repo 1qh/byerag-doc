@@ -85,6 +85,17 @@ If the routed topic's approved pool is already at the soft cap (50), candidates 
 - Dup-scan failure (Ollama down) → skip dup-flagging; candidates enter queue without `conflictsWith`. Admin sees "duplicate-scan unavailable" warning.
 - Contradiction-scan failure → skip; candidates enter queue without retire-suggestions. Admin sees warning.
 
+## MUST
+
+- Wrap the `callKimi` call inside `internal.trainingGen.generate` in a 3-attempt in-loop retry with `2000*(i+1)` ms backoff. Why: a single Kimi 429 otherwise leaves the doc approved with zero suggestions silently.
+- Self-reschedule via `ctx.scheduler.runAfter(5*60_000, internal.trainingGen.generate, {attempt: att+1, docId})` up to `MAX_RETRY=5` when all 3 attempts fail OR `parsed.length === 0`. Why: transient throttle recovers without admin intervention.
+- Carry the attempt counter in args. Why: bounds reschedule chain so it cannot infinite-loop.
+- Surface the outcome as `reason: 'kimi-error:... (rescheduled)'` while retrying and `'kimi-error:... (giving up)'` at `MAX_RETRY`. Why: admin sees real status, not a frozen empty queue.
+
+## NEVER
+
+- Let `trainingGen.generate` return `{generated:0, reason:'kimi-error:...'}` and exit without rescheduling. Cost: doc sits embedded + approved with empty `/test-questions` queue forever.
+
 ## Gotcha for Claude
 
 - The 16 KB doc-text cap is a worst-case input bound, not a quality cap. Long docs lose later content. Admin can manually force-regenerate after approving the first batch if they want questions from later sections — fresh-roll uses a different random offset window of the same 16 KB length.

@@ -59,6 +59,15 @@ Per-user drill-in: scan `by_owner_dayKey` for one user across the selected cycle
 
 `costRecords` retained forever. Storage trivial (one row per user-model-day; ~1KB max per row). Cost history is operationally valuable indefinitely.
 
+## MUST
+
+- Record `costRecords` from all three direct-Kimi sites (question generation, policy classifier, `docs conflict`) via `internal.costRecords.recordDirect`, not only the chat-proxy settle. Why: the proxy settle is the sole writer otherwise, so the dashboard shows $0 despite real spend.
+- Attribute owner `'system'` for background gen/classify and the calling user for `docs conflict`; keep `recordDirect` best-effort so it never blocks the operation. Why: recording is for visibility, not gating — generation stays NOT budget-gated.
+
+## Pitfall
+
+- `$0.00` means `inputTokens`/`outputTokens` were never captured (no completed round-trip / unparsed usage), not a rate-table fault — `streamHelpers` `MODEL_RATES`/`DEFAULT_RATES` are non-zero (`$3`/`$15` per Mtok).
+
 ## Gotcha for Claude
 
 - `dayKey` is UTC string; cycle math snaps to UTC midnight boundaries.

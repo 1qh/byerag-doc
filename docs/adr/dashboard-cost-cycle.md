@@ -62,6 +62,11 @@ Chart query: same window per cycle, sum cents only, one number per cycle.
 - `costRecords` writes on every proxy settle (one row touched per call).
 - Cycle window can span 31+ days; sum aggregates run on every dashboard load.
 
+## MUST
+
+- Iterate `costCycleHistory` by calendar month (previous month's 5th), never a fixed `30 days × i` step. Why: a 30-day step accumulates error vs the 5th-of-month anchor, snapping two iterations into one cycle so a month renders twice or is skipped.
+- Carry the year in the bar label (`MMM YYYY`), not the yearless `MM-DD` of `cycleStart.slice(5)`. Why: a `12-05` label crossing a year boundary reads as suspicious without the year.
+
 ## Gotcha for Claude
 
 - 5th-day anchor: at midnight UTC of the 5th, current cycle flips. Implementation must snap cycle boundaries to UTC, not local time.

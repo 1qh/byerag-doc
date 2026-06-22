@@ -13,6 +13,26 @@ The agent inside the sandbox POSTs each SDK event to Convex `/api/stream/event`,
 - Storage: `streamEvents` rows accumulate per chat. Mitigated by TTL on completed chats (P6+).
 - Convex bandwidth: every event flows through Convex twice (sandbox POST in, reactive push out). Acceptable at internal-team scale.
 
+## MUST
+
+- Skip `type === 'stream_event'` in `processBatchEvent`; persist only assistant/user/system/result/error rows. Why: Kimi per-keystroke `text_delta`s are 1000s of deltas, blowing the 2000 per-turn insert cap.
+- Read live render deltas from the `streamEvents` table, cleared after `complete`. Why: deltas are display-only, not durable messages.
+- Order `messages.list` `.order('desc')` and reverse client-side in `use-chat-convex.ts` with `initialNumItems:100`. Why: `.order('asc')` paginates the final assistant block off-screen past 50 rows.
+- Run chat-composer uploads through the full `docs.upload` pipeline (scan→policy→embed→materialize) as `docs` rows owned by the caller in `mine` scope, materialized into `/workspace/mine/<owner>/`. Why: composer files are docs, not `/workspace` attachments.
+- Append a plain-language composer line naming uploaded docs, pointing the agent at `docs list --scope mine` → `docs read`. Why: "attached"/filesystem-path framing wastes agent turns hunting `/workspace` root.
+- Mount `ChatFileUploadProvider` in `default-providers.tsx` in every app exposing the composer. Why: a missing provider shows "File upload not enabled".
+- Reproduce a reported user-visible defect via the actual click path: env-gated dev sign-in + Playwright driving the real flow. Why: a code-trace misses defects only the real path surfaces.
+
+## NEVER
+
+- Persist `stream_event` rows into `messages`. Cost: 1000s of per-keystroke deltas blow the 2000 per-turn cap → "truncated: too many messages this turn", answer body drops.
+- Emit the `[FILE_ID:storageId:filename]` token. Cost: dead shape with no resolver; reference uploaded docs by filename instead.
+- Drive Playwright to verify a change unless the founder explicitly asks this turn. Cost: founder is the first verifier; auto-screenshotting burns time + tokens.
+
+## Pitfall
+
+- The reproduce-via-real-path rule covers reproducing a reported defect, not proactively verifying every change. Default flow: change → report → hand back; reach for Playwright only on an explicit "verify via playwright"/"show me" this turn.
+
 ## Gotcha for Claude
 
 - `seq` is monotonic per chat. Agent script increments `seq` per event; client orders by `seq` not `_creationTime` (DB write order may not match emit order under retry).

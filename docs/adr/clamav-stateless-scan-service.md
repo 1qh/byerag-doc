@@ -32,3 +32,7 @@ Action runs inside Convex's Node runtime. Upload mutation calls it inline; on pa
 - Archive recursion + size limits configured in `clamd.conf` (baked into the clamav image's mounted config). Adjust there, not in the action.
 - Signature DB updates: clamav image runs `freshclam` on boot + periodically. First boot needs network access to fetch the initial DB (one-time exception; document in operator runbook).
 - For very large files (>100 MB), streaming the blob from `_storage` through the action to clamd avoids loading the full bytes into action memory; use Bun's stream-to-socket pattern.
+
+## MUST
+
+- Use the `clamav/clamav-debian:latest` image (multi-arch) on Apple Silicon, not `clamav/clamav:latest`. Why: `clamav/clamav:latest` is amd64-only with no arm64 manifest.

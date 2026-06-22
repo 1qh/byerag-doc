@@ -32,6 +32,20 @@ In v0 the agent decides the topic count. No hard cap. No admin slider. If pathol
 - One LLM call to produce the topic list on first run. Subsequent doc uploads do incremental "nearest-centroid or new-topic" routing — cheap embedding math, no LLM call.
 - Topic list may feel coarse on small corpora (everything ends up in 1-2 topics); admin tolerates this until corpus grows.
 
+## MUST
+
+- Cluster each question's `promptEmbedding` to the nearest existing topic centroid in `persistSuggestionsWithEmbedding`; merge into it if cosine ≥ `TOPIC_MERGE_SIM` (default `0.5` for short VN MCQ embeddings). Why: name-string routing scatters 120 questions into 80–108 micro-topics, none reaching pool ≥ 5.
+- Maintain a running centroid per topic; spawn a new topic only when a question is far from every existing centroid. Why: embedding-centroid routing is the canonical Plan-B identity, not free-form `topicName`.
+- Run a fresh regen to consolidate when topics carry a null centroid. Why: old null-centroid topics cannot absorb new questions.
+
+## NEVER
+
+- Create or match topics by exact free-form `topicName` string. Cost: per-question Vietnamese category fragments fracture the pool below the testable threshold.
+
+## Pitfall
+
+- `retireEmptyTopics` (internal only) removes truly empty husks, never fragment topics — fragments hold questions, so they are not empty and survive until a regen consolidates them.
+
 ## Gotcha for Claude
 
 - "Agent decides count" means the first-run prompt instructs the agent to produce 5-15 topics depending on corpus size. The number is not a hard cap; it is a soft target. Document the actual prompt in `system-prompts.md` if added.

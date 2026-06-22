@@ -76,6 +76,16 @@ Edits to canonical questions do NOT retroactively update pinned attempt rows. Pa
 
 See `SCHEMAS.md` for `testAttempts` and `testPasses` table definitions. Pin-data fields and indexes documented there.
 
+## MUST
+
+- Branch `getMyAttemptDetail` on status: `in-progress` returns `questionSnapshots` WITHOUT `correctIndexShuffled`; terminal (`passed`/`failed`/`cancelled`) returns `{passed, score, total, sources:[{docId,filename}]}` only. Why: a score-only shape for `in-progress` makes the take-test screen structurally unreachable.
+- Surface `toast.error` from every user-facing handler; on `not authenticated` route to sign-in. Why: a silent `console.error`-only catch in `/training` `onStart` leaves a non-tech user clicking Start with no feedback.
+
+## NEVER
+
+- Return the score-only `{score,total}` shape for an `in-progress` attempt. Cost: the page's `'total' in attempt` branch fires "Score 0/5 — retake" instead of the questions; nobody can take a test.
+- Send `correctIndexShuffled` or any per-question answer key for a terminal attempt. Cost: reveals the answer key; result shows pass/fail + score + source citations only.
+
 ## Gotcha for Claude
 
 - The pinned snapshot in `testAttempts.questionSnapshots` is what gets shown on reveal. Don't render canonical question text on reveal — text could have changed. Reveal pulls from `questionSnapshots` only.

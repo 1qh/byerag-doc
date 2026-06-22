@@ -113,3 +113,25 @@ All commands return JSON on success. On error: `{error: {category, code, message
 ## Brand
 
 Provider binaries are generic names (`docs`, `training`) — agent-visible surface carries no project-repository-name branding. The repo name is internal-only.
+
+## CLI builder defaults
+
+### MUST
+- Declare a defaulted arg as `arg.number({ default: 50, description: '…' })` — no `optional: true`, no `??` in handler. Why: `default:` auto-marks the arg optional and auto-substitutes at handler entry.
+- Read a defaulted arg directly as `Infer<V>`, never `| undefined`. Why: `applyDefaults` runs inside `defineTool`/`defineQuery`/`defineMutation` before the user handler, so the value is always present.
+
+### Pitfall
+- Spec stores `default` alongside `optional`; when `optional` is omitted it derives `optional := default !== undefined`. `buildFullArgs` wraps the validator with `v.optional` when optional so the Convex action accepts `undefined`.
+- `validateArgs` (CLI-side argv parsing) substitutes the default for empty input too, so both the CLI and the action see the defaulted value.
+
+## Chat agent — tool inventory must match the prompt
+
+### MUST
+- Edit BOTH `tools/generated/registry.ts` and the per-app prompt (`apps/user/server/prompt.ts`) in the same commit when wiring a new tool or provider. Why: the agent reads the system-prompt briefing, not the skill blob directory.
+- Name in each prompt tool section the command, when to call it, and the answer-rendering shape. Why: an undescribed command is a command the agent never reaches.
+- Keep the PERSONAL-vs-KNOWLEDGE question split in the briefing. Why: corpus-only is a knowledge-question rule, never a refusal-everything rule.
+- Name every file under `apps/backend/convex/**` in camelCase (`trainingUrgency.ts`) or snake_case. Why: Convex module-path syntax bans hyphens in filenames.
+
+### NEVER
+- Let `tools/generated/registry.ts`, `tools/_app/skill.ts`, and the per-app prompt drift. Cost: three-way drift silently kills a question family — agent replies "Not in the corpus" instead of running `training status`.
+- Place a hyphenated filename under `apps/backend/convex/**`. Cost: deploy fails `InvalidConfig: lib/training-urgency.js is not a valid path to a Convex module. Path component training-urgency.js can only contain alphanumeric characters, underscores, or periods.`

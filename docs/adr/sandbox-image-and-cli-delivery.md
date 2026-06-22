@@ -32,11 +32,24 @@ The CLI is a thin client: parses argv, resolves auth from `CLI_SESSION_ID` + `CL
 ## Gotcha for Claude
 
 - The image's `agent` user has uid 1000; bind-mounts from host must match or use chown'd volumes.
-- `node:20-slim` preinstalls a `node` user at uid 1000; the Dockerfile drops it (`userdel -r node`) before creating the `agent` user to avoid `useradd: UID 1000 is not unique`. Captured in `GOTCHAS.md`.
+- `node:20-slim` preinstalls a `node` user at uid 1000; the Dockerfile drops it (`userdel -r node`) before creating the `agent` user to avoid `useradd: UID 1000 is not unique`.
 - `setsid bun run /home/agent/run.ts` runs the agent script in its own process group; PGID written to `/home/agent/.claude-sessions/<chatId>/agent.pgid` so kill-on-cleanup can reap children.
 - `CLAUDE_CODE_INCLUDE_PARTIAL_MESSAGES=1` baked into image's `ENV` so SDK emits fine-grained deltas.
 - Tesseract data packs (`tesseract-ocr-eng`, `tesseract-ocr-vie`) cover English + Vietnamese; add more on first multi-lang doc surfaces a miss.
 - Image stays under ~700 MB; verify with `docker images byerag-sandbox` after build (image tag is operator-internal — not agent-visible CLI naming).
 - The Claude SDK Bash tool inherits container PATH, not the parent agent process's env-override PATH; this is why the wrapper must live at a path already on the container default PATH (`/home/agent/.bun/bin/`), not at a path the parent agent adds via env (`SANDBOX_PATH`).
-- Writing a wrapper through a pre-existing symlink to the cli.mjs corrupts cli.mjs (the `>` redirect follows the symlink). The agent-launch action removes the wrapper file (`rm -f`) before writing, breaking any prior symlink chain. Captured in `GOTCHAS.md`.
+- Writing a wrapper through a pre-existing symlink to the cli.mjs corrupts cli.mjs (the `>` redirect follows the symlink). The agent-launch action removes the wrapper file (`rm -f`) before writing, breaking any prior symlink chain.
 - The cli.mjs HTTPS-required check applies only to external hosts. `localhost`, `127.0.0.1`, `convex-backend`, `host.docker.internal` are recognized as internal and proceed over HTTP. Production deployments use HTTPS for the Convex site URL; the relaxation is for local-dev / in-container traffic only.
+
+## MUST
+
+- Land every CLI wrapper under `/home/agent/.bun/bin/`. Why: sandbox runs as `User: agent` (uid 1000), cannot write `/usr/local/bin`; that dir is agent-owned and on default PATH (`/home/agent/.bun/bin:/usr/local/bin:/usr/bin:/bin`).
+- Write each provider wrapper as a 45-byte POSIX script `#!/bin/sh\nexec node /home/agent/cli.mjs "$@"` via `printf` after `rm -f`, then `chmod +x` in the same `&&` chain. Why: a symlink lets the next write overwrite cli.mjs through it.
+- Enumerate every provider the app's system prompt invokes in `AppConfig.cliProviders`. Why: `prepareSandboxLayout` writes wrappers only for listed providers; admin needs `['docs','training']`, user needs `['docs']`.
+- Use `sh -c` (non-login) for Docker exec invocations in `sandboxClient.ts:execInside`. Why: `sh -lc` re-sources `/etc/profile`, resetting `PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games` and dropping `/home/agent/.bun/bin`.
+- Rebuild `byerag-sandbox:latest` after any image prune or `down -v` via `docker build -t byerag-sandbox:latest apps/backend/sandbox/`. Why: it is built separately, not in `compose.yml`; absence fails `docsExtract` + chat with `docker POST /containers/create 404: No such image`.
+
+## NEVER
+
+- Ship an app with `cliProviders: []` when its prompt invokes a CLI. Cost: zero wrappers land; the agent reports the CLI not available on PATH.
+- Rely on a `SANDBOX_PATH` env-override to reach the Claude SDK Bash subshell. Cost: the SDK's child Bash inherits the container default PATH, not the parent's env-set PATH.

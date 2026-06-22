@@ -33,6 +33,19 @@ Tesseract OCR pass uses `-l eng+vie` by default. Other languages: extend the san
 - Language detector adds ~50ms per doc at ingest. Cheap.
 - `docs.lang` filter in similar-search is optional (P5+).
 
+## URL slugs for non-ASCII topic names
+
+Vietnamese topic names (e.g. `Mục đích quy định`) URL-encode to unreadable percent-escapes, so dashboard topic routes carry a computed-on-the-fly ASCII slug with no schema field.
+
+## MUST
+
+- Slug a topic name with exactly this `slugify`: `s.normalize('NFD').replaceAll(/[̀-ͯ]/gu, '').replaceAll('đ', 'd').replaceAll('Đ', 'D').toLowerCase().replaceAll(/[^a-z0-9]+/gu, '-').replace(/^-+|-+$/gu, '')`. Why: strips combining diacritics + đ/Đ so VN names produce stable ASCII slugs.
+- Resolve `<slug>` server-side via `dashboard.testDetail` doing `topicRows.find(t => slugify(t.name) === slug)`. Why: no slug column persisted; matched on read.
+
+## Pitfall
+
+- The same `slugify` is duplicated in `apps/admin/src/app/(standalone)/training/page.tsx` for client-side `Link` href construction; keep both copies byte-identical.
+
 ## Gotcha for Claude
 
 - Mixed-language docs (a contract with English boilerplate + Vietnamese signatures) embed fine; expect lower similarity scores for queries that match only one half.

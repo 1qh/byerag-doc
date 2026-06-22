@@ -23,7 +23,6 @@ mindmap
       SECURITY — egress, sandbox, proxy, keys
     Audit
       VERIFY — end-state checklist
-      GOTCHAS — evolving per-topic gotchas
       OPEN-QUESTIONS — pending MCQs
     Decisions
       docs/adr — one file per decision

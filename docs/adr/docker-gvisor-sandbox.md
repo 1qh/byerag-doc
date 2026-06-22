@@ -24,3 +24,16 @@ Per-owner sandbox runs in a Docker container with gVisor (`runsc`) runtime. One 
 - One container per owner = `sandboxes.owner` is the unique key; `sandboxes.sandboxId` is the Docker container id.
 - Lifecycle: connect-or-create on first chat message of a session; pause container between messages (Docker `pause`); unpause on next message; kill on chat delete or 14-day stale.
 - The substrate reference's `sandboxClient.ts` shape (`createSandbox`, `connectSandbox`, `commands.run`) is preserved; implementation swaps `e2b` SDK calls for `dockerode` calls behind the same interface.
+
+## MUST
+
+- Run `userdel -r node 2>/dev/null || true` before `useradd -m -u 1000 -s /bin/bash agent` in the Dockerfile. Why: `node:20-slim` preinstalls a `node` user at UID 1000, else `useradd: UID 1000 is not unique`.
+- Harden local-dev containers with `--cap-drop ALL --security-opt no-new-privileges`. Why: Colima ships no `runsc`, gVisor is prod-Linux-only.
+
+## NEVER
+
+- Pass `--runtime=runsc` to a local-dev container. Cost: Colima on Mac has no `runsc`; the run fails.
+
+## Pitfall
+
+- Local dev uses plain `runc`; gVisor (`runsc`) is deferred to prod Linux. The `--cap-drop ALL --security-opt no-new-privileges` pair is the local hardening substitute.

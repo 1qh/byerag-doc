@@ -51,4 +51,5 @@ OpenAI-compat shape future-proofs against swapping providers (drop-in Cohere / V
 - **Daemon lifecycle**: `ollama serve` runs as a background process on the operator's host. macOS bg-daemon discipline: `pgrep -f 'ollama serve'` checks, `ollama serve >/tmp/ollama.log 2>&1 &` starts if absent. Operator may also use `brew services start ollama` for managed lifecycle.
 - **Matryoshka**: store full 768 dim. Query at 768 for top recall; truncate to 256/512 at query time if storage pressure surfaces.
 - **Context limit 512 tokens** for the model. Long docs need chunking before embed (per `embedding-chunking-strategy.md`).
+- **A wrong model slug fails the pull with `Error: pull model manifest: file does not exist`** — the colon-tag form `nomic-embed-text:v2-moe` is a non-existent tag of a different base model. Use the dashed single-segment slug `nomic-embed-text-v2-moe`.
 - **Convex container reaches Mac-native Ollama** by `host.docker.internal:11434`. Convex backend's `extra_hosts: ["host.docker.internal:host-gateway"]` may need to be added to compose.yml for cross-platform parity. Verify in P4 implementation.

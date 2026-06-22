@@ -1,6 +1,6 @@
 # local-dev-loop
 
-`bun dev` runs the full local dev stack from the repo root. Per-app ports are fixed in `package.json` so OAuth callback URIs match. Ports chosen to avoid collision with operator's existing services (see GOTCHAS).
+`bun dev` runs the full local dev stack from the repo root. Per-app ports are fixed in `package.json` so OAuth callback URIs match. Ports chosen to avoid collision with operator's existing services.
 
 ## Ports
 
@@ -65,3 +65,20 @@ Colima default resources: 4 CPU / 24 GiB RAM / 100 GiB disk — sufficient for f
 - `bun smoke:agent` requires a clean schema; runs `bun run reset:db` first (drops + re-applies V001). Pre-launch only — never on a DB that holds data per `book/HARD-RULES.md` "Pre-launch: one migration only".
 - Operator has many concurrent compose projects on Colima (`map_*`, `va_*`, `noboil_*`, `vbfe-*`, k3d cluster). byerag uses `name: byerag` to namespace; volumes / networks / containers all `byerag_*` prefixed. Audit ports + names before any new service add — collision check is mandatory.
 - Local-dev agent auth bypass: on first compose boot, seed script inserts a `cliTokens` row with `source='dev'` mapped to `BOOTSTRAP_ADMIN_EMAIL[0]`; plaintext token written to `apps/backend/.env.local` as `DEV_CLI_TOKEN=<token>`. Production deployments never seed this.
+
+## MUST
+
+- Set every `.env` Convex URL (`NEXT_PUBLIC_CONVEX_URL`, `CONVEX_SELF_HOSTED_URL`, `CONVEX_SITE_URL`) to literal `127.0.0.1`, never `localhost`. Why: macOS `localhost` resolves `::1` first but Convex binds `127.0.0.1:3210` (v4) → ECONNREFUSED.
+- Forward all 4 SSH dev ports on remote dev machines: `3001` admin, `3003` user, `3210` Convex API, `3211` Convex site. Why: missing 3210/3211 fails browser WebSocket sync silently — login screen sits "Loading…".
+- Give `apps/backend` a `dev` script `bun run build-agent && bun run codegen && bunx convex dev` (persistent watch). Why: a missing `dev` script leaves `turbo dev` cold — every push is a fresh `convex dev --once` that re-analyzes.
+- Run deploy single + sequential with the box quiet and no users active. Why: concurrent/parallel pushes saturate the single isolate pool and starve runtime UDFs (`auth:signIn` hits the 1s UDF budget, sign-in breaks).
+- Free host CPU before deploy so the V8 module-analyze keeps CPU and the node-executor bundle is warm. Why: the 4s analyze isolate timeout is NOT configurable; `start_push` fails `400 InvalidModules: Function execution timed out (maximum duration: 4s)` under host saturation.
+
+## NEVER
+
+- Loop-spam `convex dev --once` or deploy concurrently with app use. Cost: repeated/parallel pushes saturate the isolate pool, `auth:signIn` hits the 1s UDF budget, sign-in breaks.
+
+## Pitfall
+
+- SSH port-forwards forward IPv4 only, so the same `::1`-vs-`127.0.0.1` trap recurs on remote dev machines — keep all URLs on `127.0.0.1`.
+- Self-host deploy is environment-fragile: a reliable green deploy needs both a warm node bundle and CPU headroom; co-tenant containers + host procs driving host load high cause the 4s analyze timeout, and the deploy goes green in ~40s once the box is freed.

@@ -68,6 +68,23 @@ Card + table queries are on the standard reactive subscription (cheap aggregates
 - KPI + tables: a few indexed aggregate scans per page open; trivial at internal-team scale.
 - Assignments table paginated server-side so a large (users × tests) set does not ship every row.
 
+## Route inventory
+
+- `/training` — overview surface: KPI cards (Overview / People at risk / Weakest test / Needs coaching) + inline Tests glance + inline User summary glance; `View all →` links to the dedicated routes.
+- `/training/users` — deep User-summary surface: sortable columns User · Department · Role · Passed/assigned · Failed · Overdue · Pass rate · Last attempt · Most-failed topic; Department multi-select; Needs-coaching toggle; search; server-paginated 100/page; CSV export; click a user → attempt-history modal.
+- `/training/tests` — deep Tests list: sortable columns Name · Questions · Assigned · Pass rate · Overdue · Source docs · Created · Last activity; search; CSV; click name → `/training/tests/<slug>`.
+- `/training/tests/<slug>` — per-test detail: KPI strip (Pass rate / Assigned / Overdue / Failed attempts) + source-doc chips (DocSheet) + collapsible read-only question bank + 3 status tables (Passed / Failing-or-in-progress / Haven't-started); usernames open the attempt-history modal.
+- `/training/assignments` — hidden multi-column filterable Assignments table; not linked, accessible by URL.
+
+## MUST
+
+- Use the shared `AttemptHistoryModal` at `apps/admin/src/app/(standalone)/training/_components/attempt-history-modal.tsx` as the canonical user-click surface. Why: one triage surface across `/training`, `/training/users`, `/training/tests/<slug>`.
+
+## Pitfall
+
+- Pattern: modal = triage (fast in/out, context preserved); dedicated URL = deep-dive (shareable, refreshable).
+- `<slug>` resolves via the `slugify` defined in [`multilingual-corpus-handling.md`](./multilingual-corpus-handling.md); `apps/admin/src/app/(standalone)/training/page.tsx` keeps a byte-identical copy for client-side `Link` href construction.
+
 ## Gotcha for Claude
 
 - Overdue is derived, not stored. No migration when `assignment_due_days` changes — recompute on read.

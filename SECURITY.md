@@ -51,7 +51,7 @@ Two-axis token-bucket caps, each refilled across a 60-second window. Caps differ
 | Stream-event ingestion (`/api/stream/event`) | 8_000 / min | 20_000 / min | stream-event sink |
 | Chat send (`messages.send`) | — | 30 / min | mutation |
 
-Stream-event caps must accommodate the fine-grained deltas (`text_delta`, `thinking_delta`, `input_json_delta`) the Claude Agent SDK emits when `CLAUDE_CODE_INCLUDE_PARTIAL_MESSAGES=1`. A single multi-tool agent turn legitimately produces low-thousands of stream events. Caps below ~5_000 starve the chat of events and corrupt `complete`-time message reconstruction (events drop at the http layer with 429 before the insert mutation runs). Captured in `GOTCHAS.md` "Kimi proxy".
+Stream-event caps must accommodate the fine-grained deltas (`text_delta`, `thinking_delta`, `input_json_delta`) the Claude Agent SDK emits when `CLAUDE_CODE_INCLUDE_PARTIAL_MESSAGES=1`. A single multi-tool agent turn legitimately produces low-thousands of stream events. Caps below ~5_000 starve the chat of events and corrupt `complete`-time message reconstruction (events drop at the http layer with 429 before the insert mutation runs).
 
 ### Sandbox runtime
 
@@ -97,6 +97,23 @@ Never stage / commit / push `.env`, `.env.local`, or ANY `.env*` variant. `.giti
 
 - Convex action logs never include `Authorization` headers or request bodies (truncation at log-line layer).
 - Error redaction in agent script scrubs `sk-ant-*`, JWT-like (`eyJ...`), the per-chat secret literal, IPs, and `/home/user/*` paths before posting error events.
+
+### Test-fixture isolation in admin aggregations
+
+`userProfiles.kind: 'real' | 'test'` is the SSOT separating test fixtures from real users — never an email-substring match (`@example.com` / `@test.com`). `convex/lib/userKind.ts` exposes `filterRealProfiles` + `isRealProfile`.
+
+#### MUST
+
+- Filter every admin aggregation surface (`dashboard.topStrip` user count + cycle cents, `costCycleHistory`, `costCyclePivot`, `computeTrain` root of `trainingSummary`/`userSummary`/`userSummaryFull`/`coachingSummary`/`testsFull`, `testDetail`, `userAttemptHistory`) through the `userKind.ts` helper. Why: a fixture leaking into an admin metric corrupts the reported number.
+- Wrap any new admin query iterating `userProfiles.by_role='user'` in `filterRealProfiles` before consuming. Why: unfiltered fixtures inflate counts.
+- Build `testOwnersSet(ctx)` and skip its members in any new cost-style query iterating `costRecords`. Why: synthetic + fixture owners otherwise show as real spend.
+- Set `kind: 'real'` on insert in `auth.ts createOrUpdateUser`; default `testing.seedUserProfile` to `'test'`; retag via `testing.markProfileKind(userId, kind)`; one-shot backfill via `scripts/backfill-test-kinds.ts`. Why: every profile is tagged at its origin.
+- Seed a `kind='test'` profile for the owner at the seed site of every smoke that emits cost. Why: mechanism-asserted fixture exclusion is the durable fix, not the orphan-pattern allowlist.
+
+#### Pitfall
+
+- `kind` is `v.optional` during the migration window; the helper treats `undefined` as `'real'` (unmarked defaults visible); flips to required once every fixture is tagged.
+- Three-surface mismatch class is the smell: `dashboard.topStrip.totalUsers` filters by `kind` + `role=user`; `dashboard.costCyclePivot` filters cost rows by `testOwnersSet(ctx)` = `kind='test'` profiles ∪ `'system'` synthetic owner ∪ cost owners with NO profile matching `ORPHAN_TEST_OWNER_PATTERNS`; `/users` Accounts page filters `kind!=='test'` by default with an opt-in "Show test fixtures" toggle (`listUserProfilesForAdmin({includeTest:true})`). The three numbers MUST stay consistent.
 
 ## Defense in depth
 

@@ -34,3 +34,13 @@ Lives in `packages/react`, so admin and user apps inherit identical behavior.
 - `/docs/<docId>` route stays — it is the shareable URL + right-click escape hatch + fallback when the sheet provider isn't mounted (e.g. print view, deep link from email).
 - System prompt does NOT need to change. Agent keeps emitting `[<docId§section>](/docs/<docId>)` citation markdown — the click handler intercepts client-side; the markdown is also a valid deep link.
 - Mobile: shadcn Sheet defaults to full-width on small viewports; correct behavior, no override.
+
+## MUST
+- Defend the citation parser, not the prompt: `DOC_HREF_RE` in `packages/react/src/components/citation-anchor.tsx` stops at `§ % # ?` and consumes an optional `(?:%C2%A7|§)` separator extracting `sectionInPath`. Why: agent appends `§section` to the URL `[…](/docs/kx7…§4)` which the renderer URL-encodes to `%C2%A7`.
+- Validate the captured docId against the Convex id charset (lowercase alphanumeric) via `DOC_ID_RE`, else fall through to a plain `<a>` with no Convex query. Why: a polluted docId throws `ArgumentValidationError` in `v.id("docs")`.
+
+## NEVER
+- Pass an unvalidated docId to a Convex `v.id("docs")` query. Cost: `ArgumentValidationError` lets the React error boundary swallow the entire assistant message → blank reply.
+
+## Pitfall
+- System prompt renders citations `[<docId§section>](/docs/<docId>)` — chip text carries `§section`, link target is docId only; the agent occasionally violates this, so the parser is the durable defense.

@@ -134,7 +134,7 @@ Every recovery: pass through these checks before believing you're "done":
 
 ## Doc evolution
 
-Every milestone (decision landed, ADR resolved, build green, gotcha hit, scope clarified) → update owner doc + append ledger row + commit doc with the work that taught it. Never duplicate across docs. One fact, one home. Gotchas → `GOTCHAS.md` section that owns the topic, not append-only bucket.
+Every milestone (decision landed, ADR resolved, build green, gotcha hit, scope clarified) → update owner doc + append ledger row + commit doc with the work that taught it. Never duplicate across docs. One fact, one home. Gotchas → the topic-owner doc, never an append-only bucket.
 
 Docs must always reflect latest agreed state. Stale docs are the enemy — future-session agent re-reads everything on every compact; outdated specs lead to wrong assumptions. Update in-place whenever a decision changes.
 

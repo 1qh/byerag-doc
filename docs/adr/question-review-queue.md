@@ -64,6 +64,20 @@ Each resolution writes one row to `auditLogs`:
 - Approve of `'retire'` flips existing `testQuestions.deletedAt`.
 - Linked via `pairedWith` for conflict and swap cards.
 
+## MUST
+
+- Render the page heading + an explanation + a path forward even when the query returns zero rows; the `/test-questions` empty state always renders `<h2>Question bank</h2>` + a dashed-border card explaining what triggers generation + nav buttons (`Go to Docs`, `View Training`). Why: bare floating "No pending suggestions." reads as a broken page.
+- Dedupe any `[...sliceA, ...sliceB]` union of two queries that can return the same `_id` via `Map<_id, row>` (last-write-wins preserves the quarantined view). Why: an overlapping row dupes and collides React `key={r._id}` — "Encountered two children with the same key". Caught in `listForQuarantine` (`policyStatus='rejected'` ∩ `scanStatus='quarantined'`) and `weeklyHighlights` (shared-scope overlapped the owner query).
+
+## NEVER
+
+- Trust two unioned `ctx.db` slices to be disjoint without deduping. Cost: a row in both states appears twice; risks duplicated or omitted rows on update.
+
+## Pitfall
+
+- Scope-disjoint slices (`scope='shared'` vs `scope='mine'`) are safe — `scope` is single-valued so they never overlap.
+- Spot the union pattern with `grep -rEn '\[\.\.\.[a-zA-Z_]+,\s*\.\.\.' apps/backend/convex`.
+
 ## Gotcha for Claude
 
 - Edit preserves the suggestion's `sourceDocIds` and `kind`; only `prompt`, `choices`, `correctIndex` are admin-editable in the inline form.

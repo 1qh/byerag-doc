@@ -50,6 +50,15 @@ Final-answer protocol (mandatory): same as admin — emit a plain-text final res
 Supportiveness expectations: cross-reference proactively, spot risks unsolicited, connect dots across docs, pre-empt follow-up questions, flag corpus gaps, surface uncertainty. Per `AGENT-DOCTRINE.md`.
 ```
 
+## MUST
+
+- Carry the mandatory final-answer protocol in every app prompt: plain-text response after the tool chain, cite every claim, stop after. Why: Kimi ends turns with `stop_reason="tool_use"` and emits no follow-up text.
+- Pair the prompt mandate with a smoke harness asserting non-empty assistant text + keyword + citation per scenario. Why: `result.result=""` otherwise ships an empty answer body.
+
+## NEVER
+
+- Drop the final-answer protocol from a prompt. Cost: Kimi's `stop_reason="tool_use"` leaves the chat with no answer body.
+
 ## Substitution
 
 `<email>` token in the user-app prompt is substituted at `buildSystemPrompt` time with the actual session email. Other app-runtime values (current date, doc counts) may be injected similarly.

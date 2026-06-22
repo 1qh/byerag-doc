@@ -78,4 +78,23 @@ Operator registers DNS records (or CNAME to Dokploy host); Traefik picks up rout
 - Local dev binds ports to `127.0.0.1` only (`compose.yml` already does this). Prod doesn't bind to host ports at all — Traefik routes via the docker network. Override port-binding away in prod compose if needed.
 - Image `ghcr.io/get-convex/convex-backend:latest` matches both environments. Pin to a digest at artifact-boundary per `book/HARD-RULES.md` "Reproducibility at artifact boundaries" (operator's choice when prod cuts a release tag).
 - Future operator action: register Dokploy compose for byerag, set env panel, point `sourceType: github` at this repo's `compose.yml`, configure auto-deploy on main branch.
+
+## Prod-built one-command bring-up
+
+### MUST
+- Bring up the full prod stack via `bun run prod` at the repo root (script `prod.sh`, wired as `"prod"` in root `package.json`). Why: one command chains the entire stack in dependency order.
+- Stop the Docker stack with `docker compose down` after Ctrl-C. Why: Ctrl-C reaps only the two Next servers via a TERM trap; the Docker stack stays up.
+
+### Pitfall
+- `bun run prod` chains: `docker compose up -d --wait` (postgres + convex-backend + clamav) → Ollama healthcheck on `:11434` → `convex deploy` from `apps/backend` → `turbo build` (admin + user + packages) → `next start` for admin `:3001` + user `:3003` in parallel.
+- The two Next-server PIDs go into `.cache/prod/pids`; logs into `.cache/prod/*.log`; `.cache/` is gitignored. Each step exits non-zero with the relevant log tail on failure.
+
+## Operator-host port collisions
+
+### MUST
+- Audit `lsof -iTCP -sTCP:LISTEN` + `docker ps --format '{{.Names}}\t{{.Ports}}'` before adding any new host-bound service. Why: the operator's Colima runs many concurrent compose projects whose ports must be avoided.
+
+### Pitfall
+- byerag host ports are chosen to avoid all co-tenant projects: admin=3001, user=3003 (not 3002 — `va_*` web), Convex API=3210, Convex site=3211, Ollama=11434 (compose-internal).
+- Co-tenant projects in use: `map_*` (timescaledb / temporal / apicurio / pgbouncer / nats / kafka / minio / valkey / glitchtip / grafana / typesense), `va_*` (web on 3002, postgres), `vbfe-*` (minio on 9000/9001, nginx on 5176, backend on 5174, postgres), `noboil_*` (convex-backend on 4100/4101, dashboard on 4102, minio on 4104/4105, spacetimedb on 4200/4103, postgres-17), `k3d-truecare-pilot-local-*`.
 - Concrete Dokploy URL + API key + project/compose ids live in agent memory at `~/.claude/projects/-Users-o-codoc/memory/`, never in tracked docs.

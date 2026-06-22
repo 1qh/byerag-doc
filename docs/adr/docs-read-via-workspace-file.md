@@ -46,3 +46,12 @@ Agent's next step is `Read <path>` (SDK native tool) when it needs the body. Rea
 - Stale entries OK to leave — overwritten on next `docs read` of same docId; whole dir blown away when sandbox is killed.
 - Agent's system prompt must explicitly say: "after `docs read`, use the `Read` tool on the `path` field to view the body — do NOT re-run `docs read` to retry."
 - This pattern is identical to how Claude Code's own `WebFetch` and `Read` tools handle large outputs — it is the Anthropic-canonical handoff, not a workaround.
+
+## MUST
+- Mime-route `DocViewer`: pdf→`<iframe>`, image→`<img>`, markdown→`MessageResponse`, office→extracted-text + "formatting not preserved" + download, code/text→`<pre>`; expose a blob `url` from `docs.read`. Why: rendering extracted text as raw `<pre>` breaks PDF/docx.
+- Render PDF in an `<iframe>` with explicit height `h-[80vh]`. Why: `<object>` collapses to 0px under flex-only sizing and headless Chromium can't render the PDF plugin.
+- Set CSP `frame-src`/`object-src` and extend `img-src` with `${convexOrigin} https://*.convex.cloud https://*.convex.site` (convexOrigin from `NEXT_PUBLIC_CONVEX_URL`, e.g. `http://127.0.0.1:3210`). Why: a `default-src 'self'` CSP blocks the cross-origin Convex storage blob → blank embed.
+- Verify doc preview via a real browser screenshot, not the a11y tree. Why: the a11y tree hides the 0px-collapse + plugin-render failures.
+
+## NEVER
+- Render extracted doc text as a `<pre>` for all mime types. Cost: raw markdown source, broken for PDF/docx.

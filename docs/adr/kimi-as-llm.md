@@ -14,6 +14,15 @@ LLM provider is Kimi via its Anthropic-protocol-compatible endpoint at `https://
 - One vendor lock-in for inference (mitigated: proxy upstream is a single env var; swap to Anthropic / Bedrock-in-VPC / local model by changing the URL).
 - Single model endpoint (`kimi-for-coding`); `model` param in requests is ignored by Kimi's coding endpoint.
 
+## MUST
+
+- Mandate a plain-text final-answer response after the tool chain via the system prompt. Why: Kimi ends turns with `stop_reason="tool_use"`, never emitting follow-up text.
+- Assert non-empty assistant text + keyword + citation per scenario in the smoke harness. Why: catches the empty-result hole at the gate.
+
+## NEVER
+
+- Trust Kimi to emit a synthesizing text turn after the last tool call. Cost: `stop_reason="tool_use"` leaves `result.result=""`, chat shows no answer body.
+
 ## Gotcha for Claude
 
 - Bearer / x-api-key both work on Kimi's endpoint. SDK sends `Authorization: Bearer <key>` by default after `ANTHROPIC_AUTH_TOKEN` is set.

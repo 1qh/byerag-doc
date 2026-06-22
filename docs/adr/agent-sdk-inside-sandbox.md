@@ -24,3 +24,13 @@ The SDK session is created with `disallowedTools: ['WebSearch', 'WebFetch']` (`a
 - `unstable_v2_resumeSession(sessionId)` over `unstable_v2_createSession()` when prior `sessionId` exists. Fallback on resume failure.
 - PGID-scoped kill on agent exit prevents zombie children: `setsid` wrapping at launch, `pgrep -g <pgid>` + `kill -9` at finally.
 - `CLAUDE_CODE_INCLUDE_PARTIAL_MESSAGES=1` enables fine-grained streaming deltas; client parsing relies on it.
+
+## MUST
+
+- Pin `@anthropic-ai/claude-agent-sdk` to `0.2.141` in `apps/backend/sandbox/package.json`. Why: it is the last `unstable_v2_*` carrier; `run.ts` imports `unstable_v2_createSession`/`unstable_v2_resumeSession`, dropped in 0.3.x.
+- Refactor `run.ts` to the 0.3+ surface (`query`, `forkSession`, `resumeSession`, `listSessions`) before un-pinning. Why: 0.3+ removed the `unstable_v2_*` names; importing them throws on agent boot.
+- Reproduce a sandbox boot failure with `docker run --rm --entrypoint sh byerag-sandbox:latest -c 'setsid bun run /home/agent/run.ts 2>&1'`. Why: bun import-failure is silent in agent.log — orchestrator outer `nohup … >/dev/null 2>&1 &` clobbers the inner `>$logFile`.
+
+## Pitfall
+
+- A fresh `docker compose down -v` + image rebuild pulls SDK `0.3.143`, which trips the dropped-`unstable_v2_*` import unless the pin holds.

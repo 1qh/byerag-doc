@@ -19,3 +19,8 @@ Host firewall blocks all outbound except `api.kimi.com:443` from the Convex proc
 - DNS resolution from the sandbox: provide a local DNS resolver (or `/etc/hosts` baked into the image) that resolves `cvex-api` to the Convex container's bridge IP — and NOTHING else. Without DNS isolation, the sandbox could resolve `api.kimi.com` and try to reach it (and fail at the bridge, but waste a round trip).
 - Host firewall rule shape (`nftables` / `iptables`): allow established + related, allow port 53 outbound (DNS) to a controlled resolver, allow 443 outbound only to the IPs that resolve `api.kimi.com`. Kimi rotates IPs; either pin via TLS SNI inspection (Envoy egress proxy) or accept periodic refresh of the allowed-IP set via cron.
 - Convex backend's outbound is governed by the host's egress rules; doesn't have its own restrictor.
+
+## MUST
+
+- Drop the host firewall before image pulls/builds via `colima ssh -- sudo nft delete table inet byerag-fw`, then pull/build, then reapply the `byerag-fw` table. Why: Kimi-only egress blocks `ghcr.io`/`docker.io` pulls + npm.
+- Reapply the `byerag-fw` table with a multi-line `nft -f -` heredoc. Why: the compact one-liner form errors on `}`.

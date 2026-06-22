@@ -86,6 +86,10 @@ Tool definitions live in `apps/backend/convex/tools/training/`. Registry codegen
 - One small tool registry per chat session; each call is a Convex action invocation with caller-scoped queries. Cost is negligible.
 - Tool surface expands the agent's prompt; mitigated by the registry-driven SKILL.md being generated on the fly per session.
 
+## MUST
+
+- Keep the `training` tools (`status` / `attempts` / `topics` / `attempt-detail`) caller-scoped and free of any `userProfiles.kind` filter. Why: a test-fixture user must get a real training answer about their own data — `kind` protects admin metrics only, never the user's own answer surface.
+
 ## Gotcha for Claude
 
 - The agent might be tempted to summarize the test pool ("there are questions about phishing, breach notification, ...") inferred from its knowledge of the underlying docs. This is NOT a leak through the training tools, but it IS a pool-leak via doc tools (`docs grep` or `docs read`). System prompt must explicitly forbid summarizing test content from doc-tool outputs as well.
